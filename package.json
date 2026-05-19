@@ -10,19 +10,29 @@
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
-    "@supabase/supabase-js": "^2.105.4",
+    "@supabase/supabase-js": "^2.106.0",
+    "@tailwindcss/postcss": "^4.3.0",
     "docx": "^9.6.1",
+    "html2pdf.js": "^0.14.0",
     "lucide-react": "^1.14.0",
+    "mammoth": "^1.12.0",
     "next": "14.2.35",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^5.7.284",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "stripe": "^22.1.1"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "autoprefixer": "^10.5.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^4.3.0",
     "typescript": "^5"
   }
 }
