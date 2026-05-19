@@ -9,7 +9,8 @@ const MAX_MB = 8
 
 async function extractPdf(buffer: ArrayBuffer): Promise<string> {
   const pdfjsLib = await import('pdfjs-dist')
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`
 
   const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) })
   const pdf = await loadingTask.promise
