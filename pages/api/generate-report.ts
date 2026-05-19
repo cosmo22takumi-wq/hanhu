@@ -164,6 +164,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const MATERIAL_LIMIT = 3
   const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com'
 
+  // 認証必須（未ログインは拒否）
+  const token = req.headers.authorization?.replace('Bearer ', '')
+  if (!token) return res.status(401).json({ error: 'ログインが必要です' })
+
+  let userId: string
+  let userEmail: string
+  try {
+    const { data: { user } } = await adminSupabase.auth.getUser(token)
+    if (!user) return res.status(401).json({ error: '無効なトークンです' })
+    userId = user.id
+    userEmail = user.email ?? ''
+  } catch (authErr) {
+    return res.status(401).json({ error: `認証エラー: ${String(authErr)}` })
+  }
+
   const body = req.body as GenerateRequest
   if (!body.theme || !body.faculty || !body.charCount) {
     return res.status(400).json({ error: 'theme, faculty, charCount は必須です' })
@@ -178,43 +193,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
   }
 
-  // 認証・生成回数チェック
-  try {
-    if (req.headers.authorization) {
-      const token = req.headers.authorization.replace('Bearer ', '')
-      const { data: { user } } = await adminSupabase.auth.getUser(token)
-      if (user) {
-        const isAdmin = user.email === ADMIN_EMAIL
-        if (!isAdmin) {
-          const isPro = await hasActiveSubscription(user.id, user.email ?? '')
-          const limit = isPro ? PRO_LIMIT : FREE_LIMIT
-          const errorCode = isPro ? 'PRO_LIMIT_REACHED' : 'FREE_LIMIT_REACHED'
-          const errorMsg = isPro
-            ? `Proプランの生成回数（${PRO_LIMIT}回）に達しました。`
-            : `無料プランの生成回数（${FREE_LIMIT}回）に達しました。Proプランにアップグレードしてください。`
+  // 生成回数チェック（管理者は対象外）
+  const isAdmin = userEmail === ADMIN_EMAIL
+  if (!isAdmin) {
+    try {
+      const isPro = await hasActiveSubscription(userId, userEmail)
+      const limit = isPro ? PRO_LIMIT : FREE_LIMIT
+      const errorCode = isPro ? 'PRO_LIMIT_REACHED' : 'FREE_LIMIT_REACHED'
+      const errorMsg = isPro
+        ? `Proプランの生成回数（${PRO_LIMIT}回）に達しました。`
+        : `無料プランの生成回数（${FREE_LIMIT}回）に達しました。Proプランにアップグレードしてください。`
 
-          const { data: usageData } = await adminSupabase
-            .from('usage')
-            .select('report_count')
-            .eq('user_id', user.id)
-            .maybeSingle()
+      const { data: usageData } = await adminSupabase
+        .from('usage')
+        .select('report_count')
+        .eq('user_id', userId)
+        .maybeSingle()
 
-          const currentCount = (usageData?.report_count as number | null) ?? 0
+      const currentCount = (usageData?.report_count as number | null) ?? 0
 
-          if (currentCount >= limit) {
-            return res.status(402).json({ error: errorCode, message: errorMsg, count: currentCount, limit })
-          }
-
-          await adminSupabase.from('usage').upsert(
-            { user_id: user.id, report_count: currentCount + 1, updated_at: new Date().toISOString() },
-            { onConflict: 'user_id' }
-          )
-        }
+      if (currentCount >= limit) {
+        return res.status(402).json({ error: errorCode, message: errorMsg, count: currentCount, limit })
       }
+
+      await adminSupabase.from('usage').upsert(
+        { user_id: userId, report_count: currentCount + 1, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id' }
+      )
+    } catch (err) {
+      console.error('usage check error:', err)
+      return res.status(500).json({ error: `利用チェックエラー: ${String(err)}` })
     }
-  } catch (authErr) {
-    console.error('subscription check error:', authErr)
-    return res.status(500).json({ error: `認証エラー: ${String(authErr)}` })
   }
 
   const systemPrompt = buildSystemPrompt(body)
