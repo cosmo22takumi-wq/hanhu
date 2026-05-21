@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase, ADMIN_EMAIL } from '../utils/supabaseClient'
-import type { PlanType } from '../utils/checkSubscription'
+import type { PlanType } from '../utils/planTypes'
 import Auth from './Auth'
 import CiNiiSearch from './CiNiiSearch'
 import WhisperRecorder from './WhisperRecorder'

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../utils/supabaseClient'
-import type { PlanType } from '../utils/checkSubscription'
+import type { PlanType } from '../utils/planTypes'
 
 interface Props {
   onClose: () => void

@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
+import type { PlanType } from './planTypes'
+
+export type { PlanType }
 
 const ADMIN_EMAIL_FALLBACK = 'cosmo22.takumi@gmail.com'
 
@@ -6,8 +9,6 @@ export const adminSupabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
   process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
 )
-
-export type PlanType = 'free' | 'standard' | 'pro'
 
 function isActiveRow(data: { status: string; current_period_end?: string | null } | null): boolean {
   if (!data) return false
