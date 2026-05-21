@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminSupabase, hasActiveSubscription } from '../../utils/checkSubscription'
+import { adminSupabase, getPlanType } from '../../utils/checkSubscription'
 
 export interface GenerateRequest {
   theme: string
@@ -160,7 +160,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const FREE_LIMIT = 2
-  const PRO_LIMIT = 10
   const MATERIAL_LIMIT = 3
   const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com'
 
@@ -193,33 +192,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
   }
 
-  // 生成回数チェック（管理者は対象外）
+  // 生成回数チェック（管理者・有料ユーザーは無制限）
   const isAdmin = userEmail === ADMIN_EMAIL
   if (!isAdmin) {
     try {
-      const isPro = await hasActiveSubscription(userId, userEmail)
-      const limit = isPro ? PRO_LIMIT : FREE_LIMIT
-      const errorCode = isPro ? 'PRO_LIMIT_REACHED' : 'FREE_LIMIT_REACHED'
-      const errorMsg = isPro
-        ? `Proプランの生成回数（${PRO_LIMIT}回）に達しました。`
-        : `無料プランの生成回数（${FREE_LIMIT}回）に達しました。Proプランにアップグレードしてください。`
+      const planType = await getPlanType(userId, userEmail)
 
-      const { data: usageData } = await adminSupabase
-        .from('usage')
-        .select('report_count')
-        .eq('user_id', userId)
-        .maybeSingle()
+      if (planType === 'free') {
+        const { data: usageData } = await adminSupabase
+          .from('usage')
+          .select('report_count')
+          .eq('user_id', userId)
+          .maybeSingle()
 
-      const currentCount = (usageData?.report_count as number | null) ?? 0
+        const currentCount = (usageData?.report_count as number | null) ?? 0
 
-      if (currentCount >= limit) {
-        return res.status(402).json({ error: errorCode, message: errorMsg, count: currentCount, limit })
+        if (currentCount >= FREE_LIMIT) {
+          return res.status(402).json({
+            error: 'FREE_LIMIT_REACHED',
+            message: `無料プランの生成回数（${FREE_LIMIT}回）に達しました。プランにアップグレードしてください。`,
+            count: currentCount,
+            limit: FREE_LIMIT,
+          })
+        }
+
+        await adminSupabase.from('usage').upsert(
+          { user_id: userId, report_count: currentCount + 1, updated_at: new Date().toISOString() },
+          { onConflict: 'user_id' }
+        )
       }
-
-      await adminSupabase.from('usage').upsert(
-        { user_id: userId, report_count: currentCount + 1, updated_at: new Date().toISOString() },
-        { onConflict: 'user_id' }
-      )
+      // standard / pro: 生成回数制限なし
     } catch (err) {
       console.error('usage check error:', err)
       return res.status(500).json({ error: `利用チェックエラー: ${String(err)}` })

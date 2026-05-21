@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminSupabase, hasActiveSubscription } from '../../../utils/checkSubscription'
+import { adminSupabase, getPlanType } from '../../../utils/checkSubscription'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end()
@@ -11,7 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { data: { user } } = await adminSupabase.auth.getUser(token)
     if (!user) return res.status(401).json({ error: 'Invalid token' })
 
-    const isPro = await hasActiveSubscription(user.id, user.email ?? '')
+    const planType = await getPlanType(user.id, user.email ?? '')
+    const isPro = planType !== 'free'
+    const isAdmin = user.email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com')
 
     const [{ data: sub }, { data: usageData }] = await Promise.all([
       adminSupabase
@@ -27,17 +29,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ])
 
     const usageCount = (usageData?.report_count as number | null) ?? 0
-    const isAdmin = user.email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com')
+
     res.json({
+      planType,
       isPro,
       isAdmin,
       status: sub?.status ?? 'free',
       currentPeriodEnd: sub?.current_period_end ?? null,
       generationsUsed: usageCount,
-      generationsLimit: isPro ? 10 : 2,
-      // legacy fields
-      freeGenerationsUsed: usageCount,
-      freeGenerationsLimit: 2,
+      generationsLimit: isPro ? null : 2,   // null = unlimited for paid
     })
   } catch (err) {
     res.status(500).json({ error: String(err) })

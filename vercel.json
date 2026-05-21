@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "pages/api/whisper.ts": {
+      "maxDuration": 60
+    },
+    "pages/api/generate-report.ts": {
+      "maxDuration": 60
+    },
+    "pages/api/cinii.ts": {
+      "maxDuration": 30
+    },
+    "pages/api/parse-file.ts": {
+      "maxDuration": 30
+    }
+  }
+}

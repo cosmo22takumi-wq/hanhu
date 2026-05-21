@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase, ADMIN_EMAIL } from '../utils/supabaseClient'
+import type { PlanType } from '../utils/checkSubscription'
 import Auth from './Auth'
 import CiNiiSearch from './CiNiiSearch'
 import WhisperRecorder from './WhisperRecorder'
@@ -34,12 +35,18 @@ const TONES = [
   { value: '政策提言型', label: '政策提言型' },
 ]
 
+// プランごとの文字数上限
+const PLAN_CHAR_LIMIT: Record<PlanType, number> = {
+  free: 2000,
+  standard: 5000,
+  pro: 10000,
+}
+
 export default function App() {
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
-  const [isPro, setIsPro] = useState(false)
-  const [usageCount, setUsageCount] = useState(0)
-  const [usageLimit, setUsageLimit] = useState(2)
+  const [plan, setPlan] = useState<PlanType>('free')
+  const [freeUsed, setFreeUsed] = useState(0)
   const [showPricing, setShowPricing] = useState(false)
 
   const [inputTab, setInputTab] = useState<InputTab>('cinii')
@@ -62,21 +69,19 @@ export default function App() {
 
   const reportRef = useRef<HTMLTextAreaElement>(null)
 
+  const isPro = plan !== 'free'
+  const isProMax = plan === 'pro'
+
   const checkSubscription = useCallback(async (token: string, email: string) => {
-    if (email === ADMIN_EMAIL) { setIsPro(true); return }
+    if (email === ADMIN_EMAIL) { setPlan('pro'); return }
     try {
       const res = await fetch('/api/subscription/status', {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json() as {
-          isPro: boolean
-          generationsUsed?: number
-          generationsLimit?: number
-        }
-        setIsPro(data.isPro)
-        setUsageCount(data.generationsUsed ?? 0)
-        setUsageLimit(data.generationsLimit ?? (data.isPro ? 10 : 2))
+        const data = await res.json() as { planType?: PlanType; generationsUsed?: number }
+        setPlan(data.planType ?? 'free')
+        setFreeUsed(data.generationsUsed ?? 0)
       }
     } catch { /* ignore */ }
   }, [])
@@ -92,7 +97,6 @@ export default function App() {
       if (session) checkSubscription(session.access_token, session.user.email ?? '')
     })
 
-    // URLパラメータで決済結果を確認
     const params = new URLSearchParams(window.location.search)
     if (params.get('payment') === 'success') {
       window.history.replaceState({}, '', '/')
@@ -129,24 +133,16 @@ export default function App() {
   }
 
   async function generateReport() {
-    if (!theme.trim()) {
-      setGenError('テーマを入力してください')
-      return
-    }
+    if (!theme.trim()) { setGenError('テーマを入力してください'); return }
 
     const enabledCount = materials.filter((m) => m.enabled).length
 
-    // 参考資料3件制限（全ユーザー）
     if (enabledCount > 3) {
       setGenError('参考資料は最大3件まで選択できます。チェックを外してください。')
       return
     }
-
-    // 無料ユーザー: 2件以上の資料を使う場合はPro必要
-    if (enabledCount >= 2 && !isPro) {
-      setShowPricing(true)
-      return
-    }
+    // 無料: 2件以上の資料はPro以上が必要
+    if (enabledCount >= 2 && !isPro) { setShowPricing(true); return }
 
     setGenerating(true)
     setGenError('')
@@ -156,35 +152,21 @@ export default function App() {
       const { data: { session } } = await supabase.auth.getSession()
       const token = session?.access_token ?? ''
 
-      const body = {
-        theme,
-        faculty,
-        charCount,
-        tone,
-        outline,
-        materials: materials.map((m) => ({
-          title: m.title,
-          authors: m.authors,
-          year: m.year,
-          note: m.note,
-          enabled: m.enabled,
-        })),
-      }
-
       const res = await fetch('/api/generate-report', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          theme, faculty, charCount, tone, outline,
+          materials: materials.map((m) => ({
+            title: m.title, authors: m.authors, year: m.year, note: m.note, enabled: m.enabled,
+          })),
+        }),
       })
 
       if (!res.ok) {
-        const err = await res.json() as { error?: string; message?: string; count?: number; limit?: number }
-        if (err.error === 'FREE_LIMIT_REACHED' || err.error === 'PRO_LIMIT_REACHED') {
-          if (err.count !== undefined) setUsageCount(err.count)
-          if (err.limit !== undefined) setUsageLimit(err.limit)
+        const err = await res.json() as { error?: string; message?: string; count?: number }
+        if (err.error === 'FREE_LIMIT_REACHED') {
+          if (err.count !== undefined) setFreeUsed(err.count)
           setShowPricing(true)
           setGenerating(false)
           return
@@ -194,34 +176,25 @@ export default function App() {
 
       const reader = res.body?.getReader()
       if (!reader) throw new Error('ストリームを取得できません')
-
       const decoder = new TextDecoder()
       let accumulated = ''
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-
         const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split('\n').filter((l) => l.startsWith('data: '))
-
-        for (const line of lines) {
+        for (const line of chunk.split('\n').filter((l) => l.startsWith('data: '))) {
           const data = line.slice(6)
           if (data === '[DONE]') continue
           try {
             const parsed = JSON.parse(data) as { content?: string }
-            if (parsed.content) {
-              accumulated += parsed.content
-              setReport(accumulated)
-            }
-          } catch {
-            // skip
-          }
+            if (parsed.content) { accumulated += parsed.content; setReport(accumulated) }
+          } catch { /* skip */ }
         }
       }
 
       if (!accumulated) throw new Error('レポートが生成されませんでした')
-      if (!isAdmin) setUsageCount((n) => Math.min(n + 1, usageLimit))
+      if (plan === 'free') setFreeUsed((n) => Math.min(n + 1, 2))
     } catch (err) {
       setGenError(String(err))
     }
@@ -230,26 +203,20 @@ export default function App() {
   }
 
   async function handleExportDocx() {
-    if (!report) return
-    if (!isPro) { setShowPricing(true); return }
+    if (!report || !isPro) { setShowPricing(true); return }
     setExporting('docx')
     try {
       await exportDocx({ title: theme || 'レポート', content: report, author: user?.email ?? '' })
-    } catch (err) {
-      alert(`Word 出力エラー: ${String(err)}`)
-    }
+    } catch (err) { alert(`Word 出力エラー: ${String(err)}`) }
     setExporting(null)
   }
 
   async function handleExportPdf() {
-    if (!report) return
-    if (!isPro) { setShowPricing(true); return }
+    if (!report || !isProMax) { setShowPricing(true); return }
     setExporting('pdf')
     try {
       await exportPdf({ title: theme || 'レポート', content: report, author: user?.email ?? '' })
-    } catch (err) {
-      alert(`PDF 出力エラー: ${String(err)}`)
-    }
+    } catch (err) { alert(`PDF 出力エラー: ${String(err)}`) }
     setExporting(null)
   }
 
@@ -272,6 +239,7 @@ export default function App() {
 
   const isAdmin = user.email === ADMIN_EMAIL
   const enabledMaterialsCount = materials.filter((m) => m.enabled).length
+  const charLimit = isAdmin ? 10000 : PLAN_CHAR_LIMIT[plan]
 
   const tabBtn = (id: InputTab, label: string) => (
     <button
@@ -299,14 +267,26 @@ export default function App() {
     </button>
   )
 
+  // 有料機能へのアップグレード誘導UI
+  function LockedFeature({ message }: { message: string }) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 h-full py-10">
+        <span className="text-3xl">🔒</span>
+        <p className="text-sm text-gray-500 text-center">{message}</p>
+        <button
+          onClick={() => setShowPricing(true)}
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm px-4 py-2 rounded-xl hover:opacity-90 transition"
+        >
+          プランを見る
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {showPricing && (
-        <Pricing
-          isPro={isPro}
-          onClose={() => setShowPricing(false)}
-        />
-      )}
+      {showPricing && <Pricing planType={plan} onClose={() => setShowPricing(false)} />}
+
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
@@ -318,23 +298,14 @@ export default function App() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-400 hidden sm:inline truncate max-w-[160px]">{user.email}</span>
+
           {isAdmin ? (
             <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2.5 py-0.5 rounded-full">無制限</span>
-          ) : isPro ? (
-            <>
-              <span className={`text-xs font-semibold ${usageCount >= usageLimit ? 'text-red-500' : 'text-gray-400'} hidden sm:inline`}>
-                生成 {usageCount}/{usageLimit}回
-              </span>
-              <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
-                Pro
-              </span>
-              {usageCount >= usageLimit && (
-                <span className="text-xs bg-red-100 text-red-600 font-bold px-2 py-0.5 rounded-full border border-red-200">
-                  上限到達
-                </span>
-              )}
-            </>
-          ) : usageCount >= usageLimit ? (
+          ) : plan === 'pro' ? (
+            <span className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Pro</span>
+          ) : plan === 'standard' ? (
+            <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Standard</span>
+          ) : freeUsed >= 2 ? (
             <button
               onClick={() => setShowPricing(true)}
               className="text-xs bg-red-100 text-red-600 font-bold px-2.5 py-0.5 rounded-full border border-red-200 hover:bg-red-200 transition"
@@ -343,17 +314,16 @@ export default function App() {
             </button>
           ) : (
             <>
-              <span className="text-xs text-gray-400 hidden sm:inline">
-                生成 {usageCount}/{usageLimit}回
-              </span>
+              <span className="text-xs text-gray-400 hidden sm:inline">生成 {freeUsed}/2回</span>
               <button
                 onClick={() => setShowPricing(true)}
                 className="text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-3 py-1.5 rounded-lg hover:opacity-90 transition"
               >
-                Pro にアップグレード
+                アップグレード
               </button>
             </>
           )}
+
           <button
             onClick={() => supabase.auth.signOut()}
             className="text-xs border border-gray-300 rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 transition"
@@ -363,10 +333,10 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main grid: 2x2 on desktop, stack on mobile */}
+      {/* Main grid */}
       <main className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-[1400px] mx-auto w-full">
 
-        {/* ═══ TOP-LEFT: Data input area ═══ */}
+        {/* TOP-LEFT: Data input */}
         <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 min-h-[400px]">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-700">データ入力・連携</h2>
@@ -389,11 +359,15 @@ export default function App() {
             )}
 
             {inputTab === 'whisper' && (
-              <WhisperRecorder onTranscribed={handleTranscribed} />
+              isPro
+                ? <WhisperRecorder onTranscribed={handleTranscribed} />
+                : <LockedFeature message="音声文字起こしは Standard 以上のプランで使えます" />
             )}
 
             {inputTab === 'file' && (
-              <FileUploader onExtracted={handleFileExtracted} />
+              isPro
+                ? <FileUploader onExtracted={handleFileExtracted} />
+                : <LockedFeature message="ファイル読み込みは Standard 以上のプランで使えます" />
             )}
 
             {inputTab === 'memo' && (
@@ -401,7 +375,7 @@ export default function App() {
                 <textarea
                   value={memoText}
                   onChange={(e) => setMemoText(e.target.value)}
-                  placeholder="参考資料のメモ、引用テキスト、アイデアなどを入力してください。音声文字起こし結果もここに追加されます。"
+                  placeholder="参考資料のメモ、引用テキスト、アイデアなどを入力してください。"
                   className="flex-1 w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400 min-h-[200px]"
                 />
                 <button
@@ -416,7 +390,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* ═══ TOP-RIGHT: Material list / Admin ═══ */}
+        {/* TOP-RIGHT: Material list / Admin */}
         <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 min-h-[400px]">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-700">
@@ -427,20 +401,15 @@ export default function App() {
               {isAdmin && rightTabBtn('admin', '管理者')}
             </div>
           </div>
-
           <div className="flex-1 overflow-hidden">
             {rightTab === 'materials' && (
-              <MaterialList
-                key={materialListKey}
-                user={user}
-                onChange={setMaterials}
-              />
+              <MaterialList key={materialListKey} user={user} onChange={setMaterials} />
             )}
             {rightTab === 'admin' && isAdmin && <AdminPanel user={user} />}
           </div>
         </section>
 
-        {/* ═══ BOTTOM-LEFT: Report generation & editor ═══ */}
+        {/* BOTTOM-LEFT: Report generation */}
         <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-4 min-h-[480px]">
           <h2 className="text-sm font-bold text-gray-700">AIレポート生成・編集</h2>
 
@@ -467,21 +436,28 @@ export default function App() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">文字数</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                文字数
+                {!isAdmin && <span className="ml-1 text-gray-400 font-normal">（最大 {charLimit.toLocaleString()}字）</span>}
+              </label>
               <select
                 value={charCount}
                 onChange={(e) => {
                   const n = Number(e.target.value)
-                  if (n >= 3000 && !isPro) { setShowPricing(true); return }
+                  if (n > charLimit) { setShowPricing(true); return }
                   setCharCount(n)
                 }}
                 className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               >
-                {CHAR_COUNTS.map((n) => (
-                  <option key={n} value={n}>
-                    {n.toLocaleString()}字{n >= 3000 ? ' [Pro]' : ''}
-                  </option>
-                ))}
+                {CHAR_COUNTS.map((n) => {
+                  const locked = n > charLimit
+                  const tag = n > 5000 ? ' [Pro]' : n > 2000 ? ' [Standard+]' : ''
+                  return (
+                    <option key={n} value={n} disabled={locked}>
+                      {n.toLocaleString()}字{locked ? tag : ''}
+                    </option>
+                  )
+                })}
               </select>
             </div>
             <div>
@@ -499,9 +475,7 @@ export default function App() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
-              構成案（任意）
-            </label>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">構成案（任意）</label>
             <textarea
               value={outline}
               onChange={(e) => setOutline(e.target.value)}
@@ -529,10 +503,9 @@ export default function App() {
                     enabledMaterialsCount > 3 ? 'bg-red-300/40' :
                     enabledMaterialsCount >= 2 && !isPro ? 'bg-yellow-300/30' : 'bg-white/20'
                   }`}>
-                    資料 {enabledMaterialsCount}/3件{
-                      enabledMaterialsCount > 3 ? ' [超過]' :
-                      enabledMaterialsCount >= 2 && !isPro ? ' [Pro]' : '参照'
-                    }
+                    資料 {enabledMaterialsCount}/3件
+                    {enabledMaterialsCount > 3 ? ' [超過]' :
+                     enabledMaterialsCount >= 2 && !isPro ? ' [Standard+]' : '参照'}
                   </span>
                 )}
               </>
@@ -544,9 +517,7 @@ export default function App() {
           {(report || generating) && (
             <div className="flex-1 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">
-                  {report.length.toLocaleString()} 文字
-                </span>
+                <span className="text-xs text-gray-500">{report.length.toLocaleString()} 文字</span>
                 <button
                   onClick={copyReport}
                   disabled={!report}
@@ -568,7 +539,7 @@ export default function App() {
           )}
         </section>
 
-        {/* ═══ BOTTOM-RIGHT: Export & settings ═══ */}
+        {/* BOTTOM-RIGHT: Export */}
         <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-4">
           <h2 className="text-sm font-bold text-gray-700">エクスポート</h2>
 
@@ -581,11 +552,11 @@ export default function App() {
                 disabled={!report || exporting !== null}
                 className="w-full flex items-center justify-center gap-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 disabled:opacity-50 text-blue-700 font-semibold rounded-xl py-3 text-sm transition"
               >
-                {exporting === 'docx' ? (
-                  <div className="w-4 h-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
-                ) : <span>📄</span>}
+                {exporting === 'docx'
+                  ? <div className="w-4 h-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+                  : <span>📄</span>}
                 Word (.docx) でダウンロード
-                {!isPro && <span className="ml-auto text-xs bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">Pro</span>}
+                {!isPro && <span className="ml-auto text-xs bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">Standard+</span>}
               </button>
 
               <button
@@ -593,17 +564,15 @@ export default function App() {
                 disabled={!report || exporting !== null}
                 className="w-full flex items-center justify-center gap-2 border border-red-200 bg-red-50 hover:bg-red-100 disabled:opacity-50 text-red-700 font-semibold rounded-xl py-3 text-sm transition"
               >
-                {exporting === 'pdf' ? (
-                  <div className="w-4 h-4 border-2 border-red-300 border-t-red-600 rounded-full animate-spin" />
-                ) : <span>📕</span>}
+                {exporting === 'pdf'
+                  ? <div className="w-4 h-4 border-2 border-red-300 border-t-red-600 rounded-full animate-spin" />
+                  : <span>📕</span>}
                 PDF でダウンロード
-                {!isPro && <span className="ml-auto text-xs bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">Pro</span>}
+                {!isProMax && <span className="ml-auto text-xs bg-purple-100 text-purple-600 font-bold px-1.5 py-0.5 rounded">Pro</span>}
               </button>
 
               {!report && (
-                <p className="text-xs text-center text-gray-400">
-                  レポートを生成するとダウンロード可能になります
-                </p>
+                <p className="text-xs text-center text-gray-400">レポートを生成するとダウンロード可能になります</p>
               )}
             </div>
 
@@ -626,7 +595,15 @@ export default function App() {
                 onClick={() => setShowPricing(true)}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 text-white font-bold rounded-xl py-2.5 text-sm transition"
               >
-                ✦ Pro にアップグレード（¥980/月）
+                ✦ プランを見る
+              </button>
+            )}
+            {isPro && plan !== 'pro' && (
+              <button
+                onClick={() => setShowPricing(true)}
+                className="w-full flex items-center justify-center gap-2 border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded-xl py-2.5 text-sm transition"
+              >
+                ✦ Pro にアップグレード（¥3,000/月）
               </button>
             )}
             {isAdmin && (
