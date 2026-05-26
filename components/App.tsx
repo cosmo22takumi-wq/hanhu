@@ -127,10 +127,17 @@ export default function App() {
     setInputTab('memo')
   }
 
-  function handleFileExtracted(text: string, filename: string) {
-    const header = `【ファイル: ${filename}】\n`
-    setMemoText((prev) => (prev ? prev + '\n\n' + header + text : header + text))
-    setInputTab('memo')
+  async function handleFileExtracted(text: string, filename: string) {
+    const title = filename.length > 80 ? filename.slice(0, 80) + '...' : filename
+    const { error } = await supabase
+      .from('materials')
+      .insert({ user_id: user!.id, title, note: text, authors: '', url: '', year: '' })
+    if (error) {
+      alert(`資料の追加に失敗しました: ${error.message}`)
+    } else {
+      setMaterialListKey((k) => k + 1)
+      setRightTab('materials')
+    }
   }
 
   async function addMemoToMaterials() {

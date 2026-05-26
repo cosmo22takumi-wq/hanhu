@@ -43,6 +43,7 @@ export default function FileUploader({ onExtracted }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [preview, setPreview] = useState<{ text: string; filename: string } | null>(null)
+  const [showText, setShowText] = useState(false)
 
   async function processFile(file: File) {
     setError('')
@@ -102,6 +103,7 @@ export default function FileUploader({ onExtracted }: Props) {
     if (preview) {
       onExtracted(preview.text, preview.filename)
       setPreview(null)
+      setShowText(false)
     }
   }
 
@@ -134,22 +136,44 @@ export default function FileUploader({ onExtracted }: Props) {
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       {preview && (
-        <div className="flex flex-col gap-2 flex-1">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-gray-600 truncate">{preview.filename}</p>
-            <span className="text-xs text-gray-400">{preview.text.length.toLocaleString()}字</span>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3">
+            <span className="text-xl">📄</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-800 truncate">{preview.filename}</p>
+              <p className="text-xs text-gray-500">{preview.text.length.toLocaleString()}字を読み込みました</p>
+            </div>
+            <button
+              onClick={() => { setPreview(null); setShowText(false) }}
+              className="text-gray-300 hover:text-red-400 text-lg leading-none"
+              aria-label="削除"
+            >
+              ×
+            </button>
           </div>
-          <textarea
-            readOnly
-            value={preview.text}
-            className="flex-1 min-h-[140px] w-full border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-600 bg-gray-50 resize-none"
-          />
-          <button
-            onClick={handleUse}
-            className="self-start bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-sm px-4 py-2 rounded-xl transition"
-          >
-            メモに追加して資料リストへ
-          </button>
+
+          <div className="flex items-center justify-between px-1">
+            <button
+              onClick={() => setShowText((v) => !v)}
+              className="text-xs text-gray-400 hover:text-gray-600 transition"
+            >
+              {showText ? 'テキストを隠す ▲' : 'テキストを確認 ▼'}
+            </button>
+            <button
+              onClick={handleUse}
+              className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-xs px-4 py-1.5 rounded-lg transition"
+            >
+              資料リストに追加
+            </button>
+          </div>
+
+          {showText && (
+            <textarea
+              readOnly
+              value={preview.text}
+              className="w-full min-h-[120px] border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-500 bg-gray-50 resize-none"
+            />
+          )}
         </div>
       )}
     </div>
