@@ -15,7 +15,7 @@ export default function Auth() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg border border-gray-200 p-8 flex flex-col items-center gap-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">レポート作成支援</h1>
+          <h1 className="text-2xl font-bold text-gray-900">大学生のライフハック</h1>
           <p className="text-sm text-gray-500 mt-1">AI powered by OpenAI & CiNii</p>
         </div>
 
