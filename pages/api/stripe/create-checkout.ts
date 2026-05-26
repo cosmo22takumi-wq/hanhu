@@ -33,18 +33,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .eq('user_id', user.id)
     .maybeSingle()
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    payment_method_types: ['card'],
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${appUrl}/?payment=success`,
-    cancel_url: `${appUrl}/?payment=cancel`,
-    customer: existing?.stripe_customer_id ?? undefined,
-    customer_email: existing?.stripe_customer_id ? undefined : (user.email ?? undefined),
-    metadata: { user_id: user.id, plan_type: planType },
-    subscription_data: { metadata: { user_id: user.id, plan_type: planType } },
-    locale: 'ja',
-  })
-
-  res.json({ url: session.url })
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${appUrl}/?payment=success`,
+      cancel_url: `${appUrl}/?payment=cancel`,
+      customer: existing?.stripe_customer_id ?? undefined,
+      customer_email: existing?.stripe_customer_id ? undefined : (user.email ?? undefined),
+      metadata: { user_id: user.id, plan_type: planType },
+      subscription_data: { metadata: { user_id: user.id, plan_type: planType } },
+      phone_number_collection: { enabled: false },
+      locale: 'ja',
+    })
+    res.json({ url: session.url })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('Stripe checkout error:', message)
+    res.status(500).json({ error: message })
+  }
 }

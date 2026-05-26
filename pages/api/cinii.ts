@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { adminSupabase } from '../../utils/checkSubscription'
 
 export interface CiNiiPaper {
   title: string
@@ -69,8 +70,8 @@ function parsePapers(data: unknown): CiNiiPaper[] {
   }
 }
 
-async function fetchCiNii(baseUrl: string, q: string, count: string, start: string, appid: string) {
-  const url = `${baseUrl}?q=${encodeURIComponent(q)}&count=${count}&start=${start}&format=json${appid}`
+async function fetchCiNii(baseUrl: string, q: string, count: string, start: string, appid: string, sortorder: string) {
+  const url = `${baseUrl}?q=${encodeURIComponent(q)}&count=${count}&start=${start}&format=json&sortorder=${sortorder}${appid}`
   const resp = await fetch(url, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(12000),
@@ -83,7 +84,12 @@ async function fetchCiNii(baseUrl: string, q: string, count: string, start: stri
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end()
 
-  const { q, count = '20', start = '1' } = req.query
+  const token = req.headers.authorization?.replace('Bearer ', '')
+  if (!token) return res.status(401).json({ error: 'Unauthorized' })
+  const { data: { user }, error } = await adminSupabase.auth.getUser(token)
+  if (error || !user) return res.status(401).json({ error: 'Invalid token' })
+
+  const { q, count = '20', start = '1', sortorder = '1' } = req.query
   if (!q || typeof q !== 'string') {
     return res.status(400).json({ error: 'q パラメータが必要です' })
   }
@@ -100,7 +106,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   for (const endpoint of endpoints) {
     try {
-      const data = await fetchCiNii(endpoint, String(q), String(count), String(start), appid)
+      const data = await fetchCiNii(endpoint, String(q), String(count), String(start), appid, String(sortorder))
       if (!data) continue
 
       const papers = parsePapers(data)

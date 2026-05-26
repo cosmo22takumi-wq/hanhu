@@ -12,7 +12,11 @@ interface ExportOptions {
   title: string
   content: string
   author: string
+  studentId?: string
+  studentName?: string
 }
+
+const BLACK = '000000'
 
 function markdownToDocxParagraphs(markdown: string): Paragraph[] {
   const lines = markdown.split('\n')
@@ -22,28 +26,28 @@ function markdownToDocxParagraphs(markdown: string): Paragraph[] {
     if (line.startsWith('# ')) {
       paragraphs.push(
         new Paragraph({
-          text: line.slice(2).trim(),
+          children: [new TextRun({ text: line.slice(2).trim(), bold: true, color: BLACK, size: 32 })],
           heading: HeadingLevel.HEADING_1,
         })
       )
     } else if (line.startsWith('## ')) {
       paragraphs.push(
         new Paragraph({
-          text: line.slice(3).trim(),
+          children: [new TextRun({ text: line.slice(3).trim(), bold: true, color: BLACK, size: 28 })],
           heading: HeadingLevel.HEADING_2,
         })
       )
     } else if (line.startsWith('### ')) {
       paragraphs.push(
         new Paragraph({
-          text: line.slice(4).trim(),
+          children: [new TextRun({ text: line.slice(4).trim(), bold: true, color: BLACK, size: 24 })],
           heading: HeadingLevel.HEADING_3,
         })
       )
     } else if (line.startsWith('- ') || line.startsWith('* ')) {
       paragraphs.push(
         new Paragraph({
-          text: line.slice(2).trim(),
+          children: [new TextRun({ text: line.slice(2).trim(), color: BLACK })],
           bullet: { level: 0 },
         })
       )
@@ -70,38 +74,51 @@ function parseInlineMarkdown(text: string): TextRun[] {
 
   while ((match = boldRegex.exec(text)) !== null) {
     if (match.index > lastIndex) {
-      runs.push(new TextRun({ text: text.slice(lastIndex, match.index) }))
+      runs.push(new TextRun({ text: text.slice(lastIndex, match.index), color: BLACK }))
     }
-    runs.push(new TextRun({ text: match[1], bold: true }))
+    runs.push(new TextRun({ text: match[1], bold: true, color: BLACK }))
     lastIndex = match.index + match[0].length
   }
 
   if (lastIndex < text.length) {
-    runs.push(new TextRun({ text: text.slice(lastIndex) }))
+    runs.push(new TextRun({ text: text.slice(lastIndex), color: BLACK }))
   }
 
   if (runs.length === 0) {
-    runs.push(new TextRun({ text }))
+    runs.push(new TextRun({ text, color: BLACK }))
   }
 
   return runs
 }
 
 export async function exportDocx(options: ExportOptions): Promise<void> {
-  const { title, content, author } = options
+  const { title, content, author, studentId, studentName } = options
 
   const titleParagraph = new Paragraph({
-    children: [new TextRun({ text: title, bold: true, size: 32 })],
+    children: [new TextRun({ text: title, bold: true, size: 32, color: BLACK })],
     heading: HeadingLevel.TITLE,
     alignment: AlignmentType.CENTER,
-    spacing: { after: 400 },
+    spacing: { after: 200 },
   })
 
-  const metaParagraph = new Paragraph({
-    children: [new TextRun({ text: author, size: 20, color: '555555' })],
-    alignment: AlignmentType.CENTER,
+  const metaParagraphs: Paragraph[] = []
+  if (studentName) {
+    metaParagraphs.push(new Paragraph({
+      children: [new TextRun({ text: `氏名：${studentName}`, size: 22, color: BLACK })],
+      alignment: AlignmentType.RIGHT,
+    }))
+  }
+  if (studentId) {
+    metaParagraphs.push(new Paragraph({
+      children: [new TextRun({ text: `学籍番号：${studentId}`, size: 22, color: BLACK })],
+      alignment: AlignmentType.RIGHT,
+    }))
+  }
+  metaParagraphs.push(new Paragraph({
+    children: [new TextRun({ text: author, size: 18, color: BLACK })],
+    alignment: AlignmentType.RIGHT,
     spacing: { after: 800 },
-  })
+  }))
 
   const bodyParagraphs = markdownToDocxParagraphs(content)
 
@@ -111,7 +128,7 @@ export async function exportDocx(options: ExportOptions): Promise<void> {
     sections: [
       {
         properties: {},
-        children: [titleParagraph, metaParagraph, ...bodyParagraphs],
+        children: [titleParagraph, ...metaParagraphs, ...bodyParagraphs],
       },
     ],
   })
@@ -121,7 +138,7 @@ export async function exportDocx(options: ExportOptions): Promise<void> {
 }
 
 export async function exportPdf(options: ExportOptions): Promise<void> {
-  const { title, content } = options
+  const { title, content, studentId, studentName, author } = options
 
   const html2pdf = (await import('html2pdf.js' as string)).default as (
     element: HTMLElement,
@@ -130,12 +147,33 @@ export async function exportPdf(options: ExportOptions): Promise<void> {
 
   const container = document.createElement('div')
   container.style.cssText =
-    'font-family: "Noto Sans JP", sans-serif; font-size: 11pt; line-height: 1.8; padding: 20mm; color: #111;'
+    'font-family: "Noto Sans JP", sans-serif; font-size: 11pt; line-height: 1.8; padding: 20mm; color: #000;'
 
   const titleEl = document.createElement('h1')
   titleEl.textContent = title
-  titleEl.style.cssText = 'font-size: 16pt; text-align: center; margin-bottom: 24pt;'
+  titleEl.style.cssText = 'font-size: 16pt; text-align: center; margin-bottom: 12pt; color: #000;'
   container.appendChild(titleEl)
+
+  // 学籍情報ブロック（右揃え）
+  const metaEl = document.createElement('div')
+  metaEl.style.cssText = 'text-align: right; margin-bottom: 24pt; font-size: 10pt; color: #000;'
+  if (studentName) {
+    const nameEl = document.createElement('div')
+    nameEl.textContent = `氏名：${studentName}`
+    metaEl.appendChild(nameEl)
+  }
+  if (studentId) {
+    const idEl = document.createElement('div')
+    idEl.textContent = `学籍番号：${studentId}`
+    metaEl.appendChild(idEl)
+  }
+  if (author) {
+    const authorEl = document.createElement('div')
+    authorEl.textContent = author
+    authorEl.style.fontSize = '9pt'
+    metaEl.appendChild(authorEl)
+  }
+  container.appendChild(metaEl)
 
   const mdLines = content.split('\n')
   for (const line of mdLines) {
@@ -143,15 +181,15 @@ export async function exportPdf(options: ExportOptions): Promise<void> {
     if (line.startsWith('# ')) {
       el = document.createElement('h1')
       el.textContent = line.slice(2).trim()
-      el.style.fontSize = '14pt'
+      el.style.cssText = 'font-size: 14pt; color: #000;'
     } else if (line.startsWith('## ')) {
       el = document.createElement('h2')
       el.textContent = line.slice(3).trim()
-      el.style.fontSize = '13pt'
+      el.style.cssText = 'font-size: 13pt; color: #000;'
     } else if (line.startsWith('### ')) {
       el = document.createElement('h3')
       el.textContent = line.slice(4).trim()
-      el.style.fontSize = '12pt'
+      el.style.cssText = 'font-size: 12pt; color: #000;'
     } else if (line.trim() === '') {
       el = document.createElement('br')
     } else {
@@ -159,7 +197,7 @@ export async function exportPdf(options: ExportOptions): Promise<void> {
       el.innerHTML = line
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      el.style.margin = '6pt 0'
+      el.style.cssText = 'margin: 6pt 0; color: #000;'
     }
     container.appendChild(el)
   }

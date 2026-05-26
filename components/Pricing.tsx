@@ -31,10 +31,10 @@ const PLANS = [
   {
     key: 'standard' as PlanType,
     name: 'Standard',
-    price: '¥1,500',
+    price: '¥1,000',
     period: '/月',
     features: [
-      { label: 'AI生成 無制限', ok: true },
+      { label: 'AI生成 月40回まで', ok: true },
       { label: '最大 5,000字', ok: true },
       { label: '参考資料 3件まで', ok: true },
       { label: 'CiNii 論文検索', ok: true },
@@ -51,10 +51,10 @@ const PLANS = [
   {
     key: 'pro' as PlanType,
     name: 'Pro',
-    price: '¥3,000',
+    price: '¥2,000',
     period: '/月',
     features: [
-      { label: 'AI生成 無制限', ok: true },
+      { label: 'AI生成 月50回まで', ok: true },
       { label: '最大 10,000字', ok: true },
       { label: '参考資料 3件まで', ok: true },
       { label: 'CiNii 論文検索', ok: true },

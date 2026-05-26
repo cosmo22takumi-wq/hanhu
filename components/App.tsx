@@ -47,6 +47,8 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true)
   const [plan, setPlan] = useState<PlanType>('free')
   const [freeUsed, setFreeUsed] = useState(0)
+  const [monthlyUsed, setMonthlyUsed] = useState(0)
+  const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null)
   const [showPricing, setShowPricing] = useState(false)
 
   const [inputTab, setInputTab] = useState<InputTab>('cinii')
@@ -61,8 +63,12 @@ export default function App() {
   const [tone, setTone] = useState('学術的・客観的')
   const [outline, setOutline] = useState('')
 
+  const [studentName, setStudentName] = useState('')
+  const [studentId, setStudentId] = useState('')
+
   const [report, setReport] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [genPhase, setGenPhase] = useState<'writing' | 'reviewing' | null>(null)
   const [genError, setGenError] = useState('')
   const [copied, setCopied] = useState(false)
   const [exporting, setExporting] = useState<'docx' | 'pdf' | null>(null)
@@ -79,9 +85,11 @@ export default function App() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json() as { planType?: PlanType; generationsUsed?: number }
+        const data = await res.json() as { planType?: PlanType; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null }
         setPlan(data.planType ?? 'free')
         setFreeUsed(data.generationsUsed ?? 0)
+        setMonthlyUsed(data.monthlyUsed ?? 0)
+        setMonthlyLimit(data.monthlyLimit ?? null)
       }
     } catch { /* ignore */ }
   }, [])
@@ -100,7 +108,15 @@ export default function App() {
     const params = new URLSearchParams(window.location.search)
     if (params.get('payment') === 'success') {
       window.history.replaceState({}, '', '/')
-      setTimeout(() => setShowPricing(false), 500)
+      setShowPricing(false)
+      // webhook到着を待ってから再取得（最大3回リトライ）
+      let retries = 0
+      const poll = setInterval(async () => {
+        const { data: { session: s } } = await supabase.auth.getSession()
+        if (s) await checkSubscription(s.access_token, s.user.email ?? '')
+        retries++
+        if (retries >= 3) clearInterval(poll)
+      }, 3000)
     }
 
     return () => subscription.unsubscribe()
@@ -145,6 +161,7 @@ export default function App() {
     if (enabledCount >= 2 && !isPro) { setShowPricing(true); return }
 
     setGenerating(true)
+    setGenPhase('writing')
     setGenError('')
     setReport('')
 
@@ -158,7 +175,7 @@ export default function App() {
         body: JSON.stringify({
           theme, faculty, charCount, tone, outline,
           materials: materials.map((m) => ({
-            title: m.title, authors: m.authors, year: m.year, note: m.note, enabled: m.enabled,
+            title: m.title, authors: m.authors, year: m.year, note: m.note, url: m.url ?? '', enabled: m.enabled,
           })),
         }),
       })
@@ -171,6 +188,11 @@ export default function App() {
           setGenerating(false)
           return
         }
+        if (err.error === 'MONTHLY_LIMIT_REACHED') {
+          setGenError(`今月の生成上限（${err.count !== undefined ? (err as { limit?: number }).limit : ''}回）に達しました。来月1日にリセットされます。`)
+          setGenerating(false)
+          return
+        }
         throw new Error(err.message ?? err.error ?? `HTTP ${res.status}`)
       }
 
@@ -178,18 +200,25 @@ export default function App() {
       if (!reader) throw new Error('ストリームを取得できません')
       const decoder = new TextDecoder()
       let accumulated = ''
+      let lineBuf = ''
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        const chunk = decoder.decode(value, { stream: true })
-        for (const line of chunk.split('\n').filter((l) => l.startsWith('data: '))) {
-          const data = line.slice(6)
+        lineBuf += decoder.decode(value, { stream: true })
+        const lines = lineBuf.split('\n')
+        lineBuf = lines.pop() ?? '' // 末尾の不完全行は次チャンクまで保持
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const data = line.slice(6).trim()
           if (data === '[DONE]') continue
           try {
-            const parsed = JSON.parse(data) as { content?: string }
-            if (parsed.content) { accumulated += parsed.content; setReport(accumulated) }
-          } catch { /* skip */ }
+            const parsed = JSON.parse(data) as { content?: string; phase?: string; error?: string }
+            if (parsed.phase === 'writing') { setGenPhase('writing') }
+            else if (parsed.phase === 'reviewing') { setGenPhase('reviewing') }
+            else if (parsed.error) { throw new Error(parsed.error) }
+            else if (parsed.content) { accumulated += parsed.content; setReport(accumulated) }
+          } catch (e) { if (e instanceof Error) throw e }
         }
       }
 
@@ -200,13 +229,14 @@ export default function App() {
     }
 
     setGenerating(false)
+    setGenPhase(null)
   }
 
   async function handleExportDocx() {
     if (!report || !isPro) { setShowPricing(true); return }
     setExporting('docx')
     try {
-      await exportDocx({ title: theme || 'レポート', content: report, author: user?.email ?? '' })
+      await exportDocx({ title: theme || 'レポート', content: report, author: user?.email ?? '', studentId, studentName })
     } catch (err) { alert(`Word 出力エラー: ${String(err)}`) }
     setExporting(null)
   }
@@ -215,7 +245,7 @@ export default function App() {
     if (!report || !isProMax) { setShowPricing(true); return }
     setExporting('pdf')
     try {
-      await exportPdf({ title: theme || 'レポート', content: report, author: user?.email ?? '' })
+      await exportPdf({ title: theme || 'レポート', content: report, author: user?.email ?? '', studentId, studentName })
     } catch (err) { alert(`PDF 出力エラー: ${String(err)}`) }
     setExporting(null)
   }
@@ -290,8 +320,8 @@ export default function App() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <h1 className="text-base font-bold text-gray-900">レポート作成支援</h1>
-          <span className="text-xs text-gray-400 hidden sm:inline">AI Powered</span>
+          <h1 className="text-base font-bold text-gray-900">ポチレポ</h1>
+          <span className="text-xs text-gray-400 hidden sm:inline">講義資料 × CiNii論文</span>
           {isAdmin && (
             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">管理者</span>
           )}
@@ -302,9 +332,19 @@ export default function App() {
           {isAdmin ? (
             <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2.5 py-0.5 rounded-full">無制限</span>
           ) : plan === 'pro' ? (
+            <>
             <span className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Pro</span>
+            {monthlyLimit !== null && (
+              <span className="text-xs text-gray-400 hidden sm:inline">今月 {monthlyUsed}/{monthlyLimit}回</span>
+            )}
+          </>
           ) : plan === 'standard' ? (
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Standard</span>
+            <>
+              <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Standard</span>
+              {monthlyLimit !== null && (
+                <span className="text-xs text-gray-400 hidden sm:inline">今月 {monthlyUsed}/{monthlyLimit}回</span>
+              )}
+            </>
           ) : freeUsed >= 2 ? (
             <button
               onClick={() => setShowPricing(true)}
@@ -474,6 +514,27 @@ export default function App() {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">氏名（任意）</label>
+              <input
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="例: 山田 太郎"
+                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">学籍番号（任意）</label>
+              <input
+                value={studentId}
+                onChange={(e) => setStudentId(e.target.value)}
+                placeholder="例: 2024001234"
+                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1">構成案（任意）</label>
             <textarea
@@ -493,7 +554,7 @@ export default function App() {
             {generating ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                生成中...
+                {genPhase === 'reviewing' ? '校閲中...' : '執筆中...'}
               </>
             ) : (
               <>
@@ -603,7 +664,7 @@ export default function App() {
                 onClick={() => setShowPricing(true)}
                 className="w-full flex items-center justify-center gap-2 border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded-xl py-2.5 text-sm transition"
               >
-                ✦ Pro にアップグレード（¥3,000/月）
+                ✦ Pro にアップグレード（¥2,000/月）
               </button>
             )}
             {isAdmin && (

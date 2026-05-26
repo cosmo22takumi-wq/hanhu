@@ -25,6 +25,7 @@ export default function MaterialList({ user, onChange }: Props) {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ title: '', authors: '', url: '', year: '', note: '' })
   const [editingNote, setEditingNote] = useState<{ id: string; text: string } | null>(null)
+  const [translating, setTranslating] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     const { data, error } = await supabase
@@ -67,6 +68,23 @@ export default function MaterialList({ user, onChange }: Props) {
       setShowForm(false)
       load()
     }
+  }
+
+  async function handleTranslate(id: string, note: string) {
+    setTranslating(id)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) return
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ text: note }),
+      })
+      const data = await res.json() as { translated?: string; error?: string }
+      if (data.translated) await saveNote(id, data.translated)
+    } catch { /* ignore */ }
+    setTranslating(null)
   }
 
   async function saveNote(id: string, note: string) {
@@ -218,12 +236,24 @@ export default function MaterialList({ user, onChange }: Props) {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => setEditingNote({ id: m.id, text: m.note ?? '' })}
-                      className="text-xs text-gray-400 hover:text-indigo-500 mt-1 transition"
-                    >
-                      {m.note ? `メモ: ${m.note}` : 'メモを追加'}
-                    </button>
+                    <div className="flex items-start gap-2 mt-1">
+                      <button
+                        onClick={() => setEditingNote({ id: m.id, text: m.note ?? '' })}
+                        className="text-xs text-gray-400 hover:text-indigo-500 transition flex-1 text-left"
+                      >
+                        {m.note ? `メモ: ${m.note}` : 'メモを追加'}
+                      </button>
+                      {m.note && (
+                        <button
+                          onClick={() => handleTranslate(m.id, m.note)}
+                          disabled={translating === m.id}
+                          className="shrink-0 text-xs text-blue-400 hover:text-blue-600 transition disabled:opacity-50"
+                          title="日本語に翻訳"
+                        >
+                          {translating === m.id ? '翻訳中...' : '🌐 翻訳'}
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
 

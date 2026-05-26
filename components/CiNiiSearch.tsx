@@ -18,6 +18,7 @@ export default function CiNiiSearch({ user, isPro, onAdded, onUpgrade }: Props) 
   const [error, setError] = useState('')
   const [added, setAdded] = useState<Set<string>>(new Set())
   const [adding, setAdding] = useState<Set<string>>(new Set())
+  const [sortorder, setSortorder] = useState<'1' | '0'>('1') // 1=新しい順, 0=関連度順
 
   async function search(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -28,7 +29,11 @@ export default function CiNiiSearch({ user, isPro, onAdded, onUpgrade }: Props) 
     setPapers([])
 
     try {
-      const res = await fetch(`/api/cinii?q=${encodeURIComponent(query)}&count=20`)
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token ?? ''
+      const res = await fetch(`/api/cinii?q=${encodeURIComponent(query)}&count=20&sortorder=${sortorder}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json() as { papers: CiNiiPaper[]; total: number; error?: string }
       if (data.error && data.papers.length === 0) throw new Error(data.error)
@@ -63,21 +68,21 @@ export default function CiNiiSearch({ user, isPro, onAdded, onUpgrade }: Props) 
       <div className="flex flex-col items-center justify-center gap-4 h-full py-8 text-center">
         <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-2xl">🔒</div>
         <div>
-          <p className="text-sm font-bold text-gray-700 mb-1">CiNii 論文検索は Pro 限定機能です</p>
+          <p className="text-sm font-bold text-gray-700 mb-1">CiNii 論文検索は Standard 以上のプランで使えます</p>
           <p className="text-xs text-gray-500">国立情報学研究所の学術論文データベースを検索できます</p>
         </div>
         <button
           onClick={onUpgrade}
           className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:opacity-90 transition"
         >
-          Pro にアップグレード（¥980/月）
+          プランを見る
         </button>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <form onSubmit={search} className="flex gap-2">
         <input
           value={query}
@@ -94,7 +99,25 @@ export default function CiNiiSearch({ user, isPro, onAdded, onUpgrade }: Props) 
         </button>
       </form>
 
-      <p className="text-xs text-gray-400">CiNii Research（国立情報学研究所）の日本語学術論文データベース</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-gray-400">CiNii Research（国立情報学研究所）</p>
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
+          <button
+            type="button"
+            onClick={() => setSortorder('1')}
+            className={`px-2.5 py-1 text-xs font-semibold rounded-md transition ${sortorder === '1' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            新しい順
+          </button>
+          <button
+            type="button"
+            onClick={() => setSortorder('0')}
+            className={`px-2.5 py-1 text-xs font-semibold rounded-md transition ${sortorder === '0' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            関連度順
+          </button>
+        </div>
+      </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
@@ -102,7 +125,7 @@ export default function CiNiiSearch({ user, isPro, onAdded, onUpgrade }: Props) 
         <p className="text-xs text-gray-500">{total.toLocaleString()} 件中 {papers.length} 件表示</p>
       )}
 
-      <div className="space-y-3 overflow-y-auto max-h-[480px] pr-1">
+      <div className="space-y-3 overflow-y-auto max-h-[440px] pr-1">
         {papers.map((paper, i) => {
           const key = paper.url || paper.title
           const isAdded = added.has(key)

@@ -15,6 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const isPro = planType !== 'free'
     const isAdmin = user.email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com')
 
+    const PLAN_MONTHLY_LIMIT: Record<string, number> = { standard: 40, pro: 50 }
+    const currentMonthKey = new Date().toISOString().slice(0, 7)
+
     const [{ data: sub }, { data: usageData }] = await Promise.all([
       adminSupabase
         .from('subscriptions')
@@ -23,12 +26,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .maybeSingle(),
       adminSupabase
         .from('usage')
-        .select('report_count')
+        .select('report_count, monthly_count, month_key')
         .eq('user_id', user.id)
         .maybeSingle(),
     ])
 
     const usageCount = (usageData?.report_count as number | null) ?? 0
+    const monthKey = (usageData?.month_key as string | null) ?? ''
+    const monthlyUsed = monthKey === currentMonthKey
+      ? ((usageData?.monthly_count as number | null) ?? 0)
+      : 0
+    const monthlyLimit = isAdmin ? null : (isPro ? (PLAN_MONTHLY_LIMIT[planType] ?? null) : null)
 
     res.json({
       planType,
@@ -37,7 +45,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       status: sub?.status ?? 'free',
       currentPeriodEnd: sub?.current_period_end ?? null,
       generationsUsed: usageCount,
-      generationsLimit: isPro ? null : 2,   // null = unlimited for paid
+      generationsLimit: isPro ? null : 2,
+      monthlyUsed,
+      monthlyLimit,
     })
   } catch (err) {
     res.status(500).json({ error: String(err) })
