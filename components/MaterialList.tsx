@@ -26,6 +26,15 @@ export default function MaterialList({ user, onChange }: Props) {
   const [form, setForm] = useState({ title: '', authors: '', url: '', year: '', note: '' })
   const [editingNote, setEditingNote] = useState<{ id: string; text: string } | null>(null)
   const [translating, setTranslating] = useState<string | null>(null)
+  const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
+
+  function toggleNoteExpand(id: string) {
+    setExpandedNotes((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
   const load = useCallback(async () => {
     const { data, error } = await supabase
@@ -216,44 +225,73 @@ export default function MaterialList({ user, onChange }: Props) {
                     )}
                   </p>
                   {m.authors && <p className="text-xs text-gray-500 mt-0.5">{m.authors}</p>}
-                  <p className="text-xs text-gray-400">
-                    {[m.year, m.note].filter(Boolean).join(' · ')}
-                  </p>
+                  {m.year && <p className="text-xs text-gray-400">{m.year}</p>}
 
                   {editingNote?.id === m.id ? (
-                    <div className="mt-2 flex gap-1">
-                      <input
+                    <div className="mt-2 flex flex-col gap-1">
+                      <textarea
                         autoFocus
+                        rows={3}
                         value={editingNote.text}
                         onChange={(e) => setEditingNote({ id: m.id, text: e.target.value })}
-                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs resize-none focus:outline-none focus:ring-1 focus:ring-indigo-400"
                       />
-                      <button
-                        onClick={() => saveNote(m.id, editingNote.text)}
-                        className="text-xs bg-indigo-500 text-white px-2 py-1 rounded"
-                      >
-                        保存
-                      </button>
+                      <div className="flex gap-1 justify-end">
+                        <button
+                          onClick={() => setEditingNote(null)}
+                          className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded"
+                        >
+                          キャンセル
+                        </button>
+                        <button
+                          onClick={() => saveNote(m.id, editingNote.text)}
+                          className="text-xs bg-indigo-500 text-white px-2 py-1 rounded"
+                        >
+                          保存
+                        </button>
+                      </div>
+                    </div>
+                  ) : m.note ? (
+                    <div className="mt-1">
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        {expandedNotes.has(m.id)
+                          ? m.note
+                          : m.note.length > 80 ? m.note.slice(0, 80) + '…' : m.note}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {m.note.length > 80 && (
+                          <button
+                            onClick={() => toggleNoteExpand(m.id)}
+                            className="text-xs text-gray-400 hover:text-gray-600 transition"
+                          >
+                            {expandedNotes.has(m.id) ? '閉じる ▲' : 'もっと見る ▼'}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setEditingNote({ id: m.id, text: m.note ?? '' })}
+                          className="text-xs text-gray-400 hover:text-indigo-500 transition"
+                        >
+                          編集
+                        </button>
+                        {m.note.length <= 500 && (
+                          <button
+                            onClick={() => handleTranslate(m.id, m.note)}
+                            disabled={translating === m.id}
+                            className="text-xs text-blue-400 hover:text-blue-600 transition disabled:opacity-50"
+                            title="日本語に翻訳"
+                          >
+                            {translating === m.id ? '翻訳中...' : '🌐 翻訳'}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ) : (
-                    <div className="flex items-start gap-2 mt-1">
-                      <button
-                        onClick={() => setEditingNote({ id: m.id, text: m.note ?? '' })}
-                        className="text-xs text-gray-400 hover:text-indigo-500 transition flex-1 text-left"
-                      >
-                        {m.note ? `メモ: ${m.note}` : 'メモを追加'}
-                      </button>
-                      {m.note && (
-                        <button
-                          onClick={() => handleTranslate(m.id, m.note)}
-                          disabled={translating === m.id}
-                          className="shrink-0 text-xs text-blue-400 hover:text-blue-600 transition disabled:opacity-50"
-                          title="日本語に翻訳"
-                        >
-                          {translating === m.id ? '翻訳中...' : '🌐 翻訳'}
-                        </button>
-                      )}
-                    </div>
+                    <button
+                      onClick={() => setEditingNote({ id: m.id, text: '' })}
+                      className="text-xs text-gray-400 hover:text-indigo-500 transition mt-1"
+                    >
+                      メモを追加
+                    </button>
                   )}
                 </div>
 
