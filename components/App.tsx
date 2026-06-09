@@ -12,7 +12,16 @@ import FileUploader from './FileUploader'
 import { exportDocx, exportPdf } from '../utils/DocumentExporter'
 
 type InputTab = 'whisper' | 'cinii' | 'memo' | 'file'
-type RightTab = 'materials' | 'admin'
+type RightTab = 'materials' | 'history' | 'admin'
+
+interface SavedReport {
+  id: string
+  theme: string
+  faculty: string
+  content: string
+  char_count: number
+  created_at: string
+}
 
 const FACULTIES = [
   { value: 'law', label: '法学部' },
@@ -46,19 +55,27 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [plan, setPlan] = useState<PlanType>('free')
+  const [isPromoUser, setIsPromoUser] = useState(false)
   const [freeUsed, setFreeUsed] = useState(0)
   const [monthlyUsed, setMonthlyUsed] = useState(0)
   const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null)
   const [showPricing, setShowPricing] = useState(false)
+  const [pricingFromLimit, setPricingFromLimit] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showPostGenUpsell, setShowPostGenUpsell] = useState(false)
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([])
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [scores, setScores] = useState<{ aiScore: number; citationScore: number; fitScore: number; aiComment: string; citationComment: string; fitComment: string } | null>(null)
+  const [scoresLoading, setScoresLoading] = useState(false)
 
-  const [inputTab, setInputTab] = useState<InputTab>('cinii')
+  const [inputTab, setInputTab] = useState<InputTab>('memo')
   const [rightTab, setRightTab] = useState<RightTab>('materials')
   const [memoText, setMemoText] = useState('')
   const [materials, setMaterials] = useState<Material[]>([])
   const [materialListKey, setMaterialListKey] = useState(0)
 
   const [theme, setTheme] = useState('')
-  const [faculty, setFaculty] = useState('law')
+  const [faculty, setFaculty] = useState('')
   const [charCount, setCharCount] = useState(2000)
   const [tone, setTone] = useState('学術的・客観的')
   const [outline, setOutline] = useState('')
@@ -85,8 +102,9 @@ export default function App() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json() as { planType?: PlanType; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null }
+        const data = await res.json() as { planType?: PlanType; isPromoUser?: boolean; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null }
         setPlan(data.planType ?? 'free')
+        setIsPromoUser(data.isPromoUser ?? false)
         setFreeUsed(data.generationsUsed ?? 0)
         setMonthlyUsed(data.monthlyUsed ?? 0)
         setMonthlyLimit(data.monthlyLimit ?? null)
@@ -98,14 +116,35 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setAuthLoading(false)
-      if (session) checkSubscription(session.access_token, session.user.email ?? '')
+      if (session) {
+        checkSubscription(session.access_token, session.user.email ?? '')
+        if (!localStorage.getItem('pochi_onboarded')) setShowOnboarding(true)
+      }
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
-      if (session) checkSubscription(session.access_token, session.user.email ?? '')
+      if (session) {
+        checkSubscription(session.access_token, session.user.email ?? '')
+        // 初回ログイン時に紹介コードを登録
+        if (event === 'SIGNED_IN') {
+          const ref = localStorage.getItem('pochi_ref')
+          if (ref) {
+            fetch('/api/referrals/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+              body: JSON.stringify({ referrerId: ref }),
+            }).then(() => localStorage.removeItem('pochi_ref')).catch(() => {})
+          }
+        }
+      }
     })
 
     const params = new URLSearchParams(window.location.search)
+
+    // 紹介コードをlocalStorageに保存
+    const refParam = params.get('ref')
+    if (refParam) localStorage.setItem('pochi_ref', refParam)
+
     if (params.get('payment') === 'success') {
       window.history.replaceState({}, '', '/')
       setShowPricing(false)
@@ -121,6 +160,17 @@ export default function App() {
 
     return () => subscription.unsubscribe()
   }, [checkSubscription])
+
+  async function loadHistory() {
+    setHistoryLoading(true)
+    const { data } = await supabase
+      .from('reports')
+      .select('id, theme, faculty, char_count, created_at, content')
+      .order('created_at', { ascending: false })
+      .limit(20)
+    if (data) setSavedReports(data as SavedReport[])
+    setHistoryLoading(false)
+  }
 
   function handleTranscribed(text: string) {
     setMemoText((prev) => (prev ? prev + '\n\n' + text : text))
@@ -157,6 +207,7 @@ export default function App() {
 
   async function generateReport() {
     if (!theme.trim()) { setGenError('テーマを入力してください'); return }
+    if (!faculty) { setGenError('学部・分野を選択してください'); return }
 
     const enabledCount = materials.filter((m) => m.enabled).length
 
@@ -164,12 +215,14 @@ export default function App() {
       setGenError('参考資料は最大3件まで選択できます。チェックを外してください。')
       return
     }
-    // 無料: 2件以上の資料はPro以上が必要
-    if (enabledCount >= 2 && !isPro) { setShowPricing(true); return }
+    // free / standard: 2件以上はProが必要
+    if (enabledCount >= 2 && !isProMax) { setShowPricing(true); return }
 
     setGenerating(true)
     setGenPhase('writing')
     setGenError('')
+    setScores(null)
+    setScoresLoading(false)
     setReport('')
 
     try {
@@ -191,6 +244,7 @@ export default function App() {
         const err = await res.json() as { error?: string; message?: string; count?: number }
         if (err.error === 'FREE_LIMIT_REACHED') {
           if (err.count !== undefined) setFreeUsed(err.count)
+          setPricingFromLimit(true)
           setShowPricing(true)
           setGenerating(false)
           return
@@ -230,7 +284,29 @@ export default function App() {
       }
 
       if (!accumulated) throw new Error('レポートが生成されませんでした')
-      if (plan === 'free') setFreeUsed((n) => Math.min(n + 1, 2))
+      // スコア評価（バックグラウンド）
+      setScoresLoading(true)
+      const { data: { session: evalSession } } = await supabase.auth.getSession()
+      if (evalSession) {
+        fetch('/api/evaluate-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${evalSession.access_token}` },
+          body: JSON.stringify({ report: accumulated, theme, faculty }),
+        }).then(r => r.json()).then(data => setScores(data)).catch(() => {}).finally(() => setScoresLoading(false))
+      }
+
+      // 履歴に保存（エラーは無視）
+      supabase.from('reports').insert({
+        user_id: user?.id,
+        theme,
+        faculty,
+        content: accumulated,
+        char_count: accumulated.length,
+      }).then(() => loadHistory())
+      if (plan === 'free') {
+        setFreeUsed((n) => Math.min(n + 1, 2))
+        setShowPostGenUpsell(true)
+      }
     } catch (err) {
       setGenError(String(err))
     }
@@ -295,7 +371,7 @@ export default function App() {
     <button
       key={id}
       type="button"
-      onClick={() => setRightTab(id)}
+      onClick={() => { setRightTab(id); if (id === 'history') loadHistory() }}
       className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
         rightTab === id ? 'bg-indigo-500 text-white' : 'text-gray-500 hover:bg-gray-100'
       }`}
@@ -322,13 +398,43 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {showPricing && <Pricing planType={plan} onClose={() => setShowPricing(false)} />}
+      {showPricing && <Pricing planType={isPromoUser ? 'free' : plan} onClose={() => { setShowPricing(false); setPricingFromLimit(false) }} fromLimit={pricingFromLimit} />}
+
+      {showOnboarding && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+            <h2 className="text-xl font-black text-gray-900 mb-1">ポチレポへようこそ</h2>
+            <p className="text-gray-500 text-sm mb-6">3ステップで使えます</p>
+            <div className="space-y-3 mb-8">
+              {([
+                { step: '①', title: '資料のURLかファイルを追加する', desc: '電子図書館のURL・講義スライドPDF・メモをそのまま入れてください。なくても使えます', color: 'indigo' },
+                { step: '②', title: 'テーマと学部を入力する', desc: 'レポートのテーマを一行で入力して、自分の学部を選んでください', color: 'violet' },
+                { step: '③', title: '「レポート生成」を押す', desc: '3分で叩き台が完成します。確認・修正して提出してください', color: 'emerald' },
+              ] as const).map(({ step, title, desc, color }) => (
+                <div key={step} className={`flex gap-4 p-4 rounded-xl bg-${color}-50`}>
+                  <span className={`text-xl font-black text-${color}-500 shrink-0`}>{step}</span>
+                  <div>
+                    <p className="font-bold text-gray-900 text-sm">{title}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => { localStorage.setItem('pochi_onboarded', '1'); setShowOnboarding(false) }}
+              className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold rounded-xl py-3 text-sm hover:opacity-90 transition"
+            >
+              使い始める →
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <h1 className="text-base font-bold text-gray-900">ポチレポ</h1>
-          <span className="text-xs text-gray-400 hidden sm:inline">講義資料 × CiNii論文</span>
+          <span className="text-xs text-gray-400 hidden sm:inline">確実性 · 正確さ · スピード</span>
           {isAdmin && (
             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">管理者</span>
           )}
@@ -338,6 +444,16 @@ export default function App() {
 
           {isAdmin ? (
             <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2.5 py-0.5 rounded-full">無制限</span>
+          ) : isPromoUser ? (
+            <>
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">お試し</span>
+              <button
+                onClick={() => setShowPricing(true)}
+                className="text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-3 py-1.5 rounded-lg hover:opacity-90 transition"
+              >
+                アップグレード
+              </button>
+            </>
           ) : plan === 'pro' ? (
             <>
             <span className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Pro</span>
@@ -388,10 +504,10 @@ export default function App() {
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-700">データ入力・連携</h2>
             <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+              {tabBtn('memo', 'メモ')}
+              {tabBtn('file', 'ファイル')}
               {tabBtn('cinii', '論文検索')}
               {tabBtn('whisper', '音声')}
-              {tabBtn('file', 'ファイル')}
-              {tabBtn('memo', 'メモ')}
             </div>
           </div>
 
@@ -412,9 +528,7 @@ export default function App() {
             )}
 
             {inputTab === 'file' && (
-              isPro
-                ? <FileUploader onExtracted={handleFileExtracted} />
-                : <LockedFeature message="ファイル読み込みは Standard 以上のプランで使えます" />
+              <FileUploader onExtracted={handleFileExtracted} />
             )}
 
             {inputTab === 'memo' && (
@@ -437,20 +551,48 @@ export default function App() {
           </div>
         </section>
 
-        {/* TOP-RIGHT: Material list / Admin */}
+        {/* TOP-RIGHT: Material list / History / Admin */}
         <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 min-h-[400px]">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-700">
-              {rightTab === 'materials' ? '資料リスト' : '管理者コンソール'}
+              {rightTab === 'materials' ? '資料リスト' : rightTab === 'history' ? '生成履歴' : '管理者コンソール'}
             </h2>
             <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
               {rightTabBtn('materials', '資料')}
+              {rightTabBtn('history', '履歴')}
               {isAdmin && rightTabBtn('admin', '管理者')}
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
             {rightTab === 'materials' && (
-              <MaterialList key={materialListKey} user={user} onChange={setMaterials} />
+              <MaterialList key={materialListKey} user={user} onChange={setMaterials} materialLimit={isProMax ? 3 : 1} />
+            )}
+            {rightTab === 'history' && (
+              <div className="h-full flex flex-col gap-2 overflow-y-auto">
+                {historyLoading ? (
+                  <p className="text-sm text-gray-400 text-center py-8">読み込み中...</p>
+                ) : savedReports.length === 0 ? (
+                  <div className="text-center py-10 text-gray-400">
+                    <p className="text-sm">まだ生成履歴がありません</p>
+                    <p className="text-xs mt-1">レポートを生成すると自動で保存されます</p>
+                  </div>
+                ) : (
+                  savedReports.map((r) => (
+                    <div
+                      key={r.id}
+                      onClick={() => { setReport(r.content); setTheme(r.theme); if (r.faculty) setFaculty(r.faculty) }}
+                      className="border border-gray-200 rounded-xl p-3 cursor-pointer hover:border-indigo-300 hover:bg-indigo-50/30 transition"
+                    >
+                      <p className="text-sm font-semibold text-gray-800 line-clamp-1">{r.theme || '（タイトルなし）'}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-gray-400">{r.char_count.toLocaleString()}字</span>
+                        <span className="text-xs text-gray-300">·</span>
+                        <span className="text-xs text-gray-400">{new Date(r.created_at).toLocaleDateString('ja-JP')}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             )}
             {rightTab === 'admin' && isAdmin && <AdminPanel user={user} />}
           </div>
@@ -458,15 +600,40 @@ export default function App() {
 
         {/* BOTTOM-LEFT: Report generation */}
         <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-4 min-h-[480px]">
-          <h2 className="text-sm font-bold text-gray-700">AIレポート生成・編集</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-gray-700">AIレポート生成・編集</h2>
+            {!isPro && !isPromoUser && (
+              <span className="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-medium">
+                💡 テーマだけで今すぐ生成できます
+              </span>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">テーマ・問い *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-gray-600">テーマ・問い *</label>
+                <div className="flex gap-1">
+                  {[
+                    { label: 'SNS×孤独', theme: 'SNSが若者の孤独感に与える影響', faculty: 'sociology', charCount: 2000 },
+                    { label: '少子化', theme: '少子化の要因と対策', faculty: 'economics', charCount: 2000 },
+                    { label: 'AI×労働', theme: 'AIが労働市場に与える影響', faculty: 'other', charCount: 2000 },
+                  ].map((t) => (
+                    <button
+                      key={t.label}
+                      type="button"
+                      onClick={() => { setTheme(t.theme); setFaculty(t.faculty); setCharCount(t.charCount); setShowPostGenUpsell(false) }}
+                      className="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-md transition font-medium"
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <input
                 value={theme}
                 onChange={(e) => setTheme(e.target.value)}
-                placeholder="例: 表現の自由と名誉毀損の調整"
+                placeholder="例: SNSが若者の孤独感に与える影響"
                 className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
@@ -475,8 +642,9 @@ export default function App() {
               <select
                 value={faculty}
                 onChange={(e) => setFaculty(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className={`w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 ${!faculty ? 'border-indigo-300 text-gray-400' : 'border-gray-300 text-gray-900'}`}
               >
+                <option value="" disabled>あなたの学部を選んでください</option>
                 {FACULTIES.map((f) => (
                   <option key={f.value} value={f.value}>{f.label}</option>
                 ))}
@@ -582,6 +750,59 @@ export default function App() {
 
           {genError && <p className="text-sm text-red-500">{genError}</p>}
 
+          {/* レポート品質スコア */}
+          {(scoresLoading || scores) && !generating && (
+            <div className="border border-gray-200 rounded-xl p-4 space-y-3">
+              <p className="text-xs font-bold text-gray-700">📊 レポート品質スコア</p>
+              {scoresLoading ? (
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <div className="w-3 h-3 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />
+                  評価中...
+                </div>
+              ) : scores && (
+                <div className="space-y-2.5">
+                  {[
+                    { label: 'AI臭さ除去度', score: scores.aiScore, comment: scores.aiComment },
+                    { label: '引用適切性', score: scores.citationScore, comment: scores.citationComment },
+                    { label: '課題適合度', score: scores.fitScore, comment: scores.fitComment },
+                  ].map(({ label, score, comment }) => {
+                    const color = score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-amber-400' : 'bg-red-400'
+                    const textColor = score >= 80 ? 'text-emerald-700' : score >= 60 ? 'text-amber-700' : 'text-red-600'
+                    return (
+                      <div key={label}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-gray-600 font-medium">{label}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-400">{comment}</span>
+                            <span className={`text-sm font-bold ${textColor}`}>{score}</span>
+                          </div>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className={`h-full ${color} rounded-full transition-all duration-700`} style={{ width: `${score}%` }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {showPostGenUpsell && !generating && (
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-indigo-800">生成できました！Standardにすると毎月40本まで</p>
+                <p className="text-xs text-indigo-600 mt-0.5">論文検索・ファイル読み込み・Word出力も使えます</p>
+              </div>
+              <button
+                onClick={() => { setShowPricing(true); setShowPostGenUpsell(false) }}
+                className="shrink-0 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition"
+              >
+                詳しく見る
+              </button>
+            </div>
+          )}
+
           {(report || generating) && (
             <div className="flex-1 flex flex-col gap-2">
               <div className="flex items-center justify-between">
@@ -658,7 +879,7 @@ export default function App() {
           </div>
 
           <div className="mt-auto border-t border-gray-100 pt-4 space-y-2">
-            {!isPro && (
+            {(!isPro || isPromoUser) && (
               <button
                 onClick={() => setShowPricing(true)}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 text-white font-bold rounded-xl py-2.5 text-sm transition"
@@ -666,7 +887,7 @@ export default function App() {
                 ✦ プランを見る
               </button>
             )}
-            {isPro && plan !== 'pro' && (
+            {isPro && !isPromoUser && plan !== 'pro' && (
               <button
                 onClick={() => setShowPricing(true)}
                 className="w-full flex items-center justify-center gap-2 border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded-xl py-2.5 text-sm transition"
@@ -682,6 +903,22 @@ export default function App() {
                 <span>⚙</span> 管理者コンソール
               </button>
             )}
+            {/* 紹介プログラム */}
+            <div className="border border-gray-200 rounded-xl p-3">
+              <p className="text-xs font-bold text-gray-700 mb-1">🎁 友達を紹介する</p>
+              <p className="text-xs text-gray-500 mb-2">紹介した友達が使い始めると、あなたの生成回数が+1回！</p>
+              <button
+                type="button"
+                onClick={() => {
+                  const link = `${window.location.origin}/?ref=${user.id}`
+                  const message = `ChatGPTでレポート書くのやめた\n\n・電子図書館のURL貼るだけ\n・授業スライドそのまま使える\n・AIっぽさスコアで安心確認\n・2回無料\n\n${link}`
+                  navigator.clipboard.writeText(message).then(() => alert('メッセージをコピーしました！'))
+                }}
+                className="w-full text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 rounded-lg transition"
+              >
+                招待メッセージをコピー
+              </button>
+            </div>
           </div>
         </section>
       </main>

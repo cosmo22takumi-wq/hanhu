@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminSupabase, getPlanType } from '../../../utils/checkSubscription'
+import { adminSupabase, getPlanType, getActualPlanType, isPromoActive } from '../../../utils/checkSubscription'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end()
@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const PLAN_MONTHLY_LIMIT: Record<string, number> = { standard: 40, pro: 50 }
     const currentMonthKey = new Date().toISOString().slice(0, 7)
 
-    const [{ data: sub }, { data: usageData }] = await Promise.all([
+    const [{ data: sub }, { data: usageData }, { count: referralCount }] = await Promise.all([
       adminSupabase
         .from('subscriptions')
         .select('status, current_period_end')
@@ -29,6 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .select('report_count, monthly_count, month_key')
         .eq('user_id', user.id)
         .maybeSingle(),
+      adminSupabase
+        .from('referrals')
+        .select('*', { count: 'exact', head: true })
+        .eq('referrer_id', user.id),
     ])
 
     const usageCount = (usageData?.report_count as number | null) ?? 0
@@ -36,16 +40,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const monthlyUsed = monthKey === currentMonthKey
       ? ((usageData?.monthly_count as number | null) ?? 0)
       : 0
-    const monthlyLimit = isAdmin ? null : (isPro ? (PLAN_MONTHLY_LIMIT[planType] ?? null) : null)
+    const actualPlanType = isPromoActive() ? await getActualPlanType(user.id, user.email ?? '') : planType
+    const isPromoFreeUser = isPromoActive() && actualPlanType === 'free'
+
+    const monthlyLimit = isAdmin || isPromoFreeUser ? null : (isPro ? (PLAN_MONTHLY_LIMIT[planType] ?? null) : null)
+    const referralBonus = (referralCount ?? 0)
+    const generationsLimit = isAdmin ? null
+      : isPromoFreeUser ? 3
+      : actualPlanType === 'free' ? 2 + referralBonus
+      : null
 
     res.json({
       planType,
       isPro,
       isAdmin,
+      isPromoUser: isPromoFreeUser,
       status: sub?.status ?? 'free',
       currentPeriodEnd: sub?.current_period_end ?? null,
       generationsUsed: usageCount,
-      generationsLimit: isPro ? null : 2,
+      generationsLimit,
       monthlyUsed,
       monthlyLimit,
     })
