@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .maybeSingle(),
       adminSupabase
         .from('usage')
-        .select('report_count, monthly_count, month_key, cinii_count, cinii_month_key')
+        .select('report_count, monthly_count, month_key, cinii_count, cinii_month_key, proofread_count, proofread_month_key')
         .eq('user_id', user.id)
         .maybeSingle(),
       adminSupabase
@@ -57,6 +57,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       : 0
     const ciniiLimit = (isAdmin || actualPlanType !== 'free') ? null : FREE_CINII_LIMIT
 
+    const PLAN_PROOFREAD_LIMIT: Record<string, number> = { standard: 5, pro: 20 }
+    const proofreadMonthKey = (usageData?.proofread_month_key as string | null) ?? ''
+    const proofreadUsed = proofreadMonthKey === currentMonthKey
+      ? ((usageData?.proofread_count as number | null) ?? 0)
+      : 0
+    const proofreadLimit = isAdmin ? null : (PLAN_PROOFREAD_LIMIT[actualPlanType] ?? null)
+
     res.json({
       planType,
       isPro,
@@ -70,6 +77,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       monthlyLimit,
       ciniiUsed,
       ciniiLimit,
+      proofreadUsed,
+      proofreadLimit,
     })
   } catch (err) {
     res.status(500).json({ error: String(err) })

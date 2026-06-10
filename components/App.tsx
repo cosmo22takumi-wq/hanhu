@@ -4,6 +4,7 @@ import { supabase, ADMIN_EMAIL } from '../utils/supabaseClient'
 import type { PlanType } from '../utils/planTypes'
 import Auth from './Auth'
 import CiNiiSearch from './CiNiiSearch'
+import ProofreadPanel from './ProofreadPanel'
 import WhisperRecorder from './WhisperRecorder'
 import MaterialList, { type Material } from './MaterialList'
 import AdminPanel from './AdminPanel'
@@ -11,7 +12,7 @@ import Pricing from './Pricing'
 import FileUploader from './FileUploader'
 import { exportDocx, exportPdf } from '../utils/DocumentExporter'
 
-type InputTab = 'whisper' | 'cinii' | 'memo' | 'file'
+type InputTab = 'whisper' | 'cinii' | 'memo' | 'file' | 'proofread'
 type RightTab = 'materials' | 'history' | 'admin'
 
 interface SavedReport {
@@ -61,6 +62,8 @@ export default function App() {
   const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null)
   const [ciniiUsed, setCiniiUsed] = useState(0)
   const [ciniiLimit, setCiniiLimit] = useState<number | null>(null)
+  const [proofreadUsed, setProofreadUsed] = useState(0)
+  const [proofreadLimit, setProofreadLimit] = useState<number | null>(null)
   const [showPricing, setShowPricing] = useState(false)
   const [pricingFromLimit, setPricingFromLimit] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -104,7 +107,7 @@ export default function App() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json() as { planType?: PlanType; isPromoUser?: boolean; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null; ciniiUsed?: number; ciniiLimit?: number | null }
+        const data = await res.json() as { planType?: PlanType; isPromoUser?: boolean; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null; ciniiUsed?: number; ciniiLimit?: number | null; proofreadUsed?: number; proofreadLimit?: number | null }
         setPlan(data.planType ?? 'free')
         setIsPromoUser(data.isPromoUser ?? false)
         setFreeUsed(data.generationsUsed ?? 0)
@@ -112,6 +115,8 @@ export default function App() {
         setMonthlyLimit(data.monthlyLimit ?? null)
         setCiniiUsed(data.ciniiUsed ?? 0)
         setCiniiLimit(data.ciniiLimit ?? null)
+        setProofreadUsed(data.proofreadUsed ?? 0)
+        setProofreadLimit(data.proofreadLimit ?? null)
       }
     } catch { /* ignore */ }
   }, [])
@@ -512,6 +517,7 @@ export default function App() {
               {tabBtn('file', 'ファイル')}
               {tabBtn('cinii', '論文検索')}
               {tabBtn('whisper', '音声')}
+              {tabBtn('proofread', 'AI添削')}
             </div>
           </div>
 
@@ -536,6 +542,17 @@ export default function App() {
 
             {inputTab === 'file' && (
               <FileUploader onExtracted={handleFileExtracted} />
+            )}
+
+            {inputTab === 'proofread' && (
+              <ProofreadPanel
+                isPro={isPro}
+                initialText={report}
+                proofreadUsed={proofreadUsed}
+                proofreadLimit={proofreadLimit}
+                onUpgrade={() => { setPricingFromLimit(true); setShowPricing(true) }}
+                onUsed={() => setProofreadUsed((n) => n + 1)}
+              />
             )}
 
             {inputTab === 'memo' && (
