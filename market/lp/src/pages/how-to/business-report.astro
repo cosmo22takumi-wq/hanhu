@@ -1,0 +1,148 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "経営学部・商学部レポートはどんな参考文献を使いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "経営学・商学のレポートでは、経営学の教科書、企業の有価証券報告書・統合報告書、業界団体や官公庁の統計データ（経済産業省・中小企業庁など）、CiNiiで読める経営学の学術論文が主な参考資料です。企業の事例分析では、その企業の公式IR資料を一次情報として使うと説得力が増します。" }
+    },
+    {
+      "@type": "Question",
+      "name": "企業分析レポートはどう構成すればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "「現状分析（事実）→ フレームワークによる分析（SWOT・3C・4Pなど）→ 課題と提言」が基本構成です。まず対象企業の事業内容・財務状況などの事実を整理し、次に授業で習った分析フレームワークに当てはめ、最後にそこから導かれる課題や戦略の提言をまとめます。感想ではなく「分析→提言」の流れを意識してください。" }
+    },
+    {
+      "@type": "Question",
+      "name": "経営学レポートでChatGPTを使うときの注意点は？",
+      "acceptedAnswer": { "@type": "Answer", "text": "ChatGPTは企業の財務数値や統計データを誤って生成することがあります。売上高・利益率などの具体的な数字は必ず有価証券報告書や公的統計などの一次資料で確認してください。フレームワーク自体の説明は比較的正確ですが、「その企業に当てはめた分析」は事実確認が必須です。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="経営学部・商学部レポートの書き方｜企業分析・フレームワーク・参考文献まで大学生向け"
+  description="経営学部・商学部レポートの書き方を解説。SWOT・3C・4Pなどのフレームワークの使い方、企業分析レポートの構成、参考文献の探し方まで。ポチレポは経営学の文体で授業資料から叩き台を生成。"
+  canonical="https://pochi-repo.jp/how-to/business-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-amber-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-amber-700 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          経営学部・商学部レポートの書き方<br />
+          <span class="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+            企業分析・フレームワークの使い方
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          経営学部のレポートで重要なのは「フレームワークに沿った分析」と「事実に基づく数字」です。<br class="hidden sm:block" />
+          授業資料を使って、説得力のあるレポートを書く方法を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          経営学向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">経営学レポートの基本構成</h2>
+        <p class="text-gray-500 text-sm mb-8">「現状分析 → フレームワークで分析 → 課題と提言」が基本パターン</p>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8">
+          <p class="text-sm font-bold text-amber-700 mb-2">経営学でChatGPTが危険なポイント</p>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            企業分析レポートでは「売上高」「営業利益率」などの具体的な数字が問われますが、ChatGPTはこうした数字を実在しない値で生成することがあります。フレームワークの説明自体は正確でも、「その企業に当てはめた数字」は必ず有価証券報告書や統合報告書などの一次資料で確認してください。
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '現状分析：対象企業・業界の事実整理',
+              desc: '対象企業の事業内容、業界内でのポジション、財務状況などの「事実」をまず整理する。意見ではなく、IR資料や統計データに基づいた客観的な情報を書く。',
+              example: '「A社は20XX年度の売上高が前年比〜%増の〜億円であり、主力事業である〜の構成比が〜%を占める。」',
+            },
+            {
+              step: '本論：フレームワークによる分析',
+              desc: 'SWOT分析・3C分析・4P分析など、授業で習ったフレームワークに現状分析の内容を当てはめる。「強み」「機会」などの各項目に、事実に基づいた根拠を添える。',
+              example: '「SWOT分析の観点では、〜という事実から強み（Strength）として〜が挙げられる。一方で〜は弱み（Weakness）と考えられる。」',
+            },
+            {
+              step: '結論：課題と提言',
+              desc: '分析結果から導かれる課題と、それに対する提言をまとめる。「〜という分析結果から、今後は〜という戦略が有効と考えられる」という形で締める。',
+              example: '「以上の分析から、A社の課題は〜であり、〜という施策が今後の成長に寄与すると考えられる。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-amber-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-amber-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-amber-300">
+                例: {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">経営学レポートで使える表現</h2>
+        <p class="text-gray-500 text-sm mb-8">分析・提言らしい文体に変換する</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { before: 'すごい会社だと思う', after: '〜という点で競合優位性を有していると考えられる' },
+            { before: 'もっと頑張ればいいと思う', after: '〜への投資を強化することが今後の課題と考えられる' },
+            { before: '失敗していると思う', after: '〜という結果から、〜の戦略には改善の余地があると考えられる' },
+            { before: '人気があるから売れている', after: '〜というブランド戦略が顧客のロイヤルティ向上に寄与していると考えられる' },
+            { before: '良い商品だと思う', after: '〜という機能面での差別化が、競合製品との比較において優位性を生んでいる' },
+            { before: 'これから伸びそう', after: '〜という市場動向を踏まえると、今後の成長が見込まれる' },
+          ].map(({ before, after }) => (
+            <div class="bg-white rounded-xl border border-gray-100 p-4 flex gap-3 items-start">
+              <div class="text-red-400 text-xs font-bold mt-0.5 shrink-0">変換前</div>
+              <div class="flex-1">
+                <p class="text-sm text-gray-500 line-through mb-1">{before}</p>
+                <p class="text-sm text-amber-700 font-semibold">→ {after}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-amber-700 to-orange-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-amber-200 text-sm font-semibold mb-3">経営学部・商学部レポートに特化</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">授業資料・企業のIR資料を入れるだけ<br />分析フレームワークに沿った叩き台を生成</h2>
+        <p class="text-amber-100 text-sm leading-relaxed mb-8">
+          ポチレポに授業スライドや企業の決算資料のURLを入れると、<br />
+          経営学の文体・実在するデータに基づいた叩き台を生成します。<br />
+          架空の財務数値や存在しない統計は出ません。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-amber-700 font-bold rounded-xl px-8 py-4 hover:bg-amber-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-amber-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

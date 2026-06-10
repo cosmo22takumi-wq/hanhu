@@ -1,0 +1,96 @@
+[ChatGPT]
+
+
+---
+
+[Perplexity AI]
+タイトル: Just a moment...
+
+---
+
+[NotebookLM]
+タイトル: ログイン - Google アカウント
+
+---
+
+[Notion AI]
+タイトル: Attention Required! | Cloudflare
+
+見出し:
+  - Sorry, you have been blocked
+  - You are unable to access notion.so
+  - Why have I been blocked?
+  - What can I do to resolve this?
+
+---
+
+[Jenni AI]
+タイトル: Jenni | AI Academic Writer &amp; Research Tool for Students &amp; Academics
+
+説明: Jenni is an AI research and academic writing assistant that helps students, researchers, and academics create essays, papers, and citations with ease.
+
+見出し:
+  - Start writing
+  - Sign up
+  - Start writing
+  - Meet Your Intelligent Research Assistant
+  - Meet Your Intelligent Research Assistant
+  - Meet Your Intelligent Research Assistant
+  - Abstract
+  - References
+  - From blank page to cited paper in three steps
+  - Import your sources
+  - Write alongside AI
+  - Cite, review, export
+
+---
+
+[Paperpal]
+タイトル: AI Academic Writing Tool - Comprehensive AI Research Assistant | Paperpal
+
+説明: Paperpal is a comprehensive AI academic writing tool and research assistant designed for researchers and students. Our AI-powered platform features grammar checker, paraphraser, plagiarism checker, AI writing assistant, citation generator, translator, Chat PDF, essay writer and journal submission checker. Our AI writing and research assistant provides instant feedback to improve clarity, fix errors, and ensure academic standards for essays, research papers, and journal submissions.
+
+見出し:
+  - AI that brings out the best in you,From first idea to final draft
+  - Research, Write, Cite,Without Interruptions
+  - Free Plagiarism Checker,for Students &amp; Academics
+  - Everything Academics Need | All in One Place
+  - Language
+  - AI Writing
+  - Research &amp; Cite
+  - Chat PDF
+  - Plagiarism Checks
+  - Rewrite
+  - Submit Your Draft with 100% Confidence
+  - The Only AI Academic Writing Tool You Need to Succeed
+
+---
+
+[Consensus]
+タイトル: Just a moment...
+
+---
+
+[Catchy]
+
+
+---
+
+[Transcope]
+タイトル: OpenAIのGPT搭載のSEOライティングツールのトランスコープ
+
+説明: トランスコープは、ChatGPTを提供するOpenAIのGPTを搭載した、SEOに強いAIライティングツールです。順位を上げたい検索キーワードを入力すれば、競合のコンテンツを学習し、SEOに強い文章を生成します。
+
+見出し:
+  - SEOに強いAIライティングツールならトランスコープ
+  - トランスコープとは？
+  - トランスコープの活用シーン
+  - 検索順位が上がるSEOライティング
+  - 三菱地所がトランスコープを活用して、どのようにメルマガ配信・企画書作成を効率化していったのか？
+  - プロのWEBコンサルも納得！トランスコープでどのように30名のライターを8名に減らし、数多くの記事をGoogle上位表示させたのか？
+  - 本業の合間だと後回しになっていたコンテンツマーケティング。トランスコープの導入で所要時間が半分以下に！
+  - キーワードやURLからコンテンツ生成
+  - 見出し構成から長文の生成予約
+  - 記事に最適な画像の自動生成
+  - 作成した文章の各種チェック機能
+  - 競合分析を基にしたAIライティング

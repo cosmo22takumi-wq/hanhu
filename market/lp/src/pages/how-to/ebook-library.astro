@@ -1,0 +1,290 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+---
+
+<Base
+  title="大学の電子図書館の使い方｜Maruzen eBook・KinoDenでレポート資料を揃える"
+  description="大学の電子図書館（Maruzen eBook・KinoDen・丸善Knowledge Worker）の使い方と、URLをそのままポチレポに貼り付けてレポートを作る方法を解説します。"
+  canonical="https://pochi-repo.jp/how-to/ebook-library/"
+>
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-violet-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-violet-600 mb-3 uppercase tracking-wide">電子図書館ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          大学の電子図書館を<br />
+          <span class="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+            レポートの武器にする方法
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          大学の電子図書館は学術書が無料で読める最高のリソース。<br class="hidden sm:block" />
+          URLをコピーしてポチレポに貼るだけで、本の内容をまるごと資料にできます。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          URLを貼ってレポートを作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">主要な大学電子図書館サービス</h2>
+        <p class="text-gray-500 text-sm mb-8">大学によって契約しているサービスが異なります。大学ポータルで確認してください。</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              name: 'Maruzen eBook Library',
+              desc: '日本最大規模の学術電子図書館。日本語学術書・教科書・辞典が充実。大学図書館の電子書籍として最も普及している。',
+              access: '大学ポータル→図書館→電子書籍→Maruzen eBook',
+              color: 'indigo',
+            },
+            {
+              name: 'KinoDen（紀伊國屋書店）',
+              desc: '紀伊國屋書店が運営する電子図書館。日本語書籍に強く、人文・社会科学系の文献が豊富。',
+              access: '大学ポータル→図書館→電子書籍→KinoDen',
+              color: 'violet',
+            },
+            {
+              name: '丸善Knowledge Worker',
+              desc: 'ビジネス・社会科学系に強い電子図書館。日経BP・東洋経済などのビジネス書も含む。',
+              access: '大学ポータル→図書館→電子書籍→Knowledge Worker',
+              color: 'emerald',
+            },
+            {
+              name: 'EBOOK LIBRARY（EBL）',
+              desc: '海外学術出版社の英語電子書籍が中心。英語論文・洋書を引用したいときに使う。',
+              access: '大学ポータル→図書館→洋書電子書籍→EBL',
+              color: 'orange',
+            },
+          ].map(({ name, desc, access, color }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <div class="flex items-start gap-3 mb-3">
+                <span class={`w-2 h-2 rounded-full bg-${color}-500 mt-2 shrink-0`}></span>
+                <div>
+                  <p class="font-bold text-gray-900">{name}</p>
+                  <p class="text-sm text-gray-600 leading-relaxed mt-1">{desc}</p>
+                </div>
+              </div>
+              <div class="bg-gray-50 rounded-lg px-4 py-2">
+                <p class="text-xs text-gray-500">アクセス方法: {access}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+          <p class="text-sm text-yellow-800">
+            <span class="font-bold">確認方法：</span>大学の図書館サイトで「電子書籍」または「電子図書館」を検索するか、図書館のカウンターで「電子書籍サービスの一覧」を確認してください。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">電子図書館のURLをポチレポで使う方法</h2>
+        <p class="text-gray-500 text-sm mb-8">URLを貼るだけで本1冊まるごと参考資料にできる</p>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          {[
+            { step: '①', title: '電子図書館にログイン', desc: '大学ポータルから電子図書館にログイン。大学Wi-Fiまたは学認（SHIBBOLETH）で認証する。' },
+            { step: '②', title: 'テーマ関連の本を検索', desc: 'レポートのテーマに関連するキーワードで検索。「社会学」「環境政策」「日本近代史」など。' },
+            { step: '③', title: '本のURLをコピー', desc: '使いたい本のページを開き、ブラウザのアドレスバーのURLをコピーする。' },
+            { step: '④', title: 'ポチレポに貼り付け', desc: 'ポチレポの「電子図書館URL」入力欄にURLを貼り付け、テーマと学部を入力してレポートを生成。' },
+          ].map(({ step, title, desc }) => (
+            <div class="bg-white border border-gray-200 rounded-xl p-5">
+              <p class="text-xs font-bold text-indigo-600 mb-1">{step}</p>
+              <p class="font-bold text-gray-900 mb-2">{title}</p>
+              <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href={APP_URL} class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
+            電子図書館URLを使ってレポートを作る →
+          </a>
+          <p class="text-xs text-gray-400 mt-2">Googleアカウントで30秒登録・2回まで無料</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- なぜ電子図書館か -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">なぜ電子図書館の本はレポートに最適なのか</h2>
+        <p class="text-gray-500 text-sm mb-6">GoogleやWikipediaではなく、学術書を使うべき理由</p>
+        <div class="space-y-4 text-sm text-gray-700 leading-relaxed">
+          <p>大学のレポートで「参考文献に論文・書籍を使うこと」と指定される理由は、信頼性にある。Googleで検索して出てくるブログ・まとめサイト・Wikipediaは誰でも書き換えられ、査読も出版社の審査もない。一方、大学図書館が購入した学術書は出版社・編集者・専門家による審査を経た信頼できる情報源だ。</p>
+          <p>電子図書館の最大のメリットは「大学が購入している＝学術的に信頼できる資料に無料でアクセスできる」こと。文系の授業では年間数十冊の課題図書・参考文献が指定されるが、すべて購入すると数万円かかる。電子図書館ならそれが無料で読める。</p>
+          <p>さらに重要なのが「URLさえあれば引用できる」という手軽さだ。ポチレポにURLを貼るだけで、その本の内容をレポートの資料として使える。本を最初から最後まで読む必要はなく、テーマに関係する箇所を自動で見つけて引用してくれる。</p>
+        </div>
+        <div class="mt-6 grid sm:grid-cols-3 gap-4">
+          {[
+            { label: '信頼性', value: '出版社・専門家審査済み', sub: 'Wikipedia・ブログとの違い' },
+            { label: 'コスト', value: '大学Wi-Fi経由で無料', sub: '購入不要・無制限アクセス' },
+            { label: '使いやすさ', value: 'URLを貼るだけ', sub: 'ポチレポと組み合わせる場合' },
+          ].map(({ label, value, sub }) => (
+            <div class="bg-white border border-gray-200 rounded-xl p-4 text-center">
+              <p class="text-xs text-gray-400 mb-1">{label}</p>
+              <p class="font-bold text-gray-900 text-sm">{value}</p>
+              <p class="text-xs text-gray-500 mt-1">{sub}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- よくある失敗 -->
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">よくある失敗パターン</h2>
+        <p class="text-gray-500 text-sm mb-8">URLを貼ってもうまくいかない場合の原因と対処</p>
+        <div class="space-y-3">
+          {[
+            {
+              bad: 'ログアウト状態・自宅Wi-FiでURLをコピーしてしまう',
+              good: '必ず大学のWi-Fi（または学認VPN）に接続した状態でURLをコピーする。自宅から使うには大学が提供するVPNを使う',
+              icon: '🔒',
+            },
+            {
+              bad: '検索結果ページや目次ページのURLを使う',
+              good: '「この本を読む」「閲覧する」ボタンを押して本文が表示されたページのURLを使う。検索結果のURLでは本の内容を読み込めない',
+              icon: '🔗',
+            },
+            {
+              bad: '契約外のサービスのURLを使う（他大学・他機関のURL）',
+              good: '自分の大学が契約しているサービスのURLを使う。契約サービス一覧は図書館のウェブサイトで確認できる',
+              icon: '🏫',
+            },
+            {
+              bad: '英語の本をそのまま使おうとする',
+              good: 'ポチレポは英語の本も読んで日本語で引用してくれる。「英語だから使えない」は間違い',
+              icon: '🌐',
+            },
+          ].map(({ bad, good, icon }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div class="flex items-start gap-3 px-5 py-4">
+                <span class="text-red-400 font-black shrink-0">✗</span>
+                <p class="text-sm text-gray-700">{bad}</p>
+              </div>
+              <div class="flex items-start gap-3 px-5 py-4 bg-green-50 border-t border-gray-100">
+                <span class="text-green-600 font-black shrink-0">✓</span>
+                <p class="text-sm text-gray-700">{good}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            { q: 'どの電子図書館サービスに対応していますか？', a: 'URLでアクセスできる電子図書館・電子書籍サービスであれば基本的に対応しています。Maruzen eBook Library・KinoDen・丸善Knowledge Worker・JSTOR等で動作確認済みです。' },
+            { q: '大学のWi-Fi以外（自宅）でも使えますか？', a: '電子図書館にアクセスするには大学の認証が必要ですが、大学が提供するVPNを使えば自宅からでも使えます。また、大学のWi-Fiでアクセスして保存したURLは後からポチレポに貼ることができます。' },
+            { q: '英語の電子書籍も使えますか？', a: 'はい。英語の電子書籍URLを貼り付けると、英語の本の内容を読み込んで日本語レポートに引用してくれます。英語が読めなくても使えます。' },
+            { q: 'CiNiiとの違いは何ですか？', a: '電子図書館は「学術書・教科書」が中心で、テーマの背景や全体像を説明するのに適しています。CiNiiは「学術論文」が中心で、先行研究の引用や最新の研究知見を使うのに適しています。両方組み合わせると信頼性の高いレポートになります。' },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">{item.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">電子図書館を使うメリット</h2>
+        <p class="text-gray-500 text-sm mb-8">CiNii論文との違いと使い分け</p>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          {[
+            {
+              type: '電子図書館（学術書）',
+              icon: '📚',
+              best: '入門〜中級レベルのレポート、幅広いテーマの概説が必要なとき',
+              features: ['テーマの背景・全体像を説明できる', '文系全学部に対応した書籍が揃っている', 'URLをポチレポに貼るだけで使える', '大学図書館が購入→信頼性が保証されている'],
+            },
+            {
+              type: 'CiNii（学術論文）',
+              icon: '📄',
+              best: '先行研究の引用が必要なとき、より専門的な根拠が必要なとき',
+              features: ['査読済み論文で信頼性が高い', '新しい研究知見・統計データが含まれる', 'テーマに特化した専門的な議論ができる', 'ポチレポが自動検索・引用してくれる'],
+            },
+          ].map(({ type, icon, best, features }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">{icon}</span>
+                <p class="font-bold text-gray-900">{type}</p>
+              </div>
+              <p class="text-xs text-indigo-600 font-semibold mb-2">最適なシーン</p>
+              <p class="text-sm text-gray-600 mb-3">{best}</p>
+              <ul class="space-y-1">
+                {features.map(f => (
+                  <li class="flex gap-2 text-xs text-gray-600">
+                    <span class="text-indigo-400 shrink-0">✓</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">電子図書館の本1冊まるごとレポートの資料に</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          URLを貼るだけで本の内容を読み込み、テーマに合ったレポートを生成。<br />
+          参考文献も自動で正しい形式に整形されます。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/cinii/', title: 'CiNiiの使い方と論文の探し方', desc: 'CiNiiで学術論文を自動検索する方法' },
+            { href: '/how-to/reference-search/', title: '参考文献が見つからないときの探し方', desc: '電子図書館・CiNii・Google Scholarを使い分ける' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

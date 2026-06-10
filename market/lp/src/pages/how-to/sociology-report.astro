@@ -1,0 +1,141 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "社会学レポートの参考文献には何を使えばいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "社会学レポートでは、学術論文（CiNii・J-STAGEで検索）、専門書・教科書、社会調査データ（政府統計）が主な参考資料です。授業で使われた教科書を一次資料として使うのが最も確実です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "社会学レポートで「自分の意見」はどこに書きますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "社会学レポートでは「考察」セクションで自分の分析を述べます。ただし「〜と思う」ではなく、先行研究や理論を根拠にした「〜と考えられる」という形で書くことが求められます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "社会学と社会福祉学のレポートは書き方が違いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "基本構成（序論・本論・結論）は共通ですが、社会福祉学は実践的・政策的観点が重視される場合があります。どちらも「社会問題や現象を理論・データで分析する」という点は同じです。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="社会学レポートの書き方｜社会問題の分析から参考文献まで大学生向け解説"
+  description="社会学レポートの書き方を解説。社会問題・現象の分析方法、先行研究の使い方、考察の書き方、参考文献の形式まで。ポチレポは社会学部の文体に対応し、授業資料から叩き台を自動生成。"
+  canonical="https://pochi-repo.jp/how-to/sociology-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-teal-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-teal-600 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          社会学レポートの書き方<br />
+          <span class="bg-gradient-to-r from-teal-600 to-indigo-600 bg-clip-text text-transparent">
+            社会問題の分析・考察の書き方
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          社会学レポートは「社会現象を理論・データで分析する」のが核心です。<br class="hidden sm:block" />
+          構成・文体・参考文献の形式を正しく理解して書きましょう。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-teal-600 to-indigo-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          社会学向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">社会学レポートの基本構成</h2>
+        <p class="text-gray-500 text-sm mb-8">社会現象を「問い → 分析 → 考察」の流れで論じる</p>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '序論：問いの設定',
+              desc: '「なぜこの問題を取り上げるのか」「何を明らかにするのか」を示す。背景にある社会問題や先行研究に触れながら、論じる「問い」を設定する。',
+              example: '「本稿では、少子高齢化が進む日本社会において、孤独死という現象がなぜ増加しているのかを、福祉社会学的観点から検討する。」',
+            },
+            {
+              step: '本論：分析と先行研究',
+              desc: '関連する理論・研究・データを使って問いを分析する。一方向の主張だけでなく、複数の視点から検討することで論文らしくなる。',
+              example: '「山田（2020）は〜と指摘している。一方、鈴木（2022）の研究では〜という異なる結論が示されている。これらを踏まえると〜」',
+            },
+            {
+              step: '考察・結論',
+              desc: '分析から何が言えるかを自分の言葉でまとめる。「本稿の限界」にも触れると高評価につながることが多い。',
+              example: '「以上の考察から、孤独死の増加には〜という構造的要因があると考えられる。ただし、本稿では〜という点は検討できておらず、今後の課題である。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-teal-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-teal-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-teal-300">
+                例: {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">社会学レポートでよく使う表現</h2>
+        <p class="text-gray-500 text-sm mb-8">学術的な文体に変えるだけで評価が上がることも</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { before: '〜だと思う', after: '〜と考えられる / 〜が示唆される' },
+            { before: '〜は大事だ', after: '〜の重要性が指摘されている（〇〇、20xx）' },
+            { before: 'たくさんの人が', after: '多くの調査対象者が / 〇%が（出典）' },
+            { before: '最近よく聞く', after: '近年注目されている / 〇〇年以降急増している' },
+            { before: '難しい問題だ', after: '複合的な要因が絡み合っていると言える' },
+            { before: '〜が原因だ', after: '〜が一因であると推察される' },
+          ].map(({ before, after }) => (
+            <div class="bg-white rounded-xl border border-gray-100 p-4 flex gap-3 items-start">
+              <div class="text-red-400 text-xs font-bold mt-0.5 shrink-0">変換前</div>
+              <div class="flex-1">
+                <p class="text-sm text-gray-500 line-through mb-1">{before}</p>
+                <p class="text-sm text-teal-700 font-semibold">→ {after}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-teal-700 to-indigo-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-teal-200 text-sm font-semibold mb-3">社会学レポートに特化</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">授業資料から<br />社会学の文体で叩き台を生成</h2>
+        <p class="text-teal-100 text-sm leading-relaxed mb-8">
+          ポチレポに教科書URLや授業スライドを入れると、<br />
+          社会学部の文体・学術的な表現で叩き台を生成します。<br />
+          架空の参考文献は出ません。入れた資料だけを根拠にします。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-teal-700 font-bold rounded-xl px-8 py-4 hover:bg-teal-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-teal-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

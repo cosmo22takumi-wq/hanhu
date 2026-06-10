@@ -1,0 +1,28 @@
+{
+  "name": "sns-bot",
+  "version": "1.0.0",
+  "description": "X 深夜自動運用ボット（文系大学生向けレポート支援サービス）",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts",
+    "setup": "npx playwright install chromium && ts-node src/setup.ts",
+    "preview": "ts-node src/preview.ts",
+    "login": "ts-node src/manual-login.ts",
+    "test-post": "ts-node src/test-post.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.10",
+    "@types/node": "^20.12.12",
+    "@types/node-cron": "^3.0.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

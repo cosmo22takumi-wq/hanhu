@@ -59,6 +59,8 @@ export default function App() {
   const [freeUsed, setFreeUsed] = useState(0)
   const [monthlyUsed, setMonthlyUsed] = useState(0)
   const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null)
+  const [ciniiUsed, setCiniiUsed] = useState(0)
+  const [ciniiLimit, setCiniiLimit] = useState<number | null>(null)
   const [showPricing, setShowPricing] = useState(false)
   const [pricingFromLimit, setPricingFromLimit] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -102,12 +104,14 @@ export default function App() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json() as { planType?: PlanType; isPromoUser?: boolean; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null }
+        const data = await res.json() as { planType?: PlanType; isPromoUser?: boolean; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null; ciniiUsed?: number; ciniiLimit?: number | null }
         setPlan(data.planType ?? 'free')
         setIsPromoUser(data.isPromoUser ?? false)
         setFreeUsed(data.generationsUsed ?? 0)
         setMonthlyUsed(data.monthlyUsed ?? 0)
         setMonthlyLimit(data.monthlyLimit ?? null)
+        setCiniiUsed(data.ciniiUsed ?? 0)
+        setCiniiLimit(data.ciniiLimit ?? null)
       }
     } catch { /* ignore */ }
   }, [])
@@ -516,8 +520,11 @@ export default function App() {
               <CiNiiSearch
                 user={user}
                 isPro={isPro}
+                ciniiUsed={ciniiUsed}
+                ciniiLimit={ciniiLimit}
+                onSearched={() => setCiniiUsed((n) => n + 1)}
                 onAdded={() => setMaterialListKey((k) => k + 1)}
-                onUpgrade={() => setShowPricing(true)}
+                onUpgrade={() => { setPricingFromLimit(true); setShowPricing(true) }}
               />
             )}
 

@@ -1,0 +1,216 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+---
+
+<Base
+  title="法学部レポートの書き方｜判例・条文の引用から三段論法まで完全解説"
+  description="法学部レポートの書き方を解説。三段論法の使い方、判例・条文の正しい引用形式、法律用語の文体、参考文献の書き方まで。ポチレポは法学部の文体システムに対応。"
+  canonical="https://pochi-repo.jp/how-to/law-report/"
+>
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-slate-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          法学部レポートの書き方<br />
+          <span class="bg-gradient-to-r from-slate-700 to-indigo-700 bg-clip-text text-transparent">
+            三段論法・判例・条文引用
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          法学部レポートは「三段論法」と「実在する判例・条文の引用」が命です。<br class="hidden sm:block" />
+          文体・構成・引用形式を正しく使う方法を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          法学部向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">法学部レポートの基本構成</h2>
+        <p class="text-gray-500 text-sm mb-8">三段論法（大前提→小前提→結論）が法律文章の基本</p>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '問題提起',
+              desc: '論じる法的問題（何が争点か）を明確に示す。「本稿では〜について検討する」という形式で書く。',
+              example: '「本稿では、労働基準法第36条の時間外労働規制の問題点について、過労死との関係から検討する。」',
+            },
+            {
+              step: '規範定立（大前提）',
+              desc: '適用する法令・判例・学説を示す。条文番号と正確な文言を引用する。',
+              example: '「労働基準法第36条第1項は「〜」と規定する。最高裁判所は〇〇年〇〇月〇〇日判決（民集〇〇巻〇〇号〇〇頁）において〜と判示した。」',
+            },
+            {
+              step: '事実認定（小前提）',
+              desc: '論じている事例・事実関係を整理する。「事案の概要」として示すことが多い。',
+              example: '「本件では、〇〇の事実関係が問題となる。具体的には〜」',
+            },
+            {
+              step: '当てはめ（論証）',
+              desc: '大前提の法令・判例を小前提の事実に当てはめて論証する。反論への対応も含める。',
+              example: '「上記判例の基準によれば、〜の場合は〜と解するのが妥当である。これに対し〜という反論も考えられるが、〜の理由から採用できない。」',
+            },
+            {
+              step: '結論',
+              desc: '論証の結論を明確に示す。「以上より〜と解される」という形式で書く。',
+              example: '「以上の検討から、〜については〜と解するのが妥当であり、〜の改正が必要と考えられる。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div class="px-5 py-3 bg-slate-50 border-b border-gray-200">
+                <span class="font-black text-slate-700">{step}</span>
+              </div>
+              <div class="px-5 py-4">
+                <p class="text-sm text-gray-700 mb-3">{desc}</p>
+                <div class="bg-gray-50 rounded-lg px-4 py-3">
+                  <p class="text-xs font-semibold text-gray-400 mb-1">文例</p>
+                  <p class="text-sm text-gray-600 leading-relaxed">{example}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">判例・条文の正しい引用形式</h2>
+        <p class="text-gray-500 text-sm mb-8">法学部レポートで最も重要なのが正確な引用形式</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              type: '条文の引用',
+              format: '「法律名第〇条第〇項」',
+              example: '「民法第709条（不法行為による損害賠償）」「労働基準法第32条第1項」',
+              note: '略称は括弧書きで示す：「民法（以下「民法」という。）」または「民法709条」（引用2回目以降）',
+            },
+            {
+              type: '最高裁判決の引用',
+              format: '最判/最大判 年月日 掲載誌 巻 号 頁',
+              example: '「最大判昭和25年2月1日刑集4巻2号73頁」「最判平成9年3月25日民集51巻3号1728頁」',
+              note: '民集（最高裁民事判例集）・刑集（最高裁刑事判例集）・判時（判例時報）・判タ（判例タイムズ）が主な掲載誌',
+            },
+            {
+              type: '下級審判決の引用',
+              format: '裁判所名 年月日 掲載誌',
+              example: '「東京高判平成18年1月31日判時1928号61頁」',
+              note: '地裁（地方裁判所）・高裁（高等裁判所）の判決は裁判所名を明示する',
+            },
+            {
+              type: '文献（学術論文・書籍）の引用',
+              format: '著者名「論文タイトル」掲載誌名 巻号（年）頁',
+              example: '「田中一郎「不法行為法の現代的課題」法学論叢156巻3号（2004年）45頁」',
+              note: '書籍の場合：著者名『書名』（出版社、出版年）頁',
+            },
+          ].map(({ type, format, example, note }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <p class="font-bold text-gray-900 text-sm mb-2">{type}</p>
+              <div class="bg-indigo-50 rounded-lg px-4 py-2 mb-3">
+                <p class="text-xs font-semibold text-indigo-700 mb-1">形式</p>
+                <p class="text-sm text-indigo-800 font-mono">{format}</p>
+              </div>
+              <p class="text-xs font-semibold text-gray-500 mb-1">例</p>
+              <p class="text-sm text-gray-700 mb-2">{example}</p>
+              <p class="text-xs text-gray-400 bg-gray-50 rounded px-3 py-2">{note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">法学部レポートの文体ルール</h2>
+        <p class="text-gray-500 text-sm mb-8">法律文章特有の表現と避けるべき表現</p>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <p class="font-bold text-green-700 text-sm mb-3">使う表現</p>
+            <ul class="space-y-2">
+              {[
+                '〜と解される',
+                '〜と解するのが妥当である',
+                '〜と判示された',
+                '〜の趣旨に鑑みれば',
+                '〜の観点から検討する',
+                '〜と認定できる',
+                '問題となるのは〜である',
+              ].map(exp => (
+                <li class="flex gap-2 text-sm text-gray-700">
+                  <span class="text-green-500 shrink-0">✓</span>
+                  {exp}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p class="font-bold text-red-500 text-sm mb-3">避ける表現</p>
+            <ul class="space-y-2">
+              {[
+                '〜だと思います（主観的・丁寧体）',
+                '〜だと感じます',
+                '〜ではないでしょうか',
+                '〜と言えるでしょう（ChatGPT文体）',
+                '非常に重要です',
+                '〜してほしいです',
+                '私は〜と考えます（頻出しすぎる主語）',
+              ].map(exp => (
+                <li class="flex gap-2 text-sm text-gray-600">
+                  <span class="text-red-400 shrink-0">✗</span>
+                  {exp}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">法学部の文体でレポートを自動生成</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          ポチレポは法学部の三段論法・だ・である調・判例引用形式に対応した文体システムを内蔵。<br />
+          テーマと資料を入れるだけで法学部向けのレポートが生成されます。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/citation/', title: '参考文献の書き方 完全ガイド', desc: '法学引用形式・APA・MLA対応' },
+            { href: '/how-to/report-structure/', title: '大学レポートの書き方と構成', desc: '序論・本論・結論の文字数配分と書き方' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

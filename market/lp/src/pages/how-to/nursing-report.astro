@@ -1,0 +1,148 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "看護学レポートはどんな参考文献を使いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "看護学レポートでは、医学・看護学の学術論文（医学中央雑誌・CiNii・PubMed）、看護学の教科書、厚生労働省などの公的統計・ガイドラインが主な参考資料です。授業で使用された教科書が最も確実な一次資料です。インターネットの一般情報・まとめサイトは使用しないでください。" }
+    },
+    {
+      "@type": "Question",
+      "name": "看護学レポートで「患者中心のケア」「根拠に基づく看護」はどう論じますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "「根拠に基づく看護（EBN: Evidence-Based Nursing）」は先行研究やガイドラインを根拠として示す必要があります。「〜という研究（〇〇、20xx）によれば〜が有効とされている。この根拠から〜のケアが適切と考えられる」という形で書きます。「効果があると思う」ではなく「〜という根拠から〜が推奨される」が学術的な表現です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "看護実習後のレポートはどう書きますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "実習レポートは「観察・アセスメント・計画・実施・評価」のプロセスに沿って書くことが多いです。実習で実際に経験した事例（患者情報は匿名化）を記録し、そこに授業で学んだ看護理論・根拠を接続する形が基本です。「〜という状況を観察した。これは〜理論（〇〇、〜年）の〜概念と一致する」という構成が評価されます。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="看護学レポートの書き方｜根拠に基づく看護・参考文献・実習レポートまで大学生向け"
+  description="看護学レポートの書き方を解説。根拠に基づく看護（EBN）の論じ方、医中誌・CiNiiの使い方、実習後レポートの構成、参考文献の書き方まで。ポチレポは看護学の文体で授業資料から叩き台を生成。"
+  canonical="https://pochi-repo.jp/how-to/nursing-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-cyan-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-cyan-700 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          看護学レポートの書き方<br />
+          <span class="bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent">
+            根拠に基づく看護・実習レポートの書き方
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          看護学レポートで求められるのは「根拠に基づいた記述（EBN）」です。<br class="hidden sm:block" />
+          授業の教科書・実習記録を使って、正しく論じる方法を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          看護学向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">看護学レポートの基本構成</h2>
+        <p class="text-gray-500 text-sm mb-8">「根拠（EBN）→ 分析 → 看護の方向性」が基本パターン</p>
+
+        <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-5 mb-8">
+          <p class="text-sm font-bold text-cyan-700 mb-2">看護学でChatGPTが特に危険な理由</p>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            看護学・医療系のレポートでは「根拠（エビデンス）の正確性」が最重要です。ChatGPTは存在しないガイドライン名・論文タイトルを生成することがあります。医療行為の根拠として誤った情報を書くと、学術的な問題だけでなく、実習での実践にも影響が出ます。実在する教科書・論文だけを使ってください。
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '序論：テーマの背景と問い',
+              desc: 'なぜこのテーマを扱うかを示す。疾患・患者像・看護の課題についての背景説明と、「何を論じるか」の問いを明示する。',
+              example: '「本稿では、2型糖尿病患者への自己管理支援において、患者中心のアプローチがアドヒアランス向上に与える影響を、先行研究をもとに検討する。」',
+            },
+            {
+              step: '本論：根拠に基づく分析',
+              desc: '看護学・医学の研究・ガイドラインを根拠に分析する。「〜という研究によれば〜が有効とされている。この根拠から〜のケアが適切と考えられる」という構成が基本。',
+              example: '「〇〇（2021）は〜という介入が〜に有効と報告している。この知見に基づけば、〜のような看護実践が推奨される。」',
+            },
+            {
+              step: '考察・看護の方向性',
+              desc: '分析から、どのような看護が求められるかを述べる。「〜の根拠から〜が重要と考えられる」「〜という点については更なる研究が必要だ」という形で締める。',
+              example: '「以上から、〜患者への看護では〜に着目したアプローチが重要と考えられる。ただし〜については個別性を考慮する必要がある。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-cyan-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-cyan-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-cyan-300">
+                例: {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">看護学レポートで使える表現</h2>
+        <p class="text-gray-500 text-sm mb-8">EBN（根拠に基づく看護）の文体で書くために</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { before: '〜するといいと思う', after: '〜が有効と考えられる（〇〇、20xx）' },
+            { before: '患者さんが大変そうだった', after: '〜という状態が確認され、〜のリスクが考えられる' },
+            { before: '看護師として大切だと思う', after: '〜が看護の重要な役割とされている（〇〇、〜年）' },
+            { before: '効果がある', after: '〜に効果があると報告されている（〇〇ら、20xx）' },
+            { before: 'ストレスがたまる', after: '〜によるストレス負荷が生じる' },
+            { before: '対処が必要', after: '〜へのアセスメントと介入が求められる' },
+          ].map(({ before, after }) => (
+            <div class="bg-white rounded-xl border border-gray-100 p-4 flex gap-3 items-start">
+              <div class="text-red-400 text-xs font-bold mt-0.5 shrink-0">変換前</div>
+              <div class="flex-1">
+                <p class="text-sm text-gray-500 line-through mb-1">{before}</p>
+                <p class="text-sm text-cyan-700 font-semibold">→ {after}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-cyan-700 to-teal-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-cyan-200 text-sm font-semibold mb-3">看護学レポートに特化</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">授業の教科書URLを入れるだけ<br />根拠に基づく看護の文体で生成</h2>
+        <p class="text-cyan-100 text-sm leading-relaxed mb-8">
+          ポチレポに看護学の教科書URLや授業スライドを入れると、<br />
+          EBNの文体・実在する根拠つきで叩き台を生成します。<br />
+          架空のガイドライン名・存在しない論文は出ません。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-cyan-700 font-bold rounded-xl px-8 py-4 hover:bg-cyan-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-cyan-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

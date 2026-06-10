@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminSupabase, getPlanType } from '../../utils/checkSubscription'
+import Anthropic from '@anthropic-ai/sdk'
+import { Resend } from 'resend'
+import { adminSupabase, getPlanType, getActualPlanType, isPromoActive } from '../../utils/checkSubscription'
 import { YoutubeTranscript } from 'youtube-transcript'
 
 export const config = { maxDuration: 300 }
@@ -149,8 +151,8 @@ function buildWriterPrompt(
   const bodyLen = Math.round(req.charCount * 0.65)
   const conclusionLen = Math.round(req.charCount * 0.15)
   const refsLen = Math.round(req.charCount * 0.05)
-  const minChars = Math.round(req.charCount * 0.95)
-  const maxChars = Math.round(req.charCount * 1.08)
+  const minChars = req.charCount
+  const maxChars = Math.round(req.charCount * 1.05)
 
   return `あなたは偏差値62程度の国立大学に通う、学習意欲が高く勤勉な大学3年生です。レポート課題に真剣に取り組み、しっかりとした論拠と構成で学術レポートを書く能力があります。以下の指示に従い、誠実にレポートを執筆してください。
 
@@ -159,6 +161,7 @@ function buildWriterPrompt(
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 目標文字数: ${req.charCount}字
 許容範囲: ${minChars}〜${maxChars}字（この範囲を必ず守ること）
+⚠️ ${minChars}字を下回ることは絶対に禁止。不足する場合は論述をさらに深化・展開すること。
 
 各部の目安字数（合計${req.charCount}字になるよう調整すること）:
 - 序論: 約${introLen}字
@@ -166,8 +169,8 @@ function buildWriterPrompt(
 - 結論: 約${conclusionLen}字
 - 参考文献リスト: 約${refsLen}字
 
-文字数が不足する場合: 論述を深化・展開すること（無意味な繰り返し・接続詞の多用は禁止）
-文字数が超過する場合: 各節を均等に整理・圧縮すること
+文字数が不足する場合: 各章の考察・具体例・データ引用を追加して論述を深化・展開すること（無意味な繰り返し・接続詞の多用は禁止）
+文字数が超過する場合: ${maxChars}字以内に収まるよう各節を均等に整理・圧縮すること
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【必須】日本語・文体の規則
@@ -215,9 +218,18 @@ ${req.outline || '序論（背景・目的・問いの設定）→ 本論（分�
 - 冒頭に「以下にレポートを生成します」等の前置き文は不要`
 }
 
-function buildProfessorPrompt(): string {
+function buildProfessorPrompt(charCount: number): string {
+  const minChars = charCount
+  const maxChars = Math.round(charCount * 1.05)
   return `あなたは日本の大学で20年以上教鞭を執り、学術書を複数出版している厳格な教授です。
 担当ゼミの学生が書いたレポート草稿を受け取り、出版・提出に耐えるレベルに校閲・改稿してください。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【最重要】文字数の維持
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+校閲後の文字数: ${minChars}〜${maxChars}字（厳守）
+⚠️ ${minChars}字を下回ることは絶対に禁止。削除よりも言い換え・補足を優先すること。
+文字数が不足する場合は、論述の具体例・補足説明を加えて${minChars}字以上に調整すること。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【最優先】AI的な不自然さの除去
@@ -252,13 +264,12 @@ function buildProfessorPrompt(): string {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
-    return res.status(500).json({ error: 'OPENAI_API_KEY が設定されていません。' })
+    return res.status(500).json({ error: 'ANTHROPIC_API_KEY が設定されていません。' })
   }
 
-  const FREE_LIMIT = 2
-  const MATERIAL_LIMIT = 3
+  const FREE_LIMIT = isPromoActive() ? 3 : 2
   const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com'
 
   // 認証必須（未ログインは拒否）
@@ -281,7 +292,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'theme, faculty, charCount は必須です' })
   }
 
-  // 参考資料3件制限（全ユーザー共通）
+  // 参考資料上限: Pro・管理者・プロモ中 → 3件、それ以外 → 1件
+  const isAdmin = userEmail === ADMIN_EMAIL
+  const planForMaterials = await getPlanType(userId, userEmail)
+  const MATERIAL_LIMIT = (isAdmin || planForMaterials === 'pro') ? 3 : 1
   const enabledMaterialsCheck = (body.materials ?? []).filter((m) => m.enabled)
   if (enabledMaterialsCheck.length > MATERIAL_LIMIT) {
     return res.status(400).json({
@@ -293,10 +307,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const PLAN_MONTHLY_LIMIT: Record<string, number> = { standard: 40, pro: 50 }
 
   // 生成回数チェック
-  const isAdmin = userEmail === ADMIN_EMAIL
   if (!isAdmin) {
     try {
-      const planType = await getPlanType(userId, userEmail)
+      const planType = await getActualPlanType(userId, userEmail)
       const currentMonthKey = new Date().toISOString().slice(0, 7) // "2026-05"
 
       const { data: usageData } = await adminSupabase
@@ -319,6 +332,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           { user_id: userId, report_count: currentCount + 1, updated_at: new Date().toISOString() },
           { onConflict: 'user_id' }
         )
+        // 初回生成時：紹介元ユーザーをクレジット（report_count を -1 して実質+1回）
+        if (currentCount === 0) {
+          const { data: referral } = await adminSupabase
+            .from('referrals')
+            .select('id, referrer_id')
+            .eq('referred_user_id', userId)
+            .eq('credited', false)
+            .maybeSingle()
+          if (referral) {
+            const { data: referrerUsage } = await adminSupabase
+              .from('usage')
+              .select('report_count')
+              .eq('user_id', referral.referrer_id)
+              .maybeSingle()
+            const referrerCount = (referrerUsage?.report_count as number | null) ?? 0
+            await Promise.all([
+              adminSupabase.from('usage').upsert(
+                { user_id: referral.referrer_id, report_count: Math.max(0, referrerCount - 1), updated_at: new Date().toISOString() },
+                { onConflict: 'user_id' }
+              ),
+              adminSupabase.from('referrals').update({ credited: true }).eq('id', referral.id),
+            ]).catch(() => {})
+          }
+        }
       } else {
         // 有料プラン：月次制限チェック
         const monthKey = (usageData?.month_key as string | null) ?? ''
@@ -357,17 +394,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   )
 
   const writerPrompt = buildWriterPrompt(body, fetchedContents)
-  const professorPrompt = buildProfessorPrompt()
+  const professorPrompt = buildProfessorPrompt(body.charCount)
   const userMessage = `テーマ: 「${body.theme}」\n\n上記テーマについて、指定された条件・文字数・文体で学術レポートを執筆してください。`
-  const maxTokens = Math.min(Math.max(Math.ceil(body.charCount * 2.2), 1500), 8000)
+  // 5000字以下はSonnet、超える場合はOpus（Sonnetの出力上限8192トークン対策）
+  const model = body.charCount > 5000 ? 'claude-opus-4-7' : 'claude-sonnet-4-6'
+  const maxTokens = body.charCount > 5000
+    ? Math.min(Math.ceil(body.charCount * 3), 30000)
+    : Math.min(Math.ceil(body.charCount * 2.5), 8000)
 
-  const openaiHeaders = { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` }
-
-  function friendlyOpenAIError(status: number, text: string): string {
-    if (status === 429) return 'OpenAI のクレジット残高が不足しています。'
-    if (status === 401) return 'OpenAI API キーが無効です。'
-    return `OpenAI エラー (${status}): ${text}`
-  }
+  const anthropic = new Anthropic({ apiKey })
 
   // SSE ヘッダーを先に送信してクライアントに即座にフィードバック
   res.setHeader('Content-Type', 'text/event-stream')
@@ -378,84 +413,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ── Phase 1: 執筆（大学生）──
     res.write(`data: ${JSON.stringify({ phase: 'writing' })}\n\n`)
 
-    const writerRes = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: openaiHeaders,
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: writerPrompt },
-          { role: 'user', content: userMessage },
-        ],
-        temperature: 0.7,
-        max_tokens: maxTokens,
-        stream: false,
-      }),
-      signal: AbortSignal.timeout(120000),
+    const writerMsg = await anthropic.messages.create({
+      model,
+      max_tokens: maxTokens,
+      system: writerPrompt,
+      messages: [{ role: 'user', content: userMessage }],
     })
 
-    if (!writerRes.ok) {
-      const text = await writerRes.text()
-      res.write(`data: ${JSON.stringify({ error: friendlyOpenAIError(writerRes.status, text) })}\n\n`)
-      res.end(); return
-    }
-
-    const writerData = await writerRes.json() as { choices: { message: { content: string } }[] }
-    const draft = writerData.choices[0]?.message?.content ?? ''
+    const draft = writerMsg.content[0]?.type === 'text' ? writerMsg.content[0].text : ''
     if (!draft) {
       res.write(`data: ${JSON.stringify({ error: '執筆フェーズで内容を取得できませんでした' })}\n\n`)
       res.end(); return
     }
 
-    // ── Phase 2: 校閲（教授）──
+    // ── Phase 2: 校閲（教授）ストリーミング ──
     res.write(`data: ${JSON.stringify({ phase: 'reviewing' })}\n\n`)
 
-    const professorRes = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: openaiHeaders,
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: professorPrompt },
-          { role: 'user', content: `以下の学生レポートを校閲・改稿してください：\n\n${draft}` },
-        ],
-        temperature: 0.45,
-        max_tokens: maxTokens,
-        stream: true,
-      }),
-      signal: AbortSignal.timeout(120000),
+    const professorStream = anthropic.messages.stream({
+      model,
+      max_tokens: maxTokens,
+      system: professorPrompt,
+      messages: [{ role: 'user', content: `以下の学生レポートを校閲・改稿してください：\n\n${draft}` }],
     })
 
-    if (!professorRes.ok) {
-      const text = await professorRes.text()
-      res.write(`data: ${JSON.stringify({ error: friendlyOpenAIError(professorRes.status, text) })}\n\n`)
-      res.end(); return
-    }
-
-    const reader = professorRes.body?.getReader()
-    if (!reader) { res.write(`data: ${JSON.stringify({ error: 'ストリーム取得失敗' })}\n\n`); res.end(); return }
-
-    // チャンク境界で日本語文字（UTF-8マルチバイト）が分断されないようラインバッファを使う
-    const decoder = new TextDecoder()
-    let lineBuf = ''
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      lineBuf += decoder.decode(value, { stream: true })
-      const lines = lineBuf.split('\n')
-      lineBuf = lines.pop() ?? '' // 末尾の不完全行は次のチャンクまで保持
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue
-        const data = line.slice(6).trim()
-        if (data === '[DONE]') { res.write('data: [DONE]\n\n'); continue }
-        try {
-          const parsed = JSON.parse(data) as { choices: { delta: { content?: string }; finish_reason: string | null }[] }
-          const content = parsed.choices[0]?.delta?.content
-          if (content) res.write(`data: ${JSON.stringify({ content })}\n\n`)
-        } catch { /* 不完全なJSONはskip */ }
+    for await (const chunk of professorStream) {
+      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+        res.write(`data: ${JSON.stringify({ content: chunk.delta.text })}\n\n`)
       }
     }
+
+    res.write('data: [DONE]\n\n')
     res.end()
+
+    // 生成完了メール（バックグラウンド、失敗しても無視）
+    const resendKey = process.env.RESEND_API_KEY
+    if (resendKey && userEmail) {
+      const resend = new Resend(resendKey)
+      const snippet = draft.slice(0, 200).replace(/\n/g, ' ')
+      resend.emails.send({
+        from: 'ポチレポ <noreply@pochi-repo.com>',
+        to: userEmail,
+        subject: `【ポチレポ】レポートが完成しました：${body.theme}`,
+        html: `<p>レポートの生成が完了しました。</p>
+<p><strong>テーマ：</strong>${body.theme}</p>
+<p><strong>冒頭：</strong>${snippet}…</p>
+<p><a href="https://report-saas-bay.vercel.app">アプリで確認する →</a></p>
+<hr><p style="font-size:12px;color:#888">ポチレポ | 大学生のライフハック</p>`,
+      }).catch(() => {})
+    }
   } catch (err) {
     if (!res.writableEnded) {
       res.write(`data: ${JSON.stringify({ error: String(err) })}\n\n`)

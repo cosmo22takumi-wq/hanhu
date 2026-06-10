@@ -1,0 +1,52 @@
+---
+const APP_URL = 'https://report-saas-bay.vercel.app'
+---
+
+<footer class="bg-gray-900 text-gray-400 text-sm">
+  <div class="max-w-6xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+      <div class="col-span-2 md:col-span-1">
+        <p class="text-white font-black text-xl mb-2">ポチレポ</p>
+        <p class="text-xs leading-relaxed">
+          大学生のレポート作成を<br />AIで効率化するサービス。<br />
+          架空の参考文献が出ない。3分で叩き台。
+        </p>
+      </div>
+
+      <div>
+        <p class="text-white font-semibold mb-3">ツール</p>
+        <ul class="space-y-2">
+          <li><a href="/tools/citation/" class="hover:text-white transition">参考文献フォーマッター</a></li>
+          <li><a href={APP_URL} class="hover:text-white transition">レポートAI</a></li>
+          <li><a href={APP_URL} class="hover:text-white transition">レポート生成</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-white font-semibold mb-3">ガイド</p>
+        <ul class="space-y-2">
+          <li><a href="/how-to/citation/" class="hover:text-white transition">参考文献の書き方</a></li>
+          <li><a href="/how-to/report/" class="hover:text-white transition">レポートの書き方</a></li>
+          <li><a href="/how-to/cinii/" class="hover:text-white transition">CiNiiの使い方</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-white font-semibold mb-3">サービス</p>
+        <ul class="space-y-2">
+          <li><a href="/#pricing" class="hover:text-white transition">料金プラン</a></li>
+          <li><a href="/#faq" class="hover:text-white transition">よくある質問</a></li>
+          <li><a href={APP_URL} class="hover:text-white transition">ログイン / 登録</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <p class="text-xs">&copy; 2025 ポチレポ. All rights reserved.</p>
+      <div class="flex gap-4 text-xs">
+        <a href="/privacy/" class="hover:text-white transition">プライバシーポリシー</a>
+        <a href="/terms/" class="hover:text-white transition">利用規約</a>
+      </div>
+    </div>
+  </div>
+</footer>

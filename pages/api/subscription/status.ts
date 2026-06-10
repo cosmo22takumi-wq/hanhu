@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .maybeSingle(),
       adminSupabase
         .from('usage')
-        .select('report_count, monthly_count, month_key')
+        .select('report_count, monthly_count, month_key, cinii_count, cinii_month_key')
         .eq('user_id', user.id)
         .maybeSingle(),
       adminSupabase
@@ -50,6 +50,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       : actualPlanType === 'free' ? 2 + referralBonus
       : null
 
+    const FREE_CINII_LIMIT = 3
+    const ciniiMonthKey = (usageData?.cinii_month_key as string | null) ?? ''
+    const ciniiUsed = ciniiMonthKey === currentMonthKey
+      ? ((usageData?.cinii_count as number | null) ?? 0)
+      : 0
+    const ciniiLimit = (isAdmin || actualPlanType !== 'free') ? null : FREE_CINII_LIMIT
+
     res.json({
       planType,
       isPro,
@@ -61,6 +68,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       generationsLimit,
       monthlyUsed,
       monthlyLimit,
+      ciniiUsed,
+      ciniiLimit,
     })
   } catch (err) {
     res.status(500).json({ error: String(err) })

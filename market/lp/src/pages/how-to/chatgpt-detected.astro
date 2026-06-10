@@ -1,0 +1,260 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "ChatGPTで書いたレポートはバレますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "バレる可能性は高いです。ChatGPTの文章には「〜と言えるでしょう」「非常に重要です」などの特徴的な表現パターンがあり、教授の目には明らかです。また架空の参考文献を生成することがあり、これは一発でバレます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AIでレポートを書くとバレない方法はありますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "「バレない方法」を探すよりも「正しく使う方法」を選ぶことをおすすめします。自分で用意した実在の参考文献をベースにAIに書いてもらい、生成後に自分で読んで修正する使い方なら、学習にもなり先生にも出せる品質になります。これがポチレポの設計思想です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AI検知ツール（GPTZero等）でバレますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "AI検知ツールの精度は完全ではありませんが、大学によってはGPTZeroなどを導入しているところがあります。実在する参考文献をベースに生成し、自分で加筆・修正を加えることで検知リスクは下がります。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="ChatGPTで嘘の参考文献が出た人へ｜架空文献ゼロのAIレポート【2026年】"
+  description="ChatGPTのレポートに存在しない参考文献が出た・AIバレした人へ。ポチレポは実在する自分の授業資料だけをベースに生成するため架空文献ゼロ。先生に確認されても安心な正確なレポートを2回無料で作れます。"
+  canonical="https://pochi-repo.jp/how-to/chatgpt-detected/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-orange-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-orange-600 mb-3 uppercase tracking-wide">AI活用ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          ChatGPTのレポートに<br />
+          <span class="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+            嘘の参考文献が出る問題
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          ChatGPTは存在しない論文タイトルを生成します。先生が確認した瞬間にアウト。<br class="hidden sm:block" />
+          ポチレポは<strong>実在する自分の資料だけ</strong>をベースに生成するため、架空文献はゼロです。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          嘘が出ないAIでレポートを作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ChatGPTレポートがバレる3つの理由</h2>
+        <p class="text-gray-500 text-sm mb-8">なぜバレるのかを知ることが対策の第一歩</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              num: '01',
+              title: '架空の参考文献を生成する',
+              desc: 'ChatGPTは「それっぽい論文タイトル・著者名」を生成しますが、実在しない場合がほとんどです。教授がCiNiiや図書館で検索して確認した瞬間に一発でアウトになります。これが最もバレやすいパターンです。',
+              level: '致命的',
+              levelColor: 'red',
+            },
+            {
+              num: '02',
+              title: 'AI特有の文体パターン',
+              desc: '「〜と言えるでしょう」「非常に重要な要素です」「〜が求められます」「〜の観点から検討することが必要です」——こうした表現を連発するのがChatGPTの特徴です。大学の教授はこの文体を毎年何百本も読んでいます。',
+              level: '高リスク',
+              levelColor: 'orange',
+            },
+            {
+              num: '03',
+              title: '論旨が表面的で根拠が薄い',
+              desc: '「〜は重要です。なぜなら〜だからです」という繰り返しで、具体的なデータや文献に基づく論証がない。学術的な文章に必要な「根拠→主張→反論への対応」の構造がなく、読めばすぐわかります。',
+              level: '中リスク',
+              levelColor: 'yellow',
+            },
+          ].map(({ num, title, desc, level, levelColor }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <div class="flex items-start gap-4">
+                <span class="text-3xl font-black text-gray-200 shrink-0">{num}</span>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <p class="font-bold text-gray-900">{title}</p>
+                    <span class={`text-xs font-bold text-${levelColor}-600 bg-${levelColor}-100 px-2 py-0.5 rounded-full`}>{level}</span>
+                  </div>
+                  <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">「バレない」より「出せるレベル」を目指す</h2>
+        <p class="text-gray-500 text-sm mb-8">AIの正しい活用は「ゼロから書かせる」ではなく「自分の資料を処理させる」</p>
+
+        <div class="grid sm:grid-cols-2 gap-4 mb-8">
+          <div class="border-2 border-red-200 rounded-xl p-5 bg-red-50">
+            <p class="text-xs font-bold text-red-500 mb-3">悪い使い方</p>
+            <p class="font-semibold text-gray-900 text-sm mb-3">「〇〇について2000字で書いて」</p>
+            <ul class="space-y-2">
+              {[
+                '架空の参考文献が生成される',
+                'AI文体で書かれる',
+                '内容が薄く根拠がない',
+                '先生への提出リスクが高い',
+              ].map(item => (
+                <li class="flex gap-2 text-sm text-gray-600">
+                  <span class="text-red-400 shrink-0">✗</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="border-2 border-green-300 rounded-xl p-5 bg-green-50">
+            <p class="text-xs font-bold text-green-600 mb-3">正しい使い方</p>
+            <p class="font-semibold text-gray-900 text-sm mb-3">「この論文・資料をベースに書いて」</p>
+            <ul class="space-y-2">
+              {[
+                '実在する参考文献が引用される',
+                '資料の内容が反映された文章になる',
+                '自分が学んだ内容がベースになる',
+                '先生からの質問にも答えられる',
+              ].map(item => (
+                <li class="flex gap-2 text-sm text-gray-700">
+                  <span class="text-green-600 shrink-0">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-white border-2 border-indigo-400 rounded-xl p-6">
+          <p class="font-black text-gray-900 mb-1">ポチレポが選ばれる理由</p>
+          <p class="text-xs text-indigo-600 font-semibold mb-3">ChatGPTに嫌気が差した人のためのAI</p>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            ポチレポは<strong>「あなたが用意した実在の資料（授業PDF・録音・メモ）をベースに書くAI」</strong>です。
+            ChatGPTのように架空の論文を生成しません。嘘がないから安心して提出できる。
+            そして学術的な文体・学部別の書き方・文字数管理まで専用設計されているので、
+            AIっぽい不自然な文章にもなりません。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">AI検知ツールについて</h2>
+        <p class="text-gray-500 text-sm mb-8">GPTZero・Turnitin AI検知の仕組みと現状</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              title: 'AI検知ツールの精度は100%ではない',
+              desc: 'GPTZeroなどのAI検知ツールは誤検知（人間が書いた文章をAI判定）することもあります。ただし、AI特有の表現パターンが多いほど検知精度は上がります。',
+            },
+            {
+              title: '日本語AI検知ツールの精度は英語より低い',
+              desc: '主要なAI検知ツールは英語向けに最適化されており、日本語の検知精度は現時点では低めです。ただし今後改善される可能性は高く、リスクがゼロとは言えません。',
+            },
+            {
+              title: '実在する資料をベースにすることが最大の対策',
+              desc: '検知ツールへの対策を考えるより、実在する文献をベースにした根拠ある文章を書くことのほうが長期的に安全で、かつ学習になります。',
+            },
+          ].map(({ title, desc }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <p class="font-bold text-gray-900 text-sm mb-2">{title}</p>
+              <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">ChatGPTに失望した人が使うAI</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          嘘の参考文献が出ない。AIっぽい文体にならない。<br />
+          自分の授業資料をそのままベースにして、正確なレポートを作ります。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: 'ChatGPTで書いたレポートはバレますか？',
+              a: 'バレる可能性は高いです。ChatGPTの文章には「〜と言えるでしょう」「非常に重要です」などの特徴的な表現パターンがあり、架空の参考文献を生成することもあります。',
+            },
+            {
+              q: 'AIでレポートを書くとバレない方法はありますか？',
+              a: '「バレない方法」を探すよりも「正しく使う方法」を選ぶことをおすすめします。自分で用意した実在の参考文献をベースにAIに書いてもらい、生成後に自分で確認・修正する使い方なら、学習にもなり先生にも出せる品質になります。',
+            },
+            {
+              q: 'AI検知ツール（GPTZero等）でバレますか？',
+              a: 'AI検知ツールの精度は完全ではありませんが、リスクはゼロではありません。実在する参考文献をベースに生成し、自分で加筆・修正を加えることで検知リスクは下がります。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/ai-report-guide/', title: 'AIを使ったレポートの正しい作り方', desc: 'バレないではなく出せるレベルを目指す方法' },
+            { href: '/how-to/reference-search/', title: '参考文献が見つからないときの探し方', desc: 'CiNii・電子図書館・Google Scholarを使う' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

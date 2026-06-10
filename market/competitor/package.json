@@ -1,0 +1,17 @@
+{
+  "name": "competitor-monitor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "run": "ts-node src/main.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

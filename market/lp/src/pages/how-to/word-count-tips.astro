@@ -1,0 +1,173 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+---
+
+<Base
+  title="大学レポートの文字数が足りない！論理的に増やす5つの方法"
+  description="大学レポートの文字数が指定に足りないときの対処法を解説。水増しではなく論理的に内容を充実させる5つの方法。ポチレポは指定文字数の95〜108%に自動で調整。"
+  canonical="https://pochi-repo.jp/how-to/word-count-tips/"
+>
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-amber-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-amber-600 mb-3 uppercase tracking-wide">文字数対策</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          レポートの文字数が足りない<br />
+          <span class="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+            水増しではなく内容で増やす
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          「字数稼ぎ」に見えないまま文字数を増やす方法があります。<br class="hidden sm:block" />
+          論証の質を上げながら文字数を達成する5つの方法を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          ポチレポで文字数自動調整 →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-10 px-4 bg-red-50 border-b border-red-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-bold text-gray-900 mb-3">まず：やってはいけない「水増し」パターン</p>
+        <div class="grid sm:grid-cols-3 gap-3">
+          {[
+            '同じことを言い換えて繰り返す',
+            '「〜ということが言えると思われます」などの冗長表現',
+            '改行・空白・句読点を増やして見た目だけ稼ぐ',
+          ].map(item => (
+            <div class="flex gap-2 items-start bg-white rounded-lg px-4 py-3 border border-red-200">
+              <span class="text-red-400 shrink-0">✗</span>
+              <p class="text-sm text-gray-700">{item}</p>
+            </div>
+          ))}
+        </div>
+        <p class="text-xs text-gray-500 mt-3">これらは先生にすぐバレます。内容の充実で文字数を達成しましょう。</p>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">論理的に文字数を増やす5つの方法</h2>
+        <p class="text-gray-500 text-sm mb-8">内容の充実 = 点数アップ + 文字数達成の一石二鳥</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              num: '01',
+              title: '根拠を追加・具体化する',
+              desc: '主張があるのに「なぜそう言えるのか」の根拠が薄い箇所を探す。データ・統計・事例・文献引用を1つ追加するだけで200〜400字増やせる。',
+              how: ['「〜である」→「〜である。これは〇〇（著者, 年）が指摘するように〜という理由による」', '事例を1つ具体的に記述する（固有名詞・数字・状況を入れる）'],
+            },
+            {
+              num: '02',
+              title: '反論と反駁を追加する',
+              desc: '「一方、〜という反論も考えられる。しかし〜の理由から、本稿の主張が妥当である」という構造を入れると400〜600字追加できる。レポートの論証力も上がる。',
+              how: ['「〜という見方もある。この見解によれば〜だと言える。しかし〜の点で〜と考えられる。」', '反論を想定することで自分の主張がより明確になる'],
+            },
+            {
+              num: '03',
+              title: '先行研究を1本追加する',
+              desc: '「本論で使った主張と関連する先行研究をもう1本引用する」だけで300〜500字追加できる。CiNiiで1本追加して本論の中に組み込む。',
+              how: ['「〜については、〇〇（著者名, 年）も同様の指摘をしており、〜と述べている。本稿の主張と合わせて考えると〜」'],
+            },
+            {
+              num: '04',
+              title: '序論と結論を充実させる',
+              desc: '序論・結論が短すぎる場合、それぞれ1〜2段落追加できる余地がある。序論なら「なぜこのテーマを選んだか・社会的背景」、結論なら「残された課題・今後の展望」を追加する。',
+              how: ['序論に「本稿の構成」を明示するパラグラフを追加（100〜150字）', '結論に「今後の課題・研究展望」を追加（150〜200字）'],
+            },
+            {
+              num: '05',
+              title: '用語・概念を丁寧に定義する',
+              desc: '専門用語・キーワードを使っているが定義が省略されている箇所を探す。「〇〇とは〜という概念であり、本稿では〜の意味で使用する」と書くと100〜200字増やせる。',
+              how: ['中心概念・キーワードを1〜2個選んで明示的に定義する', '引用した文献の著者が定義している文言を使うと根拠も増える'],
+            },
+          ].map(({ num, title, desc, how }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <div class="flex items-start gap-4">
+                <span class="text-2xl font-black text-amber-300 shrink-0">{num}</span>
+                <div class="flex-1">
+                  <p class="font-bold text-gray-900 mb-2">{title}</p>
+                  <p class="text-sm text-gray-600 leading-relaxed mb-3">{desc}</p>
+                  <div class="bg-amber-50 rounded-lg px-4 py-3">
+                    <p class="text-xs font-semibold text-amber-700 mb-2">具体的な書き方</p>
+                    <ul class="space-y-1">
+                      {how.map(h => (
+                        <li class="flex gap-2 text-xs text-gray-700">
+                          <span class="text-amber-500 shrink-0">→</span>
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">文字数が多すぎるときの削り方</h2>
+        <p class="text-gray-500 text-sm mb-6">指定文字数の5〜8%オーバーまでは許容されることが多いが、超過は要注意</p>
+        <div class="space-y-3">
+          {[
+            '繰り返している内容を1か所にまとめる',
+            '「〜ということが言える」→「〜である」と短縮する',
+            '説明なしで伝わる用語の定義を省略する',
+            '引用部分を短くして自分の言葉で要約する',
+          ].map(item => (
+            <div class="flex gap-3 items-start bg-white rounded-xl px-5 py-4 border border-gray-200">
+              <span class="text-indigo-500 shrink-0">✓</span>
+              <p class="text-sm text-gray-700">{item}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">指定文字数の95〜108%に自動調整</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          ポチレポは生成するレポートの文字数を指定範囲内に自動管理します。<br />
+          序論・本論・結論の配分比率も自動で最適化されます。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/report-structure/', title: '大学レポートの書き方と構成', desc: '序論・本論・結論の文字数配分の目安' },
+            { href: '/how-to/reference-search/', title: '参考文献が見つからないときの探し方', desc: 'CiNii・電子図書館・Google Scholarを使う' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

@@ -16,14 +16,16 @@ export interface Material {
 interface Props {
   user: User
   onChange?: (materials: Material[]) => void
+  materialLimit?: number
 }
 
-export default function MaterialList({ user, onChange }: Props) {
+export default function MaterialList({ user, onChange, materialLimit = 3 }: Props) {
   const [materials, setMaterials] = useState<Material[]>([])
   const [loading, setLoading] = useState(true)
   const [dbError, setDbError] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ title: '', authors: '', url: '', year: '', note: '' })
+  const [quickUrl, setQuickUrl] = useState('')
   const [editingNote, setEditingNote] = useState<{ id: string; text: string } | null>(null)
   const [translating, setTranslating] = useState<string | null>(null)
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
@@ -46,9 +48,9 @@ export default function MaterialList({ user, onChange }: Props) {
     if (error) {
       setDbError(true)
     } else {
-      const rows = (data ?? []).map((r: unknown) => ({
+      const rows = (data ?? []).map((r: unknown, i: number) => ({
         ...(r as Material),
-        enabled: true,
+        enabled: i < materialLimit,
       }))
       setMaterials(rows)
       onChange?.(rows)
@@ -62,10 +64,46 @@ export default function MaterialList({ user, onChange }: Props) {
 
   function toggleEnabled(id: string) {
     setMaterials((prev) => {
+      const target = prev.find((m) => m.id === id)
+      if (!target) return prev
+      // 有効化しようとしているときに上限チェック
+      if (!target.enabled) {
+        const enabledCount = prev.filter((m) => m.enabled).length
+        if (enabledCount >= materialLimit) return prev
+      }
       const next = prev.map((m) => (m.id === id ? { ...m, enabled: !m.enabled } : m))
       onChange?.(next)
       return next
     })
+  }
+
+  async function addQuickUrl() {
+    if (!quickUrl.trim()) return
+    let title = quickUrl
+    try {
+      const url = new URL(quickUrl)
+      title = url.hostname.replace('www.', '') + ' の資料'
+    } catch { /* invalid url */ }
+
+    // ページタイトルを自動取得
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (token) {
+        const res = await fetch('/api/fetch-title', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ url: quickUrl }),
+        })
+        const data = await res.json() as { title?: string | null }
+        if (data.title) title = data.title
+      }
+    } catch { /* フォールバックのまま */ }
+
+    const { error } = await supabase.from('materials').insert({
+      title, authors: '', url: quickUrl, year: '', note: '', user_id: user.id,
+    })
+    if (!error) { setQuickUrl(''); load() }
   }
 
   async function addManual(e: React.FormEvent<HTMLFormElement>) {
@@ -126,11 +164,49 @@ export default function MaterialList({ user, onChange }: Props) {
 
   const fieldClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400'
 
+  const enabledCount = materials.filter((m) => m.enabled).length
+
   return (
     <div className="h-full flex flex-col gap-3">
+      {/* URLクイック追加 */}
+      <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-3">
+        <p className="text-xs font-bold text-indigo-700 mb-2">📚 電子図書館・資料のURLを貼り付ける</p>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            placeholder="Maruzen eBook / KinoDen / 講義資料などのURL"
+            value={quickUrl}
+            onChange={(e) => setQuickUrl(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && addQuickUrl()}
+            className="flex-1 border border-indigo-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+          />
+          <button
+            onClick={addQuickUrl}
+            disabled={!quickUrl.trim()}
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-sm font-semibold px-4 py-2 rounded-lg transition shrink-0"
+          >
+            追加
+          </button>
+        </div>
+        <div className="flex items-center justify-between mt-1.5">
+          <p className="text-xs text-indigo-400">URLだけで追加できます（タイトルは自動設定）</p>
+          <a
+            href="https://elib.maruzen.co.jp/elib/html/GuestLogin?1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-indigo-600 font-semibold hover:underline flex items-center gap-1"
+          >
+            📖 丸善電子書籍を探す →
+          </a>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold text-gray-700">
           資料リスト <span className="text-gray-400 font-normal">({materials.length}件)</span>
+          {materialLimit < 3 && (
+            <span className="ml-2 text-xs text-indigo-500 font-normal">最大{materialLimit}件まで有効</span>
+          )}
         </h2>
         <button
           onClick={() => setShowForm((v) => !v)}
@@ -190,8 +266,9 @@ export default function MaterialList({ user, onChange }: Props) {
           <p className="text-sm text-gray-400 text-center py-8">読み込み中...</p>
         ) : materials.length === 0 ? (
           <div className="text-center py-10 text-gray-400">
-            <p className="text-sm">資料がありません</p>
-            <p className="text-xs mt-1">論文検索か手動追加で資料を登録してください</p>
+            <p className="text-sm font-semibold text-gray-600">資料を追加してください</p>
+            <p className="text-xs mt-1 text-gray-400">電子図書館のURLを貼るか、ファイルをアップロード</p>
+            <p className="text-xs text-gray-400">資料なしでもテーマだけで生成できます</p>
           </div>
         ) : (
           materials.map((m) => (
@@ -206,8 +283,9 @@ export default function MaterialList({ user, onChange }: Props) {
                   type="checkbox"
                   checked={m.enabled}
                   onChange={() => toggleEnabled(m.id)}
-                  className="mt-1 accent-indigo-500 cursor-pointer"
-                  title="レポート生成に含める"
+                  disabled={!m.enabled && enabledCount >= materialLimit}
+                  className="mt-1 accent-indigo-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  title={!m.enabled && enabledCount >= materialLimit ? `有効にできるのは${materialLimit}件までです` : 'レポート生成に含める'}
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-800 leading-snug">

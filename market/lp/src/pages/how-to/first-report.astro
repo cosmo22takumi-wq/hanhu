@@ -1,0 +1,241 @@
+﻿---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "大学レポートは何から始めればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "まず「課題の要件を確認する」ことから始めましょう。文字数・提出形式・参考文献の指定・使ってよい資料の種類を確認してから、テーマを決めて参考文献を探す順番が効率的です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "大学レポートと高校のレポートはどう違いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "大学レポートは「自分の主張を、実在する文献の根拠で論証する」ことが求められます。高校の感想文・まとめとの最大の違いは「参考文献の引用と論証の構造」です。「だ・である調」で書き、Wikipedia等は使えません。" }
+    },
+    {
+      "@type": "Question",
+      "name": "参考文献は最低何本必要ですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "2000字なら最低2〜3本、4000字なら3〜5本が目安です。ただし教授の指定がある場合はそれに従います。本文中に引用していない文献を参考文献リストに含めることはNGです。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="大学レポート初めてガイド｜最初の1本を書くための完全手順【2026年版】"
+  description="大学レポートを初めて書く人向けの完全ガイド。何から始めればいいかわからない人のために、テーマ選びから参考文献・提出まで全手順を解説。ポチレポで3分で叩き台を作れます。"
+  canonical="https://pochi-repo.jp/how-to/first-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">初めてのレポート</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          大学レポート、初めてでも<br />
+          <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            この手順通りに書けばOK
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          大学レポートは高校の感想文とは別物です。<br class="hidden sm:block" />
+          ゼロから始める人のために、テーマ選びから提出まで全手順を解説します。
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+            ポチレポで叩き台を作る →
+          </a>
+          <a href="#steps" class="inline-flex items-center justify-center border border-gray-300 text-gray-600 font-medium px-7 py-3 rounded-xl hover:bg-gray-50 transition text-sm">
+            手順を確認する ↓
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-10 px-4 bg-indigo-50 border-b border-indigo-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-lg font-black text-gray-900 mb-4">大学レポートと高校のレポートの違い</h2>
+        <div class="grid sm:grid-cols-2 gap-3">
+          {[
+            { label: '高校のレポート・感想文', items: ['自分の感想・意見を書く', '「思います」「感じます」でOK', '参考文献は任意', 'Wikipediaも可'], bad: true },
+            { label: '大学のレポート', items: ['文献を根拠にして論証する', '「だ・である調」必須', '参考文献の引用が必要', 'Wikipediaは不可'], bad: false },
+          ].map(({ label, items, bad }) => (
+            <div class={`rounded-xl p-5 border ${bad ? 'bg-white border-gray-200' : 'bg-indigo-600 border-indigo-700'}`}>
+              <p class={`text-xs font-bold mb-3 ${bad ? 'text-gray-500' : 'text-indigo-200'}`}>{label}</p>
+              <ul class="space-y-2">
+                {items.map(item => (
+                  <li class={`flex gap-2 text-sm ${bad ? 'text-gray-600' : 'text-white'}`}>
+                    <span class={bad ? 'text-gray-400' : 'text-indigo-300'}>{bad ? '→' : '✓'}</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="steps" class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">最初の1本を書くための全手順</h2>
+        <p class="text-gray-500 text-sm mb-8">この順番通りにやれば必ず書ける</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              step: 'STEP 1',
+              title: '課題の要件を確認する',
+              time: '5分',
+              desc: '提出前に必ず確認する5点：①文字数（〇〇字以上〇〇字以内）②提出形式（Word/PDF/印刷）③参考文献の指定④テーマの自由度（自由か指定か）⑤提出期限',
+              tips: ['文字数の上限と下限を両方確認する', 'Word書式指定（フォント・行間）があれば守る'],
+            },
+            {
+              step: 'STEP 2',
+              title: 'テーマ（問い）を1文で決める',
+              time: '15分',
+              desc: 'レポートのテーマは「〇〇はなぜ〜か」「〇〇は〜と言えるか」という形式の「問い」として立てると書きやすくなる。この問いへの答えを最後の結論で述べる。',
+              tips: ['大きすぎるテーマ（「環境問題について」）→ 絞る（「日本の再生可能エネルギー政策の課題」）', '授業でやった内容・興味のある話題から選ぶと書きやすい'],
+            },
+            {
+              step: 'STEP 3',
+              title: '参考文献を2〜3本見つける',
+              time: '30〜60分',
+              desc: 'CiNii・電子図書館・Google Scholarで検索して、テーマに関連する学術論文・学術書を2〜3本見つける。Wikipediaは使えないので注意。',
+              tips: ['CiNii（cir.nii.ac.jp）でキーワード検索', '大学Wi-Fiで接続すると全文が読める論文が増える'],
+            },
+            {
+              step: 'STEP 4',
+              title: '構成メモを作る',
+              time: '10〜15分',
+              desc: '序論・本論・結論の3パートで「何を書くか」をメモする。序論に問いを置き、本論に根拠・文献引用を置き、結論に問いへの答えを置く。',
+              tips: ['メモは箇条書きで十分。完璧に書かなくていい', '本論を2〜3つの小テーマ（段落）に分けると書きやすい'],
+            },
+            {
+              step: 'STEP 5',
+              title: '本文を書く',
+              time: '2〜4時間',
+              desc: '構成メモを見ながら序論から書く。文体は「だ・である調」で統一。文献を引用するときは「〇〇（著者名, 年）によれば〜」の形式で書く。',
+              tips: ['完璧に書こうとしない。まず書ききることが大事', '一文は60〜80字以内を目安にすると読みやすくなる'],
+            },
+            {
+              step: 'STEP 6',
+              title: '参考文献リストを作る',
+              time: '15分',
+              desc: '本文中で引用したすべての文献を参考文献リストに書く。本文中で引用していない文献はリストに含めない。形式は教授の指定に従う（APA/MLA/日本語形式など）。',
+              tips: ['引用箇所と参考文献リストが対応していることを確認', '著者名・タイトル・出版社・年を正確に記録しておく'],
+            },
+            {
+              step: 'STEP 7',
+              title: '見直してから提出する',
+              time: '15〜30分',
+              desc: '文字数・文体の統一（だ・である調）・参考文献との対応・提出形式を最終確認してから提出する。',
+              tips: ['声に出して読むと不自然な文章が見つかりやすい', 'スマホでも文章確認してみると別の目で読める'],
+            },
+          ].map(({ step, title, time, desc, tips }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div class="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-indigo-600">{step}</span>
+                  <span class="font-bold text-gray-900">{title}</span>
+                </div>
+                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">{time}</span>
+              </div>
+              <div class="px-5 py-4">
+                <p class="text-sm text-gray-700 leading-relaxed mb-3">{desc}</p>
+                <ul class="space-y-1">
+                  {tips.map(tip => (
+                    <li class="flex gap-2 text-xs text-gray-500">
+                      <span class="text-indigo-400 shrink-0">→</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-2xl font-black text-gray-900 mb-3">STEP 3〜6をポチレポで3分に短縮</h2>
+        <p class="text-gray-500 mb-8 text-sm leading-relaxed">
+          参考文献探し→引用→本文生成→参考文献リスト作成まで、<br />
+          テーマと資料を入力するだけで3分で叩き台が完成します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-xs text-gray-400 mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: '大学レポートは何から始めればいいですか？',
+              a: 'まず「課題の要件を確認する」ことから始めましょう。文字数・提出形式・参考文献の指定・使ってよい資料の種類を確認してから、テーマを決めて参考文献を探す順番が効率的です。',
+            },
+            {
+              q: '大学レポートと高校のレポートはどう違いますか？',
+              a: '大学レポートは「自分の主張を、実在する文献の根拠で論証する」ことが求められます。高校の感想文・まとめとの最大の違いは「参考文献の引用と論証の構造」です。「だ・である調」で書き、Wikipedia等は使えません。',
+            },
+            {
+              q: '参考文献は最低何本必要ですか？',
+              a: '2000字なら最低2〜3本、4000字なら3〜5本が目安です。ただし教授の指定がある場合はそれに従います。本文中に引用していない文献を参考文献リストに含めることはNGです。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/report-structure/', title: '大学レポートの書き方と構成', desc: '序論・本論・結論の書き方を完全解説' },
+            { href: '/how-to/reference-search/', title: '参考文献が見つからないときの探し方', desc: 'CiNii・電子図書館・Google Scholarを使う' },
+            { href: '/how-to/cinii/', title: 'CiNiiの使い方と論文の探し方', desc: 'CiNiiで学術論文を自動検索する方法' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

@@ -1,0 +1,423 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "大学レポートの序論には何を書けばいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "序論には「問題提起（なぜこのテーマを取り上げるか）」「本論の見通し（何をどの順番で論じるか）」「結論の予告（どんな主張をするか）」の3点を書きます。全体の10〜15%程度の分量が目安です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "本論と結論の違いは何ですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "本論は根拠・データ・文献を使って主張を展開する部分、結論は本論で論じたことをまとめて「だから何か」を示す部分です。結論で新しい根拠を出してはいけません。" }
+    },
+    {
+      "@type": "Question",
+      "name": "序論・本論・結論の文字数配分はどうすればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "一般的な目安は序論10〜15%・本論70〜75%・結論10〜15%です。2000字なら序論200〜300字、本論1400〜1500字、結論200〜300字が目安です。ポチレポはこの配分を自動で管理します。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="大学レポートの書き方｜ChatGPTで嘘が出た人向け・架空文献ゼロのAI【2026年】"
+  description="大学レポートの序論・本論・結論の書き方を解説。ChatGPTで架空の参考文献が出た・AIバレした経験がある方は、実在する資料だけで正確なレポートを作るポチレポを試してください。2回無料。"
+  canonical="https://pochi-repo.jp/how-to/report-structure/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">レポートの書き方</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          大学レポートの構成は<br />
+          <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            序論・本論・結論の3つだけ
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          何を書けばいいかわからない、序論と本論の違いがわからない——<br class="hidden sm:block" />
+          この記事を読めば、大学レポートの構成がゼロから理解できます。
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+            ポチレポで構成を自動作成 →
+          </a>
+          <a href="#structure-guide" class="inline-flex items-center justify-center border border-gray-300 text-gray-600 font-medium px-7 py-3 rounded-xl hover:bg-gray-50 transition text-sm">
+            構成ガイドを見る ↓
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="structure-guide" class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">レポートの3構成とその役割</h2>
+        <p class="text-gray-500 text-sm mb-8">大学レポートは「序論→本論→結論」の流れで必ず書く</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              part: '序論',
+              en: 'Introduction',
+              ratio: '10〜15%',
+              color: 'indigo',
+              items: [
+                'テーマの背景・なぜこの問いが重要か',
+                'レポートで答える問い（リサーチクエスチョン）',
+                '本論で何をどの順番で論じるかの見通し',
+              ],
+              example: '「本レポートでは、〜について論じる。第1節では〜、第2節では〜を検討し、最後に〜という結論を示す。」',
+            },
+            {
+              part: '本論',
+              en: 'Body',
+              ratio: '70〜75%',
+              color: 'violet',
+              items: [
+                '主張を支える根拠・データ・文献の引用',
+                '複数の視点からの考察',
+                '反論への対応（あれば）',
+              ],
+              example: '「〇〇（著者名, 出版年）によれば〜である。これは〜という理由から支持される。一方、〜という反論もあるが、〜の点でこれは当てはまらない。」',
+            },
+            {
+              part: '結論',
+              en: 'Conclusion',
+              ratio: '10〜15%',
+              color: 'emerald',
+              items: [
+                '本論で論じたことの要約（新情報は出さない）',
+                '問いへの答え（明確に述べる）',
+                '残された課題・今後の展望（任意）',
+              ],
+              example: '「以上の考察から、〜という結論が導かれる。本論では〜を検討し、〜であることを示した。」',
+            },
+          ].map(({ part, en, ratio, color, items, example }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div class={`px-5 py-3 bg-${color}-50 border-b border-gray-200 flex items-center gap-3`}>
+                <span class={`text-${color}-600 font-black text-lg`}>{part}</span>
+                <span class="text-gray-400 text-sm">{en}</span>
+                <span class={`ml-auto text-xs font-semibold text-${color}-600 bg-${color}-100 px-2 py-0.5 rounded-full`}>全体の{ratio}</span>
+              </div>
+              <div class="px-5 py-4">
+                <p class="text-xs font-semibold text-gray-500 mb-2">書くべき内容</p>
+                <ul class="space-y-1 mb-4">
+                  {items.map(item => (
+                    <li class="flex gap-2 text-sm text-gray-700">
+                      <span class={`text-${color}-500 shrink-0`}>✓</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div class="bg-gray-50 rounded-lg px-4 py-3">
+                  <p class="text-xs font-semibold text-gray-400 mb-1">文例</p>
+                  <p class="text-sm text-gray-600 leading-relaxed">{example}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">よくある失敗パターン</h2>
+        <p class="text-gray-500 text-sm mb-8">点数を下げる書き方を知って避ける</p>
+
+        <div class="space-y-3">
+          {[
+            {
+              bad: '序論で自分の意見・感想を書いてしまう',
+              good: '序論は「問い」を立てる場所。主張は本論・結論で述べる',
+            },
+            {
+              bad: '本論で話題が飛び散って、前後の繋がりがない',
+              good: '各段落に1つのテーマを持たせ、「前段落の話を受けて〜」という展開にする',
+            },
+            {
+              bad: '結論で新しいデータや引用を出す',
+              good: '結論は本論の要約と問いへの答えだけ。新情報は必ず本論に移す',
+            },
+            {
+              bad: '「〜と思います」「〜と感じました」という主観表現を使う',
+              good: 'だ・である調で「〜である」「〜と考えられる」「〜が示唆される」と書く',
+            },
+            {
+              bad: '参考文献を本文中で引用せずに末尾にだけ並べる',
+              good: '本文中に「（著者名, 出版年）」または脚注番号を付けた箇所と文末リストを対応させる',
+            },
+          ].map(({ bad, good }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden">
+              <div class="flex items-start gap-3 px-5 py-4 bg-white">
+                <span class="text-red-400 font-black text-lg mt-0.5 shrink-0">✗</span>
+                <p class="text-gray-700 text-sm">{bad}</p>
+              </div>
+              <div class="flex items-start gap-3 px-5 py-4 bg-green-50 border-t border-gray-100">
+                <span class="text-green-600 font-black text-lg mt-0.5 shrink-0">✓</span>
+                <p class="text-gray-700 text-sm">{good}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">文字数別・構成配分の目安</h2>
+        <p class="text-gray-500 text-sm mb-8">指定文字数に合わせた各パートの目安字数</p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr class="bg-indigo-50">
+                <th class="border border-gray-200 px-4 py-3 text-left font-bold text-gray-700">指定文字数</th>
+                <th class="border border-gray-200 px-4 py-3 text-left font-bold text-indigo-600">序論</th>
+                <th class="border border-gray-200 px-4 py-3 text-left font-bold text-violet-600">本論</th>
+                <th class="border border-gray-200 px-4 py-3 text-left font-bold text-emerald-600">結論</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['1,000字', '100〜150字', '700〜750字', '100〜150字'],
+                ['2,000字', '200〜300字', '1,400〜1,500字', '200〜300字'],
+                ['4,000字', '400〜600字', '2,800〜3,000字', '400〜600字'],
+                ['8,000字', '800〜1,200字', '5,600〜6,000字', '800〜1,200字'],
+              ].map(row => (
+                <tr class="bg-white even:bg-gray-50">
+                  {row.map((cell, i) => (
+                    <td class={`border border-gray-200 px-4 py-3 ${i === 0 ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href={APP_URL} class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
+            ポチレポで構成を自動作成 →
+          </a>
+          <p class="text-xs text-gray-400 mt-2">Googleアカウントで30秒登録・2回まで無料</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 序論の書き方 -->
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">序論の書き方テンプレート</h2>
+        <p class="text-gray-500 text-sm mb-8">3つの要素を順番通りに書くだけ</p>
+        <div class="space-y-4">
+          {[
+            {
+              elem: '①問題提起',
+              desc: 'なぜこのテーマを取り上げるのかを説明する。社会的背景・現状の問題・このテーマが重要な理由を1〜2文で述べる。',
+              example: '近年、大学生のレポート作成における生成AIの利用が増加しており、学術的誠実性の観点から様々な議論が生じている。',
+            },
+            {
+              elem: '②リサーチクエスチョン',
+              desc: 'このレポートで答える「問い」を明示する。「本レポートでは〜を検討する」という形で問いを宣言する。',
+              example: '本レポートでは、生成AIを大学教育において適切に活用するための条件を検討する。',
+            },
+            {
+              elem: '③本論の見通し',
+              desc: '何をどの順番で論じるかを予告する。読者が「次に何が来るか」を把握できるようにする。',
+              example: '第1節では〜を概観し、第2節では〜を検討する。最後に〜という結論を示す。',
+            },
+          ].map(({ elem, desc, example }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div class="px-5 py-3 bg-indigo-50 border-b border-gray-100">
+                <span class="text-sm font-bold text-indigo-700">{elem}</span>
+              </div>
+              <div class="px-5 py-4">
+                <p class="text-sm text-gray-600 leading-relaxed mb-3">{desc}</p>
+                <div class="bg-gray-50 rounded-lg px-4 py-3">
+                  <p class="text-xs text-gray-400 mb-1">文例</p>
+                  <p class="text-sm text-gray-700 leading-relaxed">{example}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <p class="text-sm font-bold text-amber-800 mb-1">よくある間違い</p>
+          <p class="text-sm text-amber-700">序論に「自分はこう思う」という主観的な意見・感想を書いてしまうケースが多い。序論は「問いを立てる」場所であり、答えや主張は本論・結論で述べる。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 本論の書き方 -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">本論の段落展開のコツ</h2>
+        <p class="text-gray-500 text-sm mb-8">1段落＝1主張を徹底するだけで読みやすさが変わる</p>
+        <div class="space-y-4 text-sm text-gray-700 leading-relaxed mb-8">
+          <p>本論で最も重要なルールは「1段落1主張」です。1つの段落に複数の話題を詰め込むと、読む側がどこに主張があるのか分からなくなります。段落の最初の文に主張（トピックセンテンス）を置き、後続の文でその根拠・証拠・例を展開するのが基本構造です。</p>
+          <p>段落と段落をつなぐ際は、接続表現を意識します。「しかし」「一方」「さらに」「このように」「以上から」など、前後の関係を示す接続詞を適切に使うことで論理の流れが明確になります。</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+          <p class="font-bold text-gray-900 mb-3">段落の基本構造（PREP法）</p>
+          <div class="space-y-3">
+            {[
+              { label: 'P — Point（主張）', desc: '段落の最初に主張・結論を1文で述べる', color: 'indigo' },
+              { label: 'R — Reason（理由）', desc: 'その主張の理由・根拠を説明する', color: 'violet' },
+              { label: 'E — Example（根拠）', desc: 'データ・文献・具体例を使って裏付ける', color: 'emerald' },
+              { label: 'P — Point（再強調）', desc: '段落末で主張を言い換えて締める（任意）', color: 'orange' },
+            ].map(({ label, desc, color }) => (
+              <div class="flex items-start gap-3">
+                <span class={`text-xs font-bold text-${color}-600 bg-${color}-50 px-2 py-1 rounded shrink-0 mt-0.5`}>{label.slice(0, 1)}</span>
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">{label}</p>
+                  <p class="text-xs text-gray-500">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <p class="font-bold text-gray-900 mb-3">使いやすい接続表現一覧</p>
+          <div class="grid sm:grid-cols-2 gap-3 text-sm">
+            {[
+              { type: '追加・強調', words: 'さらに、加えて、また、とりわけ' },
+              { type: '対比・転換', words: 'しかし、一方、これに対して、ところが' },
+              { type: '因果・根拠', words: 'したがって、このため、なぜなら、以上から' },
+              { type: 'まとめ', words: 'このように、以上のことから、総じて' },
+            ].map(({ type, words }) => (
+              <div class="bg-gray-50 rounded-lg px-4 py-3">
+                <p class="text-xs font-bold text-gray-500 mb-1">{type}</p>
+                <p class="text-gray-700">{words}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 結論の書き方 -->
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">結論の書き方と避けるべき表現</h2>
+        <p class="text-gray-500 text-sm mb-8">「今後の課題としたい」は減点対象になる</p>
+        <div class="space-y-4 text-sm text-gray-700 leading-relaxed mb-6">
+          <p>結論は「本論で論じたことの要約」と「問いへの明確な答え」の2つで構成されます。新しい根拠や情報を結論で初めて出してはいけません。それは本論に移すべき内容です。</p>
+          <p>また「今後の課題としたい」「さらなる検討が必要である」という曖昧な締め方は、多くの教授から評価されません。課題に言及するとしても、「具体的に何が課題で、どう解決できるか」まで示せると評価が上がります。</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="border border-red-200 rounded-xl p-4 bg-red-50">
+            <p class="text-sm font-bold text-red-700 mb-3">❌ 使わない方がいい表現</p>
+            <ul class="space-y-2 text-sm text-red-700">
+              {[
+                '今後の課題としたい',
+                'さらなる研究が必要である',
+                '以上のように様々なことが分かった',
+                '本レポートでは〜について考えた',
+                'まとめると〜と思われる',
+              ].map(item => (
+                <li class="flex gap-2"><span class="shrink-0">✗</span>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div class="border border-green-200 rounded-xl p-4 bg-green-50">
+            <p class="text-sm font-bold text-green-700 mb-3">✅ 評価される表現</p>
+            <ul class="space-y-2 text-sm text-green-700">
+              {[
+                '以上の考察から〜という結論が導かれる',
+                '本論では〜を検討し、〜を示した',
+                '今後は〜の観点からの研究が求められる',
+                '本稿の限界として〜が挙げられるが、〜により補完できる',
+                '〜という問いに対し、〜と結論づけられる',
+              ].map(item => (
+                <li class="flex gap-2"><span class="shrink-0">✓</span>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: '大学レポートの序論には何を書けばいいですか？',
+              a: '序論には「問題提起（なぜこのテーマを取り上げるか）」「本論の見通し（何をどの順番で論じるか）」「結論の予告（どんな主張をするか）」の3点を書きます。全体の10〜15%程度の分量が目安です。',
+            },
+            {
+              q: '本論と結論の違いは何ですか？',
+              a: '本論は根拠・データ・文献を使って主張を展開する部分、結論は本論で論じたことをまとめて「だから何か」を示す部分です。結論で新しい根拠を出してはいけません。',
+            },
+            {
+              q: '序論・本論・結論の文字数配分はどうすればいいですか？',
+              a: '一般的な目安は序論10〜15%・本論70〜75%・結論10〜15%です。2000字なら序論200〜300字、本論1400〜1500字、結論200〜300字が目安です。ポチレポはこの配分を自動で管理します。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">ChatGPTで嘘が出た人は、次はポチレポで</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          架空の参考文献ゼロ。AIっぽい文章にならない。文字数ぴったり。<br />
+          自分の授業資料をベースに、提出できるレポートを作ります。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/citation/', title: '参考文献の書き方 完全ガイド', desc: 'APA・MLA・日本語形式の違いと書き方' },
+            { href: '/how-to/cinii/', title: 'CiNiiの使い方と論文の探し方', desc: 'CiNiiで学術論文を検索する手順' },
+            { href: '/how-to/ai-report-guide/', title: 'AIを使ったレポートの正しい作り方', desc: 'AIがバレない正しい活用方法' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

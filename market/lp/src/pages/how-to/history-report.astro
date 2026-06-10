@@ -1,0 +1,152 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "歴史学レポートで「史料」と「参考文献」の違いは何ですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "史料（一次資料）は、当時書かれた文書・記録・証拠物（日記、公文書、新聞など）です。参考文献（二次資料）は、それらを分析した研究者の著作です。歴史レポートでは「史料を根拠に、先行研究を参照しながら論じる」構成が基本です。授業で配布された史料があれば、それを積極的に使ってください。" }
+    },
+    {
+      "@type": "Question",
+      "name": "歴史学レポートの参考文献はどう探せばいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "国立国会図書館デジタルコレクション、CiNii、J-STAGEで「歴史学」「日本史」「世界史」のキーワードで検索できます。大学の電子図書館（Maruzen eBook、KinoDen等）にも歴史の専門書が多数あります。授業の参考文献リストに載っている文献を使うのが最も確実です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "歴史レポートで「〜だった」「〜したと思われる」の使い分けは？",
+      "acceptedAnswer": { "@type": "Answer", "text": "史料や先行研究によって確認された事実は「〜した」「〜であった」と断言できます。推測・解釈が入る場合は「〜と考えられる」「〜と推察される」「〜という説がある」を使います。ChatGPTが生成する歴史記述は史料に基づかない推測が混ざりやすいため注意が必要です。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="歴史学レポートの書き方｜史料の使い方・論述・参考文献まで大学生向け解説"
+  description="歴史学レポートの書き方を解説。史料（一次資料）と参考文献（二次資料）の使い分け、論述の構成、年号・人物名の正確な表記まで。ポチレポは歴史学の文体で授業資料から叩き台を生成。"
+  canonical="https://pochi-repo.jp/how-to/history-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-amber-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-amber-700 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          歴史学レポートの書き方<br />
+          <span class="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
+            史料の使い方・論述・参考文献
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          歴史学レポートで求められるのは「史料に基づいた論証」です。<br class="hidden sm:block" />
+          ChatGPTが出す歴史記述は、史料なしの推測が混ざりやすい点に要注意。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-amber-700 to-orange-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          歴史学向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">歴史学レポートの基本構成</h2>
+        <p class="text-gray-500 text-sm mb-8">「史料を根拠に、先行研究を踏まえて論じる」が基本</p>
+
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-5 mb-8">
+          <p class="text-sm font-bold text-red-700 mb-2">ChatGPTで歴史レポートを書くと危険な理由</p>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            ChatGPTは存在しない史料・架空の文献を引用することがあります。歴史学では年号・人物名・史料の正確性が特に重視されます。「〇〇天皇が△△年に〜」という記述が1字でも間違っていると、先生にすぐ発覚します。史料に基づかない記述は歴史学では致命的です。
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '序論：問いの設定と時代背景',
+              desc: '何を論じるかを示し、必要最低限の時代背景を説明する。問いは「〜はなぜ起きたか」「〜はどのような影響を与えたか」のように具体的に。',
+              example: '「本稿では、明治維新期における〇〇政策がなぜ採用され、その後の日本社会にどのような影響を与えたかを検討する。」',
+            },
+            {
+              step: '本論：史料と先行研究による分析',
+              desc: '授業で配布された史料・教科書・先行研究を根拠に論じる。「史料によれば〜」「〇〇（20xx）は〜と指摘している」という形で根拠を明示。複数の解釈を比較すると論文らしくなる。',
+              example: '「〇〇史料（西暦〜年）によれば、〜という記述がある。これについて△△（2020）は〜と解釈しているが、一方で××（2022）は〜という見方を示している。」',
+            },
+            {
+              step: '考察・結論',
+              desc: '分析から何が言えるかをまとめる。「〜という史料から〜が確認できる」「〜の観点から〜と解釈できる」のように根拠を示した結論を書く。',
+              example: '「以上の史料と先行研究から、〜は〜という要因によって生じたと考えられる。この変化は後の〜に影響を与えたと解釈できる。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-amber-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-amber-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-amber-300">
+                例: {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">歴史学レポートで気をつけること</h2>
+        <p class="text-gray-500 text-sm mb-8">年号・人物名・史料の正確性が特に重要です</p>
+
+        <div class="space-y-3">
+          {[
+            { bad: '「江戸時代に〜が起きた」（根拠なし）', good: '「〇〇史料（〜年）によれば〜」「〇〇（2020）は〜と指摘する」', why: '歴史学は「根拠なしの記述」を最も嫌います' },
+            { bad: 'ChatGPTが出した「〇〇年」「〇〇人物」をそのまま使う', good: '授業の教科書・配布資料で年号・人物名を確認する', why: 'ChatGPTは歴史的事実を誤ることが多く、特に年号は要注意' },
+            { bad: '「〜だったと思われる」を多用する', good: '「〜であった（〇〇、〜年）」「〜と記録されている」', why: '推測と事実を区別した表現が求められます' },
+          ].map(({ bad, good, why }) => (
+            <div class="rounded-xl border border-gray-100 overflow-hidden">
+              <div class="flex">
+                <div class="w-1/2 p-4 bg-red-50">
+                  <p class="text-xs text-red-500 font-bold mb-1">✗ NG</p>
+                  <p class="text-sm text-gray-700">{bad}</p>
+                </div>
+                <div class="w-1/2 p-4 bg-green-50">
+                  <p class="text-xs text-green-600 font-bold mb-1">✓ OK</p>
+                  <p class="text-sm text-gray-700">{good}</p>
+                </div>
+              </div>
+              <div class="px-4 pb-3 bg-gray-50">
+                <p class="text-xs text-gray-500">{why}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-amber-700 to-orange-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-amber-200 text-sm font-semibold mb-3">歴史学レポートに特化</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">授業の史料・テキストをもとに<br />歴史学の文体で叩き台を生成</h2>
+        <p class="text-amber-100 text-sm leading-relaxed mb-8">
+          配布史料・教科書URLを入れると、それを根拠にした歴史学の文体で生成。<br />
+          ChatGPTのような「架空の史料・間違った年号」は出ません。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-amber-700 font-bold rounded-xl px-8 py-4 hover:bg-amber-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-amber-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

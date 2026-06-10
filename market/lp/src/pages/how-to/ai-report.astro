@@ -1,0 +1,471 @@
+﻿---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "ChatGPTのレポートはなぜ教授にバレるのですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "ChatGPTは「〜することが重要であると考えられます」「〜と言えるでしょう」などの定型表現を多用します。また学部ごとに求められる論証スタイル（条文引用・実験データ・文献批評など）を無視した文章になるため、担当教員にはすぐに判別できます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AIを使ってレポートを書いてもいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "大学・授業によってルールが異なります。AIを使う場合も、出力をそのまま提出するのではなく、根拠として自分の言葉で加筆・修正することが求められます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "ポチレポはどうやってバレないようにしているのですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "9学部の文体システム・だ・である調の徹底・実在するCiNii論文の引用・文字数管理（95-108%）を組み合わせています。ChatGPTのような汎用AI出力と異なり、学部別の論証パターンと学術日本語の構文ルールをプロンプトに組み込んでいます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "無料で使えますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "はい。Googleアカウントで登録すれば2回まで無料で使えます。有料プランはStandard（¥1,000/月・月40回・最大5,000字）とPro（¥2,000/月・月50回・最大10,000字）があります。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="ChatGPTのレポートがバレる理由と、バレないAIの使い方【大学生向け】| ポチレポ"
+  description="ChatGPTで書いたレポートが教授にバレる3つの理由と、バレない方法を解説。大学レポート専用AI「ポチレポ」が学部別文体・だ・である調・実在論文引用で解決します。"
+  canonical="https://pochi-repo.jp/how-to/ai-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">ポチレポ</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          ChatGPTのレポート、<br />
+          <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            なぜ教授にバレるのか
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          AI検出ツールを使わなくても、教授にはわかります。<br class="hidden sm:block" />
+          バレる理由と、バレない方法を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          バレないレポートを生成する →
+        </a>
+      </div>
+    </section>
+
+    <!-- バレる3つの理由 -->
+    <section class="py-14 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ChatGPTがバレる3つの理由</h2>
+        <p class="text-gray-500 text-sm mb-8">AI検出ツールを使わなくても、教授には文体だけでわかります</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              num: '01',
+              title: '学術日本語じゃない',
+              desc: '「〜と考えられます」「〜と言えるでしょう」は論文で使わない表現です。ChatGPTはこうした「ていねいだが学術的ではない」文体を好みます。教授は1行読めば気づきます。',
+              color: 'red',
+            },
+            {
+              num: '02',
+              title: '学部の論証スタイルが合っていない',
+              desc: '法学部なら条文・判例引用、理工学部なら実験データ・統計、文学部なら本文批評が求められます。ChatGPTは学部ごとの「当然の作法」を知らないため、どの学部でも同じような文章を書きます。',
+              color: 'orange',
+            },
+            {
+              num: '03',
+              title: '実在しない・古い論文を引用する',
+              desc: 'ChatGPTはハルシネーション（でたらめな情報）で存在しない論文のタイトルを作ることがあります。また最新の学術情報を持っていないため、参考文献が古くなりがちです。',
+              color: 'yellow',
+            },
+          ].map(({ num, title, desc, color }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <div class="flex items-start gap-4">
+                <span class={`text-3xl font-black text-${color}-300 shrink-0`}>{num}</span>
+                <div>
+                  <p class="font-bold text-gray-900 mb-2">{title}</p>
+                  <p class="text-gray-600 text-sm leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 解決策 -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ポチレポが解決する3つの方法</h2>
+        <p class="text-gray-500 text-sm mb-8">ChatGPTと同じAIでも、設計次第でまったく違う出力になります</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              icon: '🎓',
+              title: '学術日本語ルールを内蔵',
+              desc: '「だ・である調」の徹底、一文の長さ制限、主語と述語の対応、段落の引用遷移ルールをすべてプロンプトで制御します。「ていねい語まじり」「と考えられます」は出力されません。',
+              color: 'indigo',
+            },
+            {
+              icon: '📚',
+              title: '9学部の論証スタイル',
+              desc: '法・文・経・理・工・医・教育・社会・心理の9学部ごとに、教員が「正しい」と感じる論証パターンと引用の作法を組み込んでいます。学部を選ぶだけで文体が変わります。',
+              color: 'violet',
+            },
+            {
+              icon: '🔍',
+              title: '実在するCiNii論文を引用',
+              desc: 'ポチレポはCiNii（国立情報学研究所）のデータベースから実在する論文を自動検索して引用します。でたらめな書誌情報が生成されることはありません。',
+              color: 'emerald',
+            },
+          ].map(({ icon, title, desc }) => (
+            <div class="bg-white border border-gray-200 rounded-xl p-5">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-xl shrink-0">{icon}</div>
+                <div>
+                  <p class="font-bold text-gray-900 mb-2">{title}</p>
+                  <p class="text-gray-600 text-sm leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 比較表 -->
+    <section class="py-14 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ChatGPT vs ポチレポ</h2>
+        <p class="text-gray-500 text-sm mb-8">大学レポートに使う場合の違い</p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold">項目</th>
+                <th class="px-4 py-3 text-center font-semibold">ChatGPT</th>
+                <th class="px-4 py-3 text-center font-semibold text-indigo-700">ポチレポ</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              {[
+                { item: '学部別の文体', chatgpt: '✗ 対応なし', repo: '✓ 9学部対応' },
+                { item: 'だ・である調の徹底', chatgpt: '△ 不安定', repo: '✓ 厳密に制御' },
+                { item: '実在する論文の引用', chatgpt: '✗ でたらめあり', repo: '✓ CiNii自動検索' },
+                { item: '文字数管理', chatgpt: '△ 不正確', repo: '✓ 95-108%に収まる' },
+                { item: '授業資料の活用', chatgpt: '✗ 不可', repo: '✓ PDF・録音・メモ対応' },
+                { item: '参考文献リスト自動生成', chatgpt: '✗ 手動', repo: '✓ 自動出力' },
+              ].map(({ item, chatgpt, repo }) => (
+                <tr>
+                  <td class="px-4 py-3 font-medium text-gray-700">{item}</td>
+                  <td class="px-4 py-3 text-center text-gray-500">{chatgpt}</td>
+                  <td class="px-4 py-3 text-center font-semibold text-indigo-700">{repo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 使い方 -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ポチレポの使い方</h2>
+        <p class="text-gray-500 text-sm mb-8">テーマを入力してから3分でレポートの叩き台が完成します</p>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          {[
+            { step: '①', title: 'テーマと学部を入力', desc: 'レポートのテーマ・学部・文字数指定を入力。授業内容があればPDFや録音もアップロード' },
+            { step: '②', title: 'CiNii論文を自動検索', desc: 'テーマに関連するCiNii論文を自動で検索。使用する論文の候補が表示される' },
+            { step: '③', title: 'レポートを生成', desc: '学部別の文体・だ・である調・指定文字数で本文を生成。参考文献リストも同時に出力' },
+            { step: '④', title: '確認して提出', desc: '出力内容を確認して必要なら修正。Wordエクスポートしてそのまま提出できる' },
+          ].map(({ step, title, desc }) => (
+            <div class="bg-white border border-gray-200 rounded-xl p-5">
+              <p class="text-xs font-bold text-indigo-600 mb-1">{step}</p>
+              <p class="font-bold text-gray-900 mb-2">{title}</p>
+              <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href={APP_URL} class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
+            ポチレポを無料で試す →
+          </a>
+          <p class="text-xs text-gray-400 mt-2">Googleアカウントで30秒登録・2回まで無料</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI利用ポリシー -->
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">大学のAI利用ポリシーと正しい使い方</h2>
+        <p class="text-gray-500 text-sm mb-6">「AIを使った」こと自体が問題ではなく、「使い方」が問題になる</p>
+        <div class="space-y-4 text-sm text-gray-700 leading-relaxed">
+          <p>2024年以降、多くの大学がAI利用に関するガイドラインを整備しています。東京大学・早稲田大学・慶應義塾大学などは「AIを補助的に使うことは認める」としつつ、「AI出力をそのまま提出することは不正行為とみなす」と明示しています。</p>
+          <p>つまり問われているのは「AIを使ったかどうか」ではなく、「自分で考えて書いたかどうか」です。AIが生成した文章をそのまま出すのが問題であり、AIを使って構成や調査を補助した上で自分の言葉で加筆・修正したものは、多くの大学で認められています。</p>
+        </div>
+        <div class="mt-6 grid sm:grid-cols-3 gap-4">
+          {[
+            { label: '❌ NG', title: 'AI出力をそのまま提出', desc: 'プロンプトを投げて出てきた文章をコピーして提出するだけ' },
+            { label: '⚠️ グレー', title: 'AIで書いて少し手直し', desc: '文体がAIのまま残っており、教授が読めばわかる状態' },
+            { label: '✅ OK', title: 'AIで叩き台を作り自分で仕上げる', desc: '構成・調査にAIを活用し、論述は自分の言葉で完成させる' },
+          ].map(({ label, title, desc }) => (
+            <div class="border border-gray-200 rounded-xl p-4 bg-white">
+              <p class="text-xs font-bold mb-2">{label}</p>
+              <p class="font-semibold text-gray-900 text-sm mb-1">{title}</p>
+              <p class="text-xs text-gray-500 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 学部別バレパターン -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">学部別・AIレポートがバレやすいパターン</h2>
+        <p class="text-gray-500 text-sm mb-8">汎用AIは「学部の作法」を知らない</p>
+        <div class="space-y-3">
+          {[
+            {
+              faculty: '法学部',
+              pattern: '条文・判例の引用がない。「〜と考えられる」で終わり、法的根拠が示されない',
+              fix: '「民法〇条によれば」「最判〇年〇月〇日によれば」という形式で根拠を明示する必要がある',
+            },
+            {
+              faculty: '経済学部',
+              pattern: 'グラフ・統計データがなく定性的な説明だけ。「需要が増加する」と書くが数値がない',
+              fix: '統計データや経済指標を引用し「GDPが〇%増加した（〇〇省, 2023）」のように定量的に示す',
+            },
+            {
+              faculty: '文学部・人文学部',
+              pattern: '作品テキストの引用が少ない。批評理論（構造主義など）を使わず感想文になっている',
+              fix: '一次資料（原典）から直接引用し、批評的枠組みを明示して分析する',
+            },
+            {
+              faculty: '理工学部',
+              pattern: '「〜が重要である」という抽象論に終始し、実験・計算・検証のプロセスがない',
+              fix: 'IMRAD形式（序論・方法・結果・考察）に従い、仮説→検証の論理構造にする',
+            },
+          ].map(({ faculty, pattern, fix }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div class="px-5 py-3 bg-indigo-50 border-b border-gray-100">
+                <span class="text-xs font-bold text-indigo-600">{faculty}</span>
+              </div>
+              <div class="px-5 py-3 flex items-start gap-3">
+                <span class="text-red-400 font-bold shrink-0">✗</span>
+                <p class="text-sm text-gray-600">{pattern}</p>
+              </div>
+              <div class="px-5 py-3 flex items-start gap-3 bg-green-50 border-t border-gray-100">
+                <span class="text-green-600 font-bold shrink-0">✓</span>
+                <p class="text-sm text-gray-600">{fix}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 詳細な使い方 -->
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ポチレポでバレないレポートを作る流れ</h2>
+        <p class="text-gray-500 text-sm mb-8">テーマ入力から提出まで最短3分</p>
+        <div class="relative">
+          <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-indigo-100 hidden sm:block"></div>
+          <div class="space-y-6">
+            {[
+              {
+                step: '1',
+                title: 'テーマ・学部・文字数を入力',
+                desc: 'レポートのテーマと自分の学部、指定文字数を入力します。学部を選ぶだけで論証スタイルが自動設定されます。',
+                time: '約1分',
+              },
+              {
+                step: '2',
+                title: '授業資料をアップロード（任意）',
+                desc: '講義スライドPDF・授業の録音・テキストメモがあればアップロードします。「授業内容を踏まえて」という課題に対応するために重要なステップです。',
+                time: '約2分',
+              },
+              {
+                step: '3',
+                title: 'CiNii論文を自動検索・選択',
+                desc: 'テーマに関連するCiNii論文が自動で検索され、候補が表示されます。使用する論文を選ぶだけで引用の準備が完了します。',
+                time: '約2分',
+              },
+              {
+                step: '4',
+                title: 'レポートを生成・確認',
+                desc: '学部別文体・だ・である調・指定文字数で本文が生成されます。序論・本論・結論の構成、参考文献リストも同時に出力されます。',
+                time: '約3〜5分',
+              },
+              {
+                step: '5',
+                title: '確認して提出',
+                desc: '生成された内容を読んで確認・加筆します。Wordエクスポートしてそのまま提出できます。内容の確認は必ず行ってください。',
+                time: '任意',
+              },
+            ].map(({ step, title, desc, time }) => (
+              <div class="flex gap-5 relative">
+                <div class="w-12 h-12 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center shrink-0 z-10">{step}</div>
+                <div class="flex-1 pb-2">
+                  <div class="flex items-center gap-3 mb-1">
+                    <p class="font-bold text-gray-900">{title}</p>
+                    <span class="text-xs text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{time}</span>
+                  </div>
+                  <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="mt-8 text-center">
+          <a href="https://report-saas-bay.vercel.app" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
+            ポチレポを無料で試す →
+          </a>
+          <p class="text-xs text-gray-400 mt-2">Googleアカウントで30秒登録・2回まで無料</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 料金プラン -->
+    <section class="py-14 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">料金プラン</h2>
+        <p class="text-gray-500 text-sm mb-8">まず2回無料で試せます</p>
+
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div class="border border-gray-200 rounded-2xl p-5 bg-white">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">無料</p>
+            <p class="text-2xl font-black text-gray-900 mb-4">¥0</p>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li class="flex gap-2"><span class="text-gray-400">✓</span> 生成2回（永久）</li>
+              <li class="flex gap-2"><span class="text-gray-400">✓</span> 最大2,000字</li>
+              <li class="flex gap-2"><span class="text-red-300">✗</span> <span class="text-gray-400">CiNii論文検索</span></li>
+              <li class="flex gap-2"><span class="text-red-300">✗</span> <span class="text-gray-400">ファイル・録音</span></li>
+            </ul>
+          </div>
+
+          <div class="border-2 border-indigo-500 rounded-2xl p-5 bg-white relative">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">おすすめ</div>
+            <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Standard</p>
+            <p class="text-2xl font-black text-gray-900 mb-4">¥1,000<span class="text-sm font-normal text-gray-500">/月</span></p>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> 月40回生成</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> 最大5,000字</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> CiNii論文自動検索</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> ファイル・録音読み込み</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> Wordエクスポート</li>
+            </ul>
+          </div>
+
+          <div class="border border-gray-200 rounded-2xl p-5 bg-white">
+            <p class="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-1">Pro</p>
+            <p class="text-2xl font-black text-gray-900 mb-4">¥2,000<span class="text-sm font-normal text-gray-500">/月</span></p>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> 月50回生成</li>
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> 最大10,000字</li>
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> Standard全機能</li>
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> PDFエクスポート</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: 'ChatGPTのレポートはなぜ教授にバレるのですか？',
+              a: '「〜と考えられます」「〜と言えるでしょう」などの定型表現を多用するのが主な理由です。また学部ごとの論証スタイル（条文引用・実験データ・文献批評など）を無視した文章になるため、担当教員にはすぐにわかります。',
+            },
+            {
+              q: 'AIを使ってレポートを書いてもいいですか？',
+              a: '大学・授業によってルールが異なります。AIを使う場合も、出力をそのまま提出するのではなく、根拠として自分の言葉で加筆・修正することが求められます。',
+            },
+            {
+              q: 'ポチレポはどうやってバレないようにしているのですか？',
+              a: '9学部の文体システム・だ・である調の徹底・実在するCiNii論文の引用・文字数管理（95-108%）を組み合わせています。ChatGPTのような汎用AI出力と異なり、学部別の論証パターンと学術日本語の構文ルールをプロンプトに組み込んでいます。',
+            },
+            {
+              q: '無料で使えますか？',
+              a: 'はい。Googleアカウントで登録すれば2回まで無料で使えます。有料プランはStandard（¥1,000/月・月40回・最大5,000字）とPro（¥2,000/月・月50回・最大10,000字）があります。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">ChatGPTじゃなく、大学レポート専用AIを使う</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          ポチレポは学部別文体・だ・である調・CiNii実在論文・文字数管理を専用設計したレポートAIです。<br />
+          まず2回無料で試してください。
+        </p>
+        <a
+          href={APP_URL}
+          class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg"
+        >
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <!-- 関連コンテンツ -->
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/citation/', title: '参考文献の書き方 完全ガイド', desc: 'APA・MLA・日本語形式の違いと書き方テンプレート' },
+            { href: '/how-to/cinii/', title: 'CiNiiの使い方・大学生向け完全ガイド', desc: 'テーマを入力するだけでCiNii論文を自動検索・引用' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

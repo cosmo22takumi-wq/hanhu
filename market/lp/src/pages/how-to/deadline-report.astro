@@ -1,0 +1,246 @@
+﻿---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "レポートの締め切りが明日なのに何も書いていません。間に合いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "レポートの長さによりますが、2000〜4000字程度なら今日中に仕上げることは可能です。ポチレポを使えば資料を入れてテーマを入力するだけで3分で叩き台が生成されるため、今から始めれば今日中に提出できます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "一晩でレポートを書く場合、どの順番で作業すればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "①テーマと問いを決める（15分）→②参考文献を2〜3本探す（30分）→③構成メモを作る（15分）→④序論を書く（20分）→⑤本論を書く（60〜90分）→⑥結論を書く（20分）→⑦見直し（15分）の順が効率的です。ポチレポを使うと①〜⑥を3分に短縮できます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "締め切り直前にAIでレポートを書いてもバレませんか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "ChatGPTでそのまま生成するとAI検知ツールや先生の経験でバレることがあります。ポチレポは自分で用意した参考文献をベースに生成するため、根拠のある内容になります。生成後に自分で確認・加筆することでより安全に使えます。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="レポートが締め切りに間に合わない！一晩で書き上げる方法【2026年版】"
+  description="大学レポートの締め切りが明日・今日なのに何も書いていない状況での対処法を解説。効率的な作業手順と、3分で叩き台を作るポチレポの使い方を紹介します。"
+  canonical="https://pochi-repo.jp/how-to/deadline-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-red-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-red-500 mb-3 uppercase tracking-wide">締め切り対策</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          締め切りが明日でも<br />
+          <span class="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
+            今から始めれば間に合う
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          何も書いていない、でも明日の朝までに提出しないといけない——<br class="hidden sm:block" />
+          パニックにならなくて大丈夫です。効率的な手順で今夜仕上げましょう。
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+            3分で叩き台を作る →
+          </a>
+          <a href="#steps" class="inline-flex items-center justify-center border border-gray-300 text-gray-600 font-medium px-7 py-3 rounded-xl hover:bg-gray-50 transition text-sm">
+            作業手順を確認する ↓
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-10 px-4 bg-red-50 border-b border-red-100">
+      <div class="max-w-3xl mx-auto">
+        <div class="flex items-start gap-4 p-5 bg-white rounded-xl border border-red-200">
+          <div class="text-3xl shrink-0">⏰</div>
+          <div>
+            <p class="font-bold text-gray-900 mb-1">まず「今から何時間あるか」を確認する</p>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              2000字なら3〜4時間、4000字なら5〜6時間あれば仕上げられます。
+              ポチレポを使うと資料入力からレポート生成まで10〜15分で叩き台が完成し、
+              残り時間を確認・加筆に使えます。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="steps" class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">今夜仕上げるための作業手順</h2>
+        <p class="text-gray-500 text-sm mb-8">ポチレポを使う場合と使わない場合、両方の手順を解説</p>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <span class="bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">ポチレポあり</span>
+              <span class="text-sm font-semibold text-gray-500">〜2時間で完成</span>
+            </div>
+            <div class="space-y-3">
+              {[
+                { time: '5分', task: 'テーマと学部・文字数を確認する' },
+                { time: '3分', task: '資料を用意（授業メモ/CiNii論文/PDF）' },
+                { time: '3分', task: 'ポチレポに資料を入れてレポート生成' },
+                { time: '60分', task: '生成結果を読んで確認・加筆修正' },
+                { time: '15分', task: '参考文献リストの確認と提出形式の整理' },
+              ].map(({ time, task }) => (
+                <div class="flex gap-3 items-start">
+                  <span class="text-xs font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full shrink-0 mt-0.5">{time}</span>
+                  <p class="text-sm text-gray-700">{task}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <span class="bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full">自力で書く場合</span>
+              <span class="text-sm font-semibold text-gray-500">4〜6時間必要</span>
+            </div>
+            <div class="space-y-3">
+              {[
+                { time: '15分', task: 'テーマの問いを決める' },
+                { time: '60分', task: 'CiNii・図書館で参考文献を探す' },
+                { time: '20分', task: '構成メモ（序論・本論・結論）を作る' },
+                { time: '30分', task: '序論を書く' },
+                { time: '120分', task: '本論を書く（最も時間がかかる）' },
+                { time: '30分', task: '結論と参考文献リストを書く' },
+                { time: '20分', task: '見直しと形式チェック' },
+              ].map(({ time, task }) => (
+                <div class="flex gap-3 items-start">
+                  <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full shrink-0 mt-0.5">{time}</span>
+                  <p class="text-sm text-gray-600">{task}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">時間が少ないときの優先順位</h2>
+        <p class="text-gray-500 text-sm mb-8">やること・やらなくていいことを整理する</p>
+
+        <div class="space-y-3">
+          {[
+            {
+              priority: '最優先',
+              color: 'red',
+              tasks: ['テーマと問いを1文で決める', '参考文献を最低2本見つける', '序論と結論を先に書く'],
+              note: '内容の骨格を最初に作ることで、本論が書きやすくなる',
+            },
+            {
+              priority: '次にやる',
+              color: 'orange',
+              tasks: ['本論を問いへの答えとして書く', '文献の引用箇所を特定して組み込む'],
+              note: '本論は「問いの答え→根拠→文献引用」の繰り返しで書ける',
+            },
+            {
+              priority: '時間があれば',
+              color: 'gray',
+              tasks: ['文体の統一（だ・である調）', '段落間の接続詞の整理', '誤字・脱字チェック'],
+              note: '本文が完成していれば形式の整理は最後でよい',
+            },
+          ].map(({ priority, color, tasks, note }) => (
+            <div class={`border border-${color}-200 rounded-xl p-5 bg-${color}-50`}>
+              <p class={`text-xs font-bold text-${color}-600 mb-3`}>{priority}</p>
+              <ul class="space-y-1 mb-3">
+                {tasks.map(task => (
+                  <li class="flex gap-2 text-sm text-gray-800">
+                    <span class={`text-${color}-500 shrink-0`}>✓</span>
+                    {task}
+                  </li>
+                ))}
+              </ul>
+              <p class="text-xs text-gray-500">{note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-2xl font-black text-gray-900 mb-3">今すぐ叩き台を作る</h2>
+        <p class="text-gray-500 mb-8 text-sm leading-relaxed">
+          テーマと手元の資料（メモ・PDF・授業録音）を入力するだけ。<br />
+          3分で序論・本論・結論・参考文献リストが揃った叩き台が完成します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-xs text-gray-400 mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: 'レポートの締め切りが明日なのに何も書いていません。間に合いますか？',
+              a: 'レポートの長さによりますが、2000〜4000字程度なら今日中に仕上げることは可能です。ポチレポを使えば資料を入れてテーマを入力するだけで3分で叩き台が生成されるため、今から始めれば今日中に提出できます。',
+            },
+            {
+              q: '一晩でレポートを書く場合、どの順番で作業すればいいですか？',
+              a: '①テーマと問いを決める（15分）→②参考文献を2〜3本探す（30分）→③構成メモを作る（15分）→④序論を書く（20分）→⑤本論を書く（60〜90分）→⑥結論を書く（20分）→⑦見直し（15分）の順が効率的です。ポチレポを使うと①〜⑥を3分に短縮できます。',
+            },
+            {
+              q: '締め切り直前にAIでレポートを書いてもバレませんか？',
+              a: 'ChatGPTでそのまま生成するとAI検知ツールや先生の経験でバレることがあります。ポチレポは自分で用意した参考文献をベースに生成するため、根拠のある内容になります。生成後に自分で確認・加筆することでより安全に使えます。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/report-structure/', title: '大学レポートの書き方と構成', desc: '序論・本論・結論の書き方を完全解説' },
+            { href: '/how-to/reference-search/', title: '参考文献が見つからないときの探し方', desc: '時間をかけずに参考文献を見つける方法' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

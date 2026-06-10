@@ -1,0 +1,102 @@
+---
+const APP_URL = 'https://report-saas-bay.vercel.app'
+// Trial: 2026-05-29 22:00 JST → 72時間後 2026-06-01 22:00 JST
+const TRIAL_START    = '2026-05-29T22:00:00+09:00'
+const TRIAL_DEADLINE = '2026-06-01T22:00:00+09:00'
+---
+
+<!-- 72-hour trial banner (auto-hides when deadline passes) -->
+<div
+  id="trial-banner"
+  class="bg-amber-400 text-gray-900 font-semibold py-5 px-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
+  data-start={TRIAL_START}
+  data-deadline={TRIAL_DEADLINE}
+>
+  <span class="flex items-center gap-2">
+    <span class="text-2xl">🎉</span>
+    <span class="text-sm sm:text-base">6/1まで限定・全機能<strong>無料トライアル</strong>実施中！</span>
+  </span>
+  <span
+    id="trial-countdown"
+    class="bg-gray-900 text-amber-300 font-black rounded-full px-4 py-1 text-sm tabular-nums tracking-wide"
+  >
+    --時間--分--秒
+  </span>
+  <a
+    href={APP_URL}
+    class="bg-gray-900 text-white rounded-xl px-6 py-2.5 text-sm font-bold hover:bg-gray-700 transition whitespace-nowrap"
+  >
+    いますぐ無料で試す →
+  </a>
+</div>
+
+<script>
+  (function () {
+    const banner = document.getElementById('trial-banner')
+    const countdownEl = document.getElementById('trial-countdown')
+    if (!banner || !countdownEl) return
+
+    const start    = new Date(banner.dataset.start).getTime()
+    const deadline = new Date(banner.dataset.deadline).getTime()
+
+    function update() {
+      const now = Date.now()
+      // まだ開始前 → 非表示
+      if (now < start) {
+        banner.style.display = 'none'
+        return
+      }
+      // 期限切れ → 削除
+      const remaining = deadline - now
+      if (remaining <= 0) {
+        banner.remove()
+        clearInterval(timer)
+        return
+      }
+      banner.style.display = ''
+      const h = Math.floor(remaining / 3600000)
+      const m = Math.floor((remaining % 3600000) / 60000)
+      const s = Math.floor((remaining % 60000) / 1000)
+      countdownEl.textContent =
+        `${h}時間${String(m).padStart(2, '0')}分${String(s).padStart(2, '0')}秒`
+    }
+
+    update()
+    const timer = setInterval(update, 1000)
+  })()
+</script>
+
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2">
+      <span class="text-xl font-black bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+        ポチレポ
+      </span>
+      <span class="hidden sm:inline text-xs text-gray-400 font-medium border border-gray-200 rounded-full px-2 py-0.5">
+        大学生向け
+      </span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+      <a href="/tools/citation/" class="hover:text-indigo-600 transition">参考文献ツール</a>
+      <a href="/#features" class="hover:text-indigo-600 transition">機能</a>
+      <a href="/#pricing" class="hover:text-indigo-600 transition">料金</a>
+      <a href="/#faq" class="hover:text-indigo-600 transition">FAQ</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={APP_URL}
+        class="hidden sm:inline-flex items-center text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition"
+      >
+        ログイン
+      </a>
+      <a
+        href={APP_URL}
+        class="inline-flex items-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:opacity-90 transition shadow-sm"
+      >
+        無料で始める
+      </a>
+    </div>
+  </div>
+</header>

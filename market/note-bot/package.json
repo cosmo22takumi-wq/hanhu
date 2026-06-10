@@ -1,0 +1,19 @@
+{
+  "name": "note-bot",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "login": "ts-node src/login.ts",
+    "post": "ts-node src/main.ts",
+    "preview": "ts-node src/main.ts --preview"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

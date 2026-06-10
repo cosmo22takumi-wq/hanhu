@@ -1,0 +1,229 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+import CitationTool from '../../components/tools/CitationTool'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "参考文献フォーマットの作り方",
+  "description": "書籍・雑誌論文・Webサイトの参考文献をAPA・MLA・日本語形式で自動生成する方法",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "資料の種類を選ぶ",
+      "text": "書籍・雑誌論文・Webサイトから資料の種類を選択します"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "著者・タイトル・発行年を入力",
+      "text": "著者名、タイトル、発行年などの情報を入力します"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "参考文献を生成",
+      "text": "「生成する」ボタンをクリックすると、APA・MLA・日本語形式の参考文献が生成されます"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "コピーしてレポートに貼り付け",
+      "text": "生成された参考文献をコピーして、レポートの参考文献リストに貼り付けます"
+    }
+  ]
+}
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "大学レポートの参考文献はどの形式で書けばいいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "学部や指導教員によって異なりますが、日本語レポートでは「日本語学術形式」が一般的です。英語論文の引用にはAPA第7版が多く使われます。シラバスや課題説明を確認し、指定がない場合は日本語形式かAPAを選ぶと無難です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "著者が複数いる場合の書き方は？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "著者名の欄に「山田太郎, 鈴木花子」のようにカンマ区切りで入力してください。APAでは著者20名まで全員記載し、21名以上は...を使います。MLAでは2名目以降はet al.になります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "CiNiiで見つけた論文の参考文献はどう書きますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "雑誌論文として、著者名・論文タイトル・雑誌名・巻・号・ページ・DOIを入力してください。CiNiiの論文詳細ページにこれらの情報が記載されています。"
+      }
+    }
+  ]
+}
+---
+
+<Base
+  title="参考文献フォーマット自動生成【APA・MLA・日本語形式対応】無料ツール"
+  description="著者名・タイトル・年を入力するだけで参考文献が即生成。APA第7版・MLA第9版・日本語学術形式に対応。書籍・雑誌論文・Webサイトに対応。大学レポートの参考文献作成を無料サポート。"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} slot="head" />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+    <!-- Hero -->
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-12 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">無料ツール・登録不要</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4">
+          参考文献フォーマット<br class="sm:hidden" />自動生成ツール
+        </h1>
+        <p class="text-gray-600 leading-relaxed">
+          著者名・タイトル・発行年を入力するだけで、大学レポートで使える参考文献が自動でフォーマットされます。<br />
+          <strong class="text-gray-800">APA第7版・MLA第9版・日本語学術形式</strong>に対応。
+        </p>
+      </div>
+    </section>
+
+    <!-- Tool -->
+    <section class="py-12 px-4">
+      <div class="max-w-3xl mx-auto">
+        <CitationTool client:load />
+      </div>
+    </section>
+
+    <!-- Guide: どの形式を使うべき? -->
+    <section class="py-16 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">どの参考文献形式を使えばいいの？</h2>
+        <p class="text-gray-500 text-sm mb-8">学部・指導教員によって異なりますが、目安はこちら</p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold">形式</th>
+                <th class="px-4 py-3 text-left font-semibold">主な使用場面</th>
+                <th class="px-4 py-3 text-left font-semibold">特徴</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <tr>
+                <td class="px-4 py-3 font-semibold text-gray-900">日本語学術形式</td>
+                <td class="px-4 py-3 text-gray-600">法学・文学・社会学など文系全般</td>
+                <td class="px-4 py-3 text-gray-600">日本語のレポートに最もよく使われる標準形式</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-semibold text-gray-900">APA第7版</td>
+                <td class="px-4 py-3 text-gray-600">心理学・教育学・経営学・社会科学</td>
+                <td class="px-4 py-3 text-gray-600">著者（年）形式。英語論文でも標準</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-semibold text-gray-900">MLA第9版</td>
+                <td class="px-4 py-3 text-gray-600">文学・語学・人文科学</td>
+                <td class="px-4 py-3 text-gray-600">英米文学・外国語学部で多く使用</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-3">※ 指定がない場合は授業シラバスまたは指導教員に確認してください</p>
+      </div>
+    </section>
+
+    <!-- Guide: 参考文献の書き方（SEOコンテンツ） -->
+    <section class="py-16 px-4">
+      <div class="max-w-3xl mx-auto prose prose-gray max-w-none">
+        <h2 class="text-2xl font-black text-gray-900 mb-6">参考文献の書き方 基本ガイド</h2>
+
+        <div class="space-y-8">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3">書籍（本）の参考文献の書き方</h3>
+            <p class="text-sm text-gray-600 mb-3">書籍を参考文献に記載する場合は、著者名・発行年・タイトル・出版社の4つが基本要素です。</p>
+            <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+              <p class="text-xs font-semibold text-gray-500">日本語形式の例</p>
+              <p class="text-sm font-mono text-gray-800 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                山田太郎（2022）『憲法入門』有斐閣．
+              </p>
+              <p class="text-xs font-semibold text-gray-500 mt-3">APA形式の例</p>
+              <p class="text-sm font-mono text-gray-800 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                Yamada, T. (2022). <em>Introduction to Constitutional Law</em>. Yuhikaku.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3">雑誌論文（CiNii論文）の参考文献の書き方</h3>
+            <p class="text-sm text-gray-600 mb-3">CiNiiで見つけた論文を引用するときは、著者名・年・論文タイトル・雑誌名・巻・号・ページを記載します。</p>
+            <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+              <p class="text-xs font-semibold text-gray-500">日本語形式の例</p>
+              <p class="text-sm font-mono text-gray-800 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                鈴木花子（2021）「表現の自由に関する一考察」『法学研究』45（2），15-32．
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3">Webサイトの参考文献の書き方</h3>
+            <p class="text-sm text-gray-600 mb-3">Webサイトを引用するときは、URL・閲覧日の記載が必要です。</p>
+            <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+              <p class="text-xs font-semibold text-gray-500">日本語形式の例</p>
+              <p class="text-sm font-mono text-gray-800 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                国立情報学研究所（2024）「CiNiiについて」国立情報学研究所，https://www.nii.ac.jp/（2025年5月25日閲覧）．
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA to full service -->
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">論文検索からレポート本文まで、まとめて解決</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          CiNiiで論文を自動検索→引用フォーマット生成→レポート本文をAI生成。<br />
+          ポチレポの本サービスなら参考文献の作成からレポート全体の生成まで一気通貫でできます。
+        </p>
+        <a
+          href={APP_URL}
+          class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg"
+        >
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・月2回まで無料</p>
+      </div>
+    </section>
+
+    <!-- Related links -->
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { href: '/how-to/citation/', title: '参考文献・引用の書き方完全ガイド', desc: 'APA・MLA・日本語形式を徹底解説' },
+            { href: '/how-to/cinii/', title: 'CiNiiの使い方【文系向け】', desc: '国内最大の論文DBを使いこなす' },
+            { href: '/how-to/report/', title: '大学レポートの書き方ガイド', desc: '序論・本論・結論の構成を解説' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-primary-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>

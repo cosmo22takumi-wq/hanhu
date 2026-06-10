@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx ts-node *)",
+      "Bash(node -e \"const path=require\\('path'\\); console.log\\(path.resolve\\('/c/Users/Owner/report-saas/market/sns-bot/src/db', '../../', './data/sns-bot.db'\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(npx playwright *)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(npm run *)",
+      "Bash(ls \"C:/Users/Owner/AppData/Roaming/tiktok-report-marketer/backgrounds/\" 2>/dev/null | head -20 || echo \"folder not found\")"
+    ]
+  }
+}

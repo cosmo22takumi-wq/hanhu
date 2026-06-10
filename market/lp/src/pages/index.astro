@@ -9,13 +9,13 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "ポチレポ",
-  "description": "大学生のライフハック。CiNii論文自動検索・参考文献フォーマット生成・レポート構成AI。",
+  "description": "大学生向けの学生特化型AIレポートツール。実在する情報のみを根拠にするため架空の参考文献が出ない。情報の確実性・文章の正確さ・スピードの三つを兼ね備えたAI。",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Web",
   "offers": [
     { "@type": "Offer", "price": "0", "priceCurrency": "JPY", "name": "無料プラン" },
-    { "@type": "Offer", "price": "1500", "priceCurrency": "JPY", "name": "Standardプラン" },
-    { "@type": "Offer", "price": "3000", "priceCurrency": "JPY", "name": "Proプラン" }
+    { "@type": "Offer", "price": "1000", "priceCurrency": "JPY", "name": "Standardプラン" },
+    { "@type": "Offer", "price": "2000", "priceCurrency": "JPY", "name": "Proプラン" }
   ]
 }
 
@@ -28,15 +28,15 @@ const faqSchema = {
       "name": "ChatGPTと何が違うの？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ChatGPTは文章生成が得意ですが、実在する学術論文を引用してくれません。ポチレポはCiNii APIと連携して実際の論文を探し、正しい引用フォーマットで文章に組み込みます。"
+        "text": "ChatGPTなど汎用AIは、存在しない論文タイトル・架空の情報をあたかも実在するかのように生成することがあります。ポチレポはあなたが入力した実在の資料だけを根拠に書くため、「この参考文献、実在するの？」と先生に指摘されることがありません。情報の確実性・文章の正確さ・スピードの三つが揃った学生特化型AIです。"
       }
     },
     {
       "@type": "Question",
-      "name": "大学にバレませんか？",
+      "name": "AIを使っていいの？正しい使い方は？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ポチレポは「全自動生成」ではなく「作業支援」に特化しています。自分の考えや授業メモをもとに構成と表現をサポートするため、最終的には自分で内容を確認・編集することを推奨します。"
+        "text": "ポチレポの正しい使い方は「自分の資料を入れて、構成と表現をサポートしてもらう」ことです。電子図書館のリンク・授業メモ・自分で探した論文を入力すると、それをベースにした文章が生成されます。ChatGPTと違い「あなたの資料から書く」ので、自分の考えが反映された内容になります。"
       }
     },
     {
@@ -44,7 +44,7 @@ const faqSchema = {
       "name": "無料でどこまで使えますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "無料プランでも月2回のレポート生成が使えます。参考文献フォーマッターは登録不要で無制限に使えます。"
+        "text": "無料プランではレポート生成を2回（通算）まで、最大2,000字で利用できます。参考文献フォーマッターはユーザー登録なしで無制限に使えます。"
       }
     },
     {
@@ -52,7 +52,7 @@ const faqSchema = {
       "name": "スマートフォンでも使えますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "はい、スマートフォン・タブレットからもご利用いただけます。ただし作業効率の面からパソコンでのご利用をおすすめします。"
+        "text": "はい、スマートフォン・タブレットにも対応しています。ただし長文入力や編集にはパソコンでのご利用をおすすめします。"
       }
     }
   ]
@@ -60,8 +60,8 @@ const faqSchema = {
 ---
 
 <Base
-  title="ポチレポ｜講義資料とCiNii論文でレポートを書くAI"
-  description="大学生のレポート作成を支援するAIツール。講義の録音・資料とCiNii論文を組み合わせて、先生に出せるレポートを最短で作成。参考文献フォーマット自動生成。無料から使えます。"
+  title="ポチレポ｜電子図書館のURLを貼るだけ。授業資料を読んでレポートを書くAI"
+  description="大学の電子図書館URL・講義スライドPDF・授業録音をそのまま入れるだけ。ChatGPTが知らない「あなたの授業」の内容でレポートを書くAI。登録30秒・無料から使えます。"
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
@@ -69,306 +69,858 @@ const faqSchema = {
   <Header />
 
   <!-- ===== HERO ===== -->
-  <section class="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-violet-500/5 pt-16 pb-20 px-4">
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100/40 via-transparent to-transparent pointer-events-none" />
-    <div class="max-w-4xl mx-auto text-center relative">
-      <p class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full px-4 py-1.5 mb-6 border border-indigo-100">
-        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block"></span>
-        文系大学生向け・無料から使えます
-      </p>
+  <section class="relative min-h-screen flex items-end pb-14 overflow-hidden">
 
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-6">
-        講義資料と<br class="sm:hidden" />CiNii論文で<br />
-        <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-          レポートを書くAI
-        </span>
-      </h1>
+    <!-- Pixel art: majestic mountain landscape, student at summit with laptop, achievement -->
+    <div class="absolute inset-0">
+      <svg
+        viewBox="0 0 80 45"
+        preserveAspectRatio="xMidYMid slice"
+        class="w-full h-full"
+        style="image-rendering: pixelated; image-rendering: crisp-edges"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <!-- =============================== -->
+        <!-- PIXEL ART: Majestic mountain    -->
+        <!-- landscape, clear sunny day,     -->
+        <!-- student at peak with laptop,    -->
+        <!-- achievement pose                -->
+        <!-- Grid: 80 × 45 px               -->
+        <!-- =============================== -->
 
-      <p class="text-lg sm:text-xl text-gray-600 mb-4 leading-relaxed">
-        授業の録音・資料をAIが読んでCiNii論文と組み合わせ、<br class="hidden sm:block" />
-        <strong class="text-gray-800">参考文献つきで先生に出せるレポート</strong>を最短で生成。
-      </p>
+        <!-- SKY — layered colour bands for depth gradient -->
+        <rect width="80" height="5"  fill="#0B1E55"/>
+        <rect y="5"  width="80" height="4"  fill="#112B7A"/>
+        <rect y="9"  width="80" height="4"  fill="#1A3E99"/>
+        <rect y="13" width="80" height="4"  fill="#2252B4"/>
+        <rect y="17" width="80" height="4"  fill="#2C64C6"/>
+        <rect y="21" width="80" height="4"  fill="#3877D5"/>
+        <rect y="25" width="80" height="4"  fill="#488ADF"/>
+        <rect y="29" width="80" height="16" fill="#589CE8"/>
 
-      <p class="text-sm text-gray-400 mb-8">登録は30秒。Googleアカウントで即スタート。</p>
+        <!-- SUN (upper right, pixel art) -->
+        <rect x="64" y="2"  width="1" height="1" fill="#FFE040"/>
+        <rect x="67" y="1"  width="1" height="1" fill="#FFE040"/>
+        <rect x="70" y="1"  width="1" height="1" fill="#FFE040"/>
+        <rect x="73" y="2"  width="1" height="1" fill="#FFE040"/>
+        <rect x="63" y="4"  width="1" height="1" fill="#FFE040"/>
+        <rect x="75" y="4"  width="1" height="1" fill="#FFE040"/>
+        <rect x="63" y="6"  width="1" height="1" fill="#FFE040"/>
+        <rect x="75" y="6"  width="1" height="1" fill="#FFE040"/>
+        <rect x="64" y="8"  width="1" height="1" fill="#FFE040"/>
+        <rect x="67" y="8"  width="1" height="1" fill="#FFE040"/>
+        <rect x="70" y="8"  width="1" height="1" fill="#FFE040"/>
+        <rect x="73" y="8"  width="1" height="1" fill="#FFE040"/>
+        <!-- Sun core -->
+        <rect x="65" y="2"  width="9" height="1" fill="#FFD700"/>
+        <rect x="64" y="3"  width="11" height="5" fill="#FFD700"/>
+        <rect x="65" y="8"  width="9" height="1" fill="#FFD700"/>
+        <!-- Bright centre -->
+        <rect x="67" y="4"  width="5" height="3" fill="#FFF176"/>
 
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a
-          href={APP_URL}
-          class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-lg rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg shadow-indigo-500/20"
-        >
-          ✦ 無料で始める
-        </a>
-        <a
-          href="/tools/citation/"
-          class="inline-flex items-center justify-center gap-2 bg-white text-gray-700 font-semibold text-base rounded-xl px-6 py-4 hover:bg-gray-50 transition border border-gray-200 shadow-sm"
-        >
-          参考文献ツールを試す（登録不要）
-        </a>
-      </div>
+        <!-- BIRDS (tiny pixel V shapes in sky) -->
+        <rect x="14" y="6"  width="1" height="1" fill="#223366"/>
+        <rect x="16" y="5"  width="1" height="1" fill="#223366"/>
+        <rect x="18" y="6"  width="1" height="1" fill="#223366"/>
+        <rect x="30" y="4"  width="1" height="1" fill="#1A2D5A"/>
+        <rect x="32" y="3"  width="1" height="1" fill="#1A2D5A"/>
+        <rect x="34" y="4"  width="1" height="1" fill="#1A2D5A"/>
+        <rect x="48" y="7"  width="1" height="1" fill="#2A3D72"/>
+        <rect x="50" y="6"  width="1" height="1" fill="#2A3D72"/>
+        <rect x="52" y="7"  width="1" height="1" fill="#2A3D72"/>
 
-      <!-- trust indicators -->
-      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-10 text-xs text-gray-400">
-        <span class="flex items-center gap-1"><span class="text-emerald-500">✓</span> クレジットカード不要</span>
-        <span class="flex items-center gap-1"><span class="text-emerald-500">✓</span> Googleアカウントで即ログイン</span>
-        <span class="flex items-center gap-1"><span class="text-emerald-500">✓</span> 2回まで無料（通算）</span>
-        <span class="flex items-center gap-1"><span class="text-emerald-500">✓</span> CiNii論文対応</span>
+        <!-- CLOUD 1 (left, x=3–15, y=5–8) -->
+        <rect x="5"  y="5"  width="8"  height="1" fill="#FFFFFF"/>
+        <rect x="3"  y="6"  width="13" height="2" fill="#FFFFFF"/>
+        <rect x="4"  y="8"  width="11" height="1" fill="#C8DCEE"/>
+
+        <!-- CLOUD 2 (centre-left, x=20–33, y=4–7) -->
+        <rect x="22" y="4"  width="9"  height="1" fill="#FFFFFF"/>
+        <rect x="20" y="5"  width="13" height="2" fill="#FFFFFF"/>
+        <rect x="21" y="7"  width="11" height="1" fill="#C8DCEE"/>
+
+        <!-- CLOUD 3 (small, x=42–51, y=6–8) -->
+        <rect x="43" y="6"  width="7"  height="1" fill="#FFFFFF"/>
+        <rect x="42" y="7"  width="9"  height="1" fill="#FFFFFF"/>
+        <rect x="43" y="8"  width="7"  height="1" fill="#C8DCEE"/>
+
+        <!-- FAR MOUNTAIN RANGE (pale blue-grey, jagged pixel silhouette) -->
+        <polygon fill="#7090C2" points="
+          0,45 0,20
+          2,20 2,17 5,17 5,14 8,14 8,11
+          10,11 10,9  13,9  13,11
+          15,11 15,14 17,14 17,11
+          20,11 20,9  22,9  22,7
+          25,7  25,9  27,9  27,11
+          30,11 30,14 32,14 32,11
+          35,11 35,9  38,9  38,11
+          40,11 40,14 43,14 43,17
+          46,17 46,20 49,20 49,18
+          52,18 52,21 55,21 55,19
+          58,19 58,22 61,22 61,20
+          64,20 64,23 67,23 67,21
+          70,21 70,24 73,24 73,22
+          76,22 76,25 80,25
+          80,45
+        "/>
+
+        <!-- FAR MOUNTAIN SNOW CAPS -->
+        <rect x="10" y="9"  width="3" height="2" fill="#E0EAFF"/>
+        <rect x="11" y="8"  width="1" height="1" fill="#F0F6FF"/>
+        <rect x="22" y="7"  width="3" height="2" fill="#E0EAFF"/>
+        <rect x="23" y="6"  width="1" height="1" fill="#F8FAFF"/>
+        <rect x="35" y="9"  width="3" height="2" fill="#E0EAFF"/>
+        <rect x="36" y="8"  width="1" height="1" fill="#F0F6FF"/>
+
+        <!-- NEAR MOUNTAIN RANGE (dark navy, pixel silhouette) -->
+        <polygon fill="#243668" points="
+          0,45 0,26
+          3,26 3,23 6,23 6,20
+          9,20 9,17 12,17 12,15
+          14,15 14,18 17,18 17,16
+          20,16 20,14 23,14 23,17
+          25,17 25,15 28,15 28,13
+          31,13 31,15 34,15 34,18
+          36,18 36,16 39,16 39,14
+          42,14 42,17 45,17 45,20
+          47,20 47,18 50,18 50,21
+          53,21 53,24 56,24 56,22
+          59,22 59,25 62,25 62,23
+          65,23 65,26 68,26 68,24
+          71,24 71,27 74,27 74,25
+          77,25 77,28 80,28
+          80,45
+        "/>
+
+        <!-- NEAR MOUNTAIN SNOW CAPS -->
+        <rect x="12" y="15" width="2" height="2" fill="#D8E4FF"/>
+        <rect x="13" y="14" width="1" height="1" fill="#EEF2FF"/>
+        <rect x="20" y="14" width="3" height="2" fill="#D8E4FF"/>
+        <rect x="21" y="13" width="1" height="1" fill="#F0F4FF"/>
+        <rect x="28" y="13" width="3" height="2" fill="#D8E4FF"/>
+        <rect x="29" y="12" width="1" height="1" fill="#EEF2FF"/>
+        <rect x="36" y="14" width="3" height="2" fill="#D8E4FF"/>
+        <rect x="37" y="13" width="1" height="1" fill="#EEF2FF"/>
+
+        <!-- DEEP FOREST TREELINE (pixel-art tree tops) -->
+        <polygon fill="#183E0C" points="
+          0,45 0,35 2,33 4,35 6,31 8,33
+          10,30 12,32 14,29 16,31 18,27
+          20,29 22,26 24,28 26,25 28,27
+          30,24 32,26 34,25 36,27 38,24
+          40,26 42,23 44,25 46,24 48,26
+          50,25 52,28 54,30 56,29 58,31
+          60,30 62,32 64,31 66,33 68,32
+          70,34 72,33 74,35 76,35 78,37
+          80,36 80,45
+        "/>
+
+        <!-- MID-TONE TREE TOP HIGHLIGHTS -->
+        <rect x="0"  y="33" width="2" height="2" fill="#286018"/>
+        <rect x="6"  y="31" width="2" height="2" fill="#286018"/>
+        <rect x="10" y="30" width="2" height="2" fill="#286018"/>
+        <rect x="14" y="29" width="2" height="2" fill="#2E6A1C"/>
+        <rect x="18" y="27" width="2" height="2" fill="#2E6A1C"/>
+        <rect x="22" y="26" width="2" height="2" fill="#347220"/>
+        <rect x="26" y="25" width="2" height="2" fill="#347220"/>
+        <rect x="30" y="24" width="2" height="2" fill="#347220"/>
+        <rect x="34" y="25" width="2" height="2" fill="#286018"/>
+        <rect x="38" y="24" width="2" height="2" fill="#286018"/>
+        <rect x="42" y="23" width="2" height="2" fill="#347220"/>
+
+        <!-- ROCKY MOUNTAIN PLATEAU (where student sits — right side) -->
+        <rect x="38" y="33" width="42" height="1" fill="#3A4A76"/>
+        <rect x="36" y="34" width="44" height="2" fill="#2C3A64"/>
+        <rect x="36" y="36" width="44" height="1" fill="#3A4A76"/>
+        <!-- Ground beneath the plateau -->
+        <rect y="37"  width="38" height="8" fill="#162E0A"/>
+        <rect x="38" y="37" width="42" height="8" fill="#1C2848"/>
+
+        <!-- ======================================= -->
+        <!-- PIXEL ART STUDENT CHARACTER              -->
+        <!-- Seated on plateau (right area)          -->
+        <!-- Left arm raised in celebration          -->
+        <!-- ======================================= -->
+
+        <!-- Raised left arm -->
+        <rect x="40" y="22" width="1" height="1" fill="#FFCC88"/>   <!-- hand top -->
+        <rect x="40" y="23" width="1" height="1" fill="#FFCC88"/>   <!-- wrist -->
+        <rect x="41" y="24" width="1" height="2" fill="#2255BB"/>   <!-- forearm -->
+        <rect x="42" y="26" width="1" height="1" fill="#2255BB"/>   <!-- upper arm jnt -->
+
+        <!-- HEAD: hair then face -->
+        <rect x="42" y="22" width="1" height="1" fill="#332211"/>   <!-- hair far left -->
+        <rect x="43" y="21" width="4" height="1" fill="#332211"/>   <!-- hair top -->
+        <rect x="47" y="22" width="1" height="1" fill="#332211"/>   <!-- hair far right -->
+        <rect x="42" y="23" width="1" height="3" fill="#332211"/>   <!-- hair left side -->
+        <rect x="47" y="23" width="1" height="3" fill="#332211"/>   <!-- hair right side -->
+        <rect x="43" y="22" width="4" height="4" fill="#FFCC88"/>   <!-- face -->
+        <!-- Eyes (two 1px dots) -->
+        <rect x="44" y="23" width="1" height="1" fill="#332211"/>
+        <rect x="46" y="23" width="1" height="1" fill="#332211"/>
+        <!-- Smile -->
+        <rect x="44" y="25" width="1" height="1" fill="#CC6655"/>
+        <rect x="45" y="26" width="1" height="1" fill="#CC6655"/>
+        <rect x="46" y="25" width="1" height="1" fill="#CC6655"/>
+
+        <!-- TORSO / SHIRT -->
+        <rect x="41" y="27" width="8" height="5" fill="#2255BB"/>   <!-- main shirt body -->
+        <rect x="41" y="26" width="1" height="1" fill="#2255BB"/>   <!-- left shoulder -->
+        <rect x="48" y="26" width="1" height="1" fill="#2255BB"/>   <!-- right shoulder -->
+        <!-- Shirt shadow band -->
+        <rect x="41" y="30" width="8" height="1" fill="#1A3D88"/>
+
+        <!-- Right arm resting down toward laptop -->
+        <rect x="49" y="27" width="1" height="2" fill="#2255BB"/>
+        <rect x="50" y="29" width="1" height="1" fill="#FFCC88"/>   <!-- hand -->
+
+        <!-- PANTS (seated, spread out) -->
+        <rect x="40" y="32" width="9" height="4" fill="#1A2244"/>
+        <rect x="39" y="33" width="1" height="2" fill="#1A2244"/>   <!-- left knee out -->
+        <rect x="49" y="33" width="1" height="1" fill="#1A2244"/>   <!-- right -->
+
+        <!-- SHOES -->
+        <rect x="39" y="36" width="2" height="1" fill="#0A0A14"/>
+        <rect x="48" y="36" width="2" height="1" fill="#0A0A14"/>
+
+        <!-- ======================================= -->
+        <!-- PIXEL ART LAPTOP                        -->
+        <!-- Open lid, sitting beside student        -->
+        <!-- ======================================= -->
+
+        <!-- Screen bezel (dark) -->
+        <rect x="51" y="28" width="10" height="7" fill="#0A0A14"/>
+        <!-- Screen content (blue) -->
+        <rect x="52" y="29" width="8"  height="5" fill="#1A4499"/>
+        <!-- Report text lines on screen -->
+        <rect x="53" y="30" width="6"  height="1" fill="#4488FF"/>   <!-- title line -->
+        <rect x="53" y="31" width="5"  height="1" fill="#2E66CC"/>
+        <rect x="53" y="32" width="6"  height="1" fill="#2E66CC"/>
+        <rect x="53" y="33" width="4"  height="1" fill="#2E66CC"/>
+        <!-- Green ✓ on screen (DONE!) -->
+        <rect x="57" y="30" width="1"  height="1" fill="#34C759"/>
+        <rect x="58" y="31" width="1"  height="1" fill="#34C759"/>
+        <rect x="56" y="32" width="1"  height="1" fill="#34C759"/>
+        <!-- Screen glow -->
+        <rect x="51" y="35" width="10" height="1" fill="#222238"/>   <!-- keyboard -->
+        <rect x="50" y="36" width="12" height="1" fill="#0A0A14"/>   <!-- hinge -->
+
+        <!-- ======================================= -->
+        <!-- GOLD STAR SPARKLES (achievement)        -->
+        <!-- ======================================= -->
+
+        <!-- Big pixel-cross star near raised hand -->
+        <rect x="37" y="17" width="1" height="5" fill="#FFD700"/>   <!-- vertical -->
+        <rect x="35" y="19" width="5" height="1" fill="#FFD700"/>   <!-- horizontal -->
+        <rect x="36" y="18" width="1" height="1" fill="#FFF176"/>   <!-- top-left diag -->
+        <rect x="40" y="18" width="1" height="1" fill="#FFF176"/>   <!-- top-right diag -->
+        <rect x="36" y="21" width="1" height="1" fill="#FFF176"/>   <!-- btm-left diag -->
+        <rect x="40" y="21" width="1" height="1" fill="#FFF176"/>   <!-- btm-right diag -->
+
+        <!-- Medium pixel-cross star (upper right) -->
+        <rect x="57" y="22" width="1" height="5" fill="#FFD700"/>
+        <rect x="55" y="24" width="5" height="1" fill="#FFD700"/>
+        <rect x="56" y="23" width="1" height="1" fill="#FFF176"/>
+        <rect x="60" y="23" width="1" height="1" fill="#FFF176"/>
+        <rect x="56" y="26" width="1" height="1" fill="#FFF176"/>
+        <rect x="60" y="26" width="1" height="1" fill="#FFF176"/>
+
+        <!-- Small sparkle dots scattered -->
+        <rect x="44" y="18" width="1" height="1" fill="#FFD700"/>
+        <rect x="50" y="20" width="1" height="1" fill="#FFD700"/>
+        <rect x="63" y="27" width="1" height="1" fill="#FFD700"/>
+        <rect x="34" y="14" width="1" height="1" fill="#FFE060"/>
+        <rect x="64" y="24" width="1" height="1" fill="#FFE060"/>
+
+        <!-- ======================================= -->
+        <!-- FLOATING PIXEL ART DOCUMENT (complete)  -->
+        <!-- ======================================= -->
+        <!-- Paper body -->
+        <rect x="28" y="21" width="6" height="8"  fill="#F8F8F4"/>
+        <!-- Paper fold corner -->
+        <rect x="32" y="21" width="2" height="2"  fill="#E0E0D8"/>
+        <rect x="34" y="21" width="1" height="1"  fill="#F8F8F4"/>
+        <rect x="33" y="22" width="1" height="1"  fill="#F8F8F4"/>
+        <!-- Title line (indigo) -->
+        <rect x="29" y="22" width="3" height="1"  fill="#4455CC"/>
+        <!-- Body lines (grey) -->
+        <rect x="29" y="24" width="4" height="1"  fill="#AAAAAA"/>
+        <rect x="29" y="25" width="3" height="1"  fill="#AAAAAA"/>
+        <rect x="29" y="26" width="4" height="1"  fill="#AAAAAA"/>
+        <!-- Green ✓ badge (complete!) -->
+        <rect x="31" y="28" width="2" height="2"  fill="#34C759"/>
+
+        <!-- Pixel dithering on mountain edges for depth -->
+        <rect x="2"  y="19" width="1" height="1"  fill="#8AA8D0" opacity="0.5"/>
+        <rect x="4"  y="16" width="1" height="1"  fill="#8AA8D0" opacity="0.5"/>
+        <rect x="14" y="13" width="1" height="1"  fill="#8AA8D0" opacity="0.5"/>
+        <rect x="27" y="12" width="1" height="1"  fill="#8AA8D0" opacity="0.5"/>
+        <rect x="40" y="13" width="1" height="1"  fill="#8AA8D0" opacity="0.5"/>
+
+      </svg>
+    </div>
+
+    <!-- Gradient overlay: left → transparent for text readability -->
+    <div class="absolute inset-0 bg-gradient-to-r from-black/78 via-black/48 to-black/8 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none"></div>
+
+    <!-- Hero content -->
+    <div class="relative max-w-6xl mx-auto px-4 w-full">
+      <div class="max-w-xl">
+        <!-- Badge -->
+        <p class="inline-flex items-center gap-2 text-xs font-semibold text-indigo-300 border border-indigo-500/40 bg-indigo-950/50 rounded-full px-4 py-1.5 mb-6 tracking-wide">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block"></span>
+          確実性 · 正確さ · スピード — 学生特化型AI
+        </p>
+
+        <!-- Main headline -->
+        <h1 class="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-[1.04] tracking-tight mb-6">
+          ChatGPTは、<br>
+          <span class="text-indigo-300">もう古い。</span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="text-base sm:text-lg text-gray-300 mb-8 leading-relaxed">
+          あなたの授業資料・電子書籍を読んで書くから、<br class="hidden sm:block">
+          <strong class="text-white">架空の参考文献が出ない、引用元が全部残る</strong>レポートになる。<br>
+          ChatGPTが知らない「あなたの授業」の内容で、3分で叩き台が完成。
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+          <a
+            href={APP_URL}
+            class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-base sm:text-lg rounded-xl px-7 py-4 transition shadow-2xl shadow-indigo-900/60"
+          >
+            無料で始める — Googleで30秒
+          </a>
+          <a
+            href="/tools/citation/"
+            class="inline-flex items-center justify-center gap-2 border border-white/30 text-white/90 font-semibold rounded-xl px-5 py-4 hover:bg-white/10 transition text-sm sm:text-base"
+          >
+            参考文献ツールを試す（登録不要）→
+          </a>
+        </div>
+
+        <!-- Trust micro-copy -->
+        <p class="text-xs text-gray-500">クレジットカード不要 · Googleアカウントで即スタート · 2回まで無料</p>
       </div>
     </div>
   </section>
 
-  <!-- ===== PROBLEM ===== -->
-  <section class="py-16 px-4 bg-gray-50">
+  <!-- ===== STATS BAR ===== -->
+  <section class="bg-[#0a0908] border-y border-gray-800/80 py-10 px-4">
+    <div class="max-w-4xl mx-auto grid grid-cols-3 text-center divide-x divide-gray-800">
+      <div class="px-4">
+        <p class="text-3xl sm:text-4xl font-black text-white">架空引用<span class="text-indigo-400 text-2xl">ゼロ</span></p>
+        <p class="text-xs text-gray-500 mt-1.5">実在する情報だけを根拠にする</p>
+      </div>
+      <div class="px-4">
+        <p class="text-3xl sm:text-4xl font-black text-white">最短<span class="text-indigo-400">10</span>分</p>
+        <p class="text-xs text-gray-500 mt-1.5">テーマ入力→レポート完成</p>
+      </div>
+      <div class="px-4">
+        <p class="text-3xl sm:text-4xl font-black text-white"><span class="text-indigo-400">9</span>学部</p>
+        <p class="text-xs text-gray-500 mt-1.5">文系学部の文体に対応</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== APP PREVIEW ===== -->
+  <section class="py-24 px-4 bg-[#0e0c0a]">
     <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-black text-center text-gray-900 mb-3">
-        こんな悩み、ありませんか？
-      </h2>
-      <p class="text-center text-gray-500 mb-10">大学生のレポートあるある</p>
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-indigo-400 mb-3 tracking-wide">実際の画面</p>
+        <p class="text-gray-400 text-base">URLを貼る。資料を入れる。引用元が全部残るレポートができる。</p>
+      </div>
+
+      <!-- Step 1: 資料を入れる -->
+      <div class="mb-8">
+        <p class="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-4">Step 1 — 資料を入れる</p>
+        <div class="rounded-2xl overflow-hidden border border-gray-700 shadow-2xl shadow-black/60">
+          <div class="flex items-center gap-2 px-4 py-3 bg-gray-800 border-b border-gray-700">
+            <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
+            <div class="flex-1 mx-4 bg-gray-700 rounded-md px-3 py-1 text-xs text-gray-400 text-center">
+              report-saas-bay.vercel.app
+            </div>
+          </div>
+          <img src="/app-materials-url.jpeg" alt="ポチレポ — 電子図書館URLを貼り付けて資料を追加する画面" class="w-full block" loading="lazy" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
+          {[
+            { icon: '📚', title: 'URLを貼るだけ', desc: 'Maruzen eBook・KinoDen のURLをコピペ。タイトルは自動でセットされる' },
+            { icon: '🗂️', title: 'ファイルも使える', desc: '授業スライドPDFや録音ファイルをそのままアップロード' },
+            { icon: '📝', title: 'メモでもOK', desc: '授業ノートをテキストで貼るだけで資料になる' },
+          ].map(({ icon, title, desc }) => (
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+              <span class="text-xl mb-2 block">{icon}</span>
+              <p class="text-white font-bold text-sm mb-1">{title}</p>
+              <p class="text-gray-400 text-xs leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Step 2: 生成して安心して提出 -->
+      <div class="mb-14">
+        <p class="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-4">Step 2 — 生成して、安心して提出</p>
+        <div class="rounded-2xl overflow-hidden border border-gray-700 shadow-2xl shadow-black/60">
+          <div class="flex items-center gap-2 px-4 py-3 bg-gray-800 border-b border-gray-700">
+            <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
+            <div class="flex-1 mx-4 bg-gray-700 rounded-md px-3 py-1 text-xs text-gray-400 text-center">
+              report-saas-bay.vercel.app
+            </div>
+          </div>
+          <img src="/app-result.jpeg" alt="ポチレポ — レポート品質スコア・AI臭さ除去度92・生成レポート表示" class="w-full block" loading="lazy" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
+          {[
+            { icon: '✅', title: '引用元が全部残る', desc: '入れた資料が根拠になるから「どこから？」と聞かれても答えられる' },
+            { icon: '📄', title: 'Word / PDFで出力', desc: 'そのまま提出できる形式でダウンロード。フォーマット整形不要' },
+            { icon: '🎁', title: '友達を招待すると+1回', desc: '紹介した友達が使い始めると生成回数が1回増える' },
+          ].map(({ icon, title, desc }) => (
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+              <span class="text-xl mb-2 block">{icon}</span>
+              <p class="text-white font-bold text-sm mb-1">{title}</p>
+              <p class="text-gray-400 text-xs leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl px-8 py-4 text-lg transition shadow-2xl shadow-indigo-900/50">
+          今すぐ無料で試す →
+        </a>
+        <p class="text-xs text-gray-600 mt-3">クレジットカード不要 · 2回まで無料</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PAIN POINTS ===== -->
+  <section class="py-24 px-4 bg-[#faf9f6]">
+    <div class="max-w-5xl mx-auto">
+      <div class="max-w-2xl mb-14">
+        <p class="text-sm font-semibold text-indigo-600 mb-3 tracking-wide">こんな経験、ありませんか？</p>
+        <h2 class="text-4xl sm:text-5xl font-black text-gray-900 leading-tight mb-6">
+          正直に聞きます。<br>
+          レポート、<br class="sm:hidden">何時間かけてますか？
+        </h2>
+        <p class="text-gray-500 text-base leading-relaxed">
+          授業資料を探して、論文を検索して、<br class="hidden sm:block">
+          参考文献の書き方を調べて、序論が思いつかなくて——<br>
+          気づいたら夜中の3時。<br>
+          でも、このパターン、変えられます。
+        </p>
+      </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { emoji: '📚', text: '参考文献の書き方がわからない。APA？MLA？日本語形式？' },
-          { emoji: '🔍', text: 'CiNiiで論文が探せない。検索しても関係ない論文ばかり出る。' },
-          { emoji: '🤖', text: 'ChatGPTで書いたら文章がAI臭い。先生にバレそうで怖い。' },
-          { emoji: '📝', text: 'レポートの構成が思いつかない。序論・本論・結論の分け方がわからない。' },
-          { emoji: '⏰', text: '締め切りまで時間がない。今から書き始めても間に合わない。' },
-          { emoji: '📖', text: '学部によって引用ルールが違う。法学部と文学部で参考文献の書き方が違う。' },
-        ].map(({ emoji, text }) => (
-          <div class="flex gap-3 bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-            <span class="text-2xl flex-shrink-0">{emoji}</span>
-            <p class="text-sm text-gray-600 leading-relaxed">{text}</p>
+          {
+            emoji: '📚',
+            title: '参考文献の書き方がわからない',
+            body: 'APAもMLAも、正直初めて聞いた。先輩にも聞きにくい。',
+          },
+          {
+            emoji: '🔍',
+            title: '参考文献探しだけで2時間飛んだ',
+            body: 'やっと見つけた論文が実在するか確認して、引用形式をまた調べ直す。本文より準備の方が長い。',
+          },
+          {
+            emoji: '🤖',
+            title: 'ChatGPTで書いたらバレそう',
+            body: 'AI特有の文体がすごく不自然。先生に絶対わかる気がして提出できない。',
+          },
+          {
+            emoji: '📝',
+            title: '序論・本論・結論が思いつかない',
+            body: '書けと言われてもどう分ければいいの？白紙の前でフリーズが続く。',
+          },
+          {
+            emoji: '⏰',
+            title: '締め切り3時間前、まだ0文字',
+            body: '気づいたら前日の夜。開き直るしかないあの絶望感、毎回繰り返してる。',
+          },
+          {
+            emoji: '🎓',
+            title: '学部によって引用ルールが違う',
+            body: '友達と形式が全然違う。もしかして最初から書き直し？ってなる。',
+          },
+        ].map(({ emoji, title, body }) => (
+          <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xl">{emoji}</span>
+              <p class="font-bold text-gray-800 text-sm leading-snug">{title}</p>
+            </div>
+            <p class="text-xs text-gray-500 leading-relaxed pl-7">{body}</p>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ===== FEATURES ===== -->
-  <section id="features" class="py-20 px-4">
-    <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-black text-center text-gray-900 mb-3">
-        ポチレポが全部解決します
-      </h2>
-      <p class="text-center text-gray-500 mb-12">ChatGPTとは違う、学術レポート専用の機能</p>
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="py-24 px-4 bg-[#faf9f6]">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-indigo-600 mb-3 tracking-wide">使い方</p>
+        <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-4">
+          3ステップで、終わります。
+        </h2>
+        <p class="text-gray-500 text-base">難しい操作は一切なし。スマホでも使えます。</p>
+      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
           {
-            icon: '🔬',
-            title: 'CiNii論文自動検索',
-            badge: '無料から',
-            desc: 'テーマを入力するだけで国内最大の学術データベース「CiNii」から関連論文を自動リストアップ。タイトル・著者・掲載誌が一覧で確認できます。',
-            points: ['国内2,000万件以上の論文に対応', '複数キーワードで絞り込み可能', '論文の概要も確認できる'],
+            n: '1',
+            icon: '📚',
+            title: '資料のURLかファイルを追加する',
+            body: '電子図書館のURL・講義スライドPDF・授業録音・メモを入れる。なくてもテーマだけで使えます。',
           },
           {
-            icon: '📋',
-            title: '参考文献フォーマット自動生成',
-            badge: '登録不要',
-            desc: '著者名・タイトル・年を入れるだけで、APA・MLA・日本語学術形式の参考文献リストを即生成。コピペするだけで完成します。',
-            points: ['APA第7版・MLA第9版対応', '日本語学術形式対応', 'Webサイト・書籍・雑誌論文に対応'],
+            n: '2',
+            icon: '✏️',
+            title: 'テーマと学部を入力する',
+            body: 'レポートのテーマ・学部・文字数を選択。9学部の文体スタイルが自動で適用されます。',
+          },
+          {
+            n: '3',
+            icon: '🎉',
+            title: '叩き台が3分で完成',
+            body: '入れた資料の内容を読んで、参考文献つきのレポートを生成。確認して修正して提出するだけです。',
+          },
+        ].map(({ n, icon, title, body }) => (
+          <div class="flex flex-col items-center text-center">
+            <div class="relative mb-5">
+              <div class="w-16 h-16 bg-white border-2 border-gray-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                {icon}
+              </div>
+              <div class="absolute -top-2.5 -right-2.5 w-7 h-7 bg-indigo-600 text-white font-black text-sm rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                {n}
+              </div>
+            </div>
+            <h3 class="font-bold text-gray-900 mb-2 text-base">{title}</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">{body}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-14 text-center">
+        <a
+          href={APP_URL}
+          class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl px-8 py-4 text-base transition shadow-lg"
+        >
+          今すぐ試してみる →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== OUTPUT EXAMPLE ===== -->
+  <section class="py-24 px-4 bg-[#faf9f6]">
+    <div class="max-w-5xl mx-auto">
+      <div class="max-w-2xl mb-14">
+        <p class="text-sm font-semibold text-indigo-600 mb-3 tracking-wide">実際の生成例</p>
+        <h2 class="text-4xl sm:text-5xl font-black text-gray-900 leading-tight mb-6">
+          こんなレポートが<br>出てきます。
+        </h2>
+        <p class="text-gray-500 text-base leading-relaxed">
+          法学部の学生が電子図書館（Maruzen eBook）の文献リンクを入れて生成した実例です。<br>
+          生成後に<strong class="text-gray-800">レポート品質スコア</strong>（AI臭さ・引用適切性・課題適合度）が表示されます。
+        </p>
+      </div>
+
+      <div class="flex flex-col lg:flex-row gap-8 items-start">
+
+        <!-- Screenshot of actual output -->
+        <div class="flex-1 rounded-2xl overflow-hidden border border-gray-200 shadow-xl">
+          <div class="flex items-center gap-2 px-4 py-3 bg-gray-100 border-b border-gray-200">
+            <span class="w-3 h-3 rounded-full bg-red-400/80"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-400/80"></span>
+            <span class="w-3 h-3 rounded-full bg-green-400/80"></span>
+            <span class="ml-3 text-xs text-gray-400">ポチレポ 生成レポート</span>
+          </div>
+          <img
+            src="/app-result.jpeg"
+            alt="ポチレポ 実際の生成レポート例 — レポート品質スコア・AI臭さ除去度92・引用適切性87・課題適合度95"
+            class="w-full block"
+            loading="lazy"
+          />
+        </div>
+
+        <!-- Callouts pointing to features in the output -->
+        <div class="lg:w-72 space-y-5 shrink-0">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <p class="text-xs font-bold text-indigo-600 mb-1">AI臭さ除去度 — 92点</p>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              語彙・構成ともに高水準で自然な学術文体。生成後にスコアで確認できます。
+            </p>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <p class="text-xs font-bold text-indigo-600 mb-1">引用適切性 — 87点</p>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              電子図書館の実在する文献を根拠に引用。でたらめな参考文献は生成されません。
+            </p>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <p class="text-xs font-bold text-indigo-600 mb-1">課題適合度 — 95点</p>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              序論・本論の構成が明快で課題整理が明確。提出前に品質を数値で確認できます。
+            </p>
+          </div>
+          <a
+            href={APP_URL}
+            class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl px-6 py-4 transition shadow-lg shadow-indigo-500/25 text-sm"
+          >
+            自分のテーマで試す →
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FREE TOOL HIGHLIGHT ===== -->
+  <section class="py-20 px-4 bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 text-white">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="max-w-lg">
+        <p class="text-indigo-200 text-sm font-semibold mb-2 tracking-wide">登録なし・完全無料</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-3 leading-snug">
+          まずは参考文献ツールを<br>試してください。
+        </h2>
+        <p class="text-indigo-100 text-sm leading-relaxed">
+          著者名・タイトル・発行年を入力するだけで<br>
+          APA・MLA・日本語形式の参考文献が即生成されます。
+        </p>
+      </div>
+      <div class="shrink-0">
+        <a
+          href="/tools/citation/"
+          class="inline-flex items-center gap-2 bg-white text-indigo-700 font-bold rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-xl whitespace-nowrap text-base"
+        >
+          参考文献ツールを使う →
+        </a>
+        <p class="text-indigo-300 text-xs text-center mt-2">登録不要・無制限で使えます</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COMPARISON: ポチレポ vs ChatGPT ===== -->
+  <section class="py-24 px-4 bg-[#0e0c0a]">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-indigo-400 mb-3 tracking-wide">よくある質問</p>
+        <h2 class="text-4xl sm:text-5xl font-black text-white mb-4">
+          ChatGPTは、<br>もう古い。
+        </h2>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          汎用AIは「それっぽい文章」を作るだけ。<br>ポチレポはあなたの授業資料・電子書籍を読んで、<br>引用元が追えるレポートを書く。
+        </p>
+      </div>
+
+      <div class="rounded-2xl overflow-hidden border border-gray-800">
+        <!-- Header -->
+        <div class="grid grid-cols-[1fr_1fr_1fr] bg-gray-900/70">
+          <div class="p-4 text-xs text-gray-500 font-semibold">機能</div>
+          <div class="p-4 text-center text-xs text-gray-400 font-semibold border-x border-gray-800">ChatGPT</div>
+          <div class="p-4 text-center text-xs text-indigo-400 font-semibold">ポチレポ</div>
+        </div>
+        <!-- Rows -->
+        {[
+          ['実在する学術論文の引用', '架空の論文タイトルを生成することも', '実在する情報だけを根拠にする'],
+          ['参考文献の自動フォーマット', '指示次第でムラがある', 'APA / MLA / 日本語形式に対応'],
+          ['電子図書館・URLを資料に', 'URLは読み込めない', 'リンクを貼るだけで本1冊まるごと資料に'],
+          ['学部別の文体・構成', '汎用文章になりがち', '9学部の文体スタイルに対応'],
+          ['授業録音→レポート化', '非対応', 'Whisperで高精度文字起こし'],
+          ['先生に出せる文体か', 'AI感が出やすい', '自分の資料をベースに自然な文体'],
+        ].map(([feat, chatgpt, pochi], i) => (
+          <div class={`grid grid-cols-[1fr_1fr_1fr] border-t border-gray-800 ${i % 2 === 0 ? '' : 'bg-gray-900/20'}`}>
+            <div class="p-4 text-xs text-gray-400 flex items-center font-medium">{feat}</div>
+            <div class="p-4 border-x border-gray-800 flex items-center justify-center">
+              <span class="text-xs text-gray-500 text-center leading-snug">{chatgpt}</span>
+            </div>
+            <div class="p-4 flex items-center justify-center">
+              <span class="text-xs text-indigo-300 text-center leading-snug">{pochi}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SOLUTION: FEATURES ===== -->
+  <section id="features" class="py-24 px-4 bg-[#0e0c0a]">
+    <div class="max-w-5xl mx-auto">
+      <div class="max-w-2xl mb-16">
+        <p class="text-sm font-semibold text-indigo-400 mb-3 tracking-wide">なぜポチレポなのか</p>
+        <h2 class="text-4xl sm:text-5xl font-black text-white leading-tight mb-6">
+          だから、<br>ポチレポを作りました。
+        </h2>
+        <p class="text-gray-400 text-base leading-relaxed">
+          ChatGPTは情報を「作る」。ポチレポはあなたが持っている資料を「読む」。<br>
+          電子図書館の本・授業スライド・録音を入れるだけで、<br>
+          <strong class="text-white">授業内容を踏まえた先生に出せるレポート</strong>を生成します。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {[
+          {
+            icon: '📚',
+            title: '電子図書館URLをそのまま資料に',
+            badge: '全プラン対応',
+            body: 'Maruzen eBook・KinoDenなど大学の電子図書館URLをコピーして貼るだけ。本1冊まるごと読み込んで、レポートに使える形で引用してくれます。',
+            pts: ['URLを貼るだけで本の内容を資料化', '参考文献リストも自動生成', '英語の本も日本語で引用できる'],
           },
           {
             icon: '🗂️',
-            title: 'レポート構成AI生成',
+            title: '授業スライドを根拠に書く',
             badge: 'Standard以上',
-            desc: 'テーマと学部を選ぶだけで、序論〜本論〜結論の章立てをAIが提案。何を書けばいいかわからない状態から即座に抜け出せます。',
-            points: ['法学・経済・社会学・文学など対応', '章立て＋見出し案まで生成', '構成を自分でカスタマイズ可能'],
+            body: '先生が配布したPDFスライドをアップロードするだけ。ChatGPTが知らない授業の内容が根拠になるから、「授業内容を踏まえて論じよ」という課題に正面から答えられる。',
+            pts: ['PDFをそのままアップロード', '先生が言ったことが引用の根拠になる', 'ChatGPTにはできない授業特化の文章'],
           },
           {
             icon: '🎤',
-            title: '授業録音→レポート骨子',
-            badge: 'Pro限定',
-            desc: '授業を録音するだけで自動文字起こし。先生の話をもとにレポートの骨子を自動生成します。授業に集中しながら資料も収集できます。',
-            points: ['Whisper AIで高精度文字起こし', '録音→要点→骨子まで自動化', 'ノート代わりに使える'],
+            title: '授業録音がそのまま根拠になる',
+            badge: 'Standard以上',
+            body: '授業の録音ファイルをアップロードすると文字起こし→資料に変換。ノートがなくても、録音さえあれば先生が言ったことを根拠にしたレポートが書けます。',
+            pts: ['Whisper AIで高精度文字起こし', '録音→資料→レポートまで自動', '「授業を聞いて書いた」レポートになる'],
           },
-        ].map(({ icon, title, badge, desc, points }) => (
-          <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-            <div class="flex items-start justify-between mb-3">
+          {
+            icon: '🔬',
+            title: '架空の参考文献が出ない',
+            badge: 'Standard以上',
+            body: 'ChatGPTは存在しない論文や架空の情報を「実在するかのように」生成することがあります。ポチレポはあなたが入れた実在の資料だけを根拠にするため、先生に「この論文どこにある？」と言われることがありません。',
+            pts: ['実在する資料のみを引用根拠にする', '電子書籍・論文・スライドをそのまま使用', '参考文献リストは入力した資料から自動生成'],
+          },
+        ].map(({ icon, title, badge, body, pts }) => (
+          <div class="border border-gray-800 rounded-2xl p-7 bg-gray-900/40 hover:border-gray-700 transition">
+            <div class="flex items-start justify-between mb-4">
               <div class="flex items-center gap-3">
                 <span class="text-3xl">{icon}</span>
-                <h3 class="font-bold text-gray-900">{title}</h3>
+                <h3 class="font-bold text-white text-lg leading-snug">{title}</h3>
               </div>
-              <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 rounded-full px-2.5 py-1 flex-shrink-0 ml-2">{badge}</span>
+              <span class="text-xs text-indigo-300 bg-indigo-950 border border-indigo-800/60 rounded-full px-3 py-1 shrink-0 ml-3 whitespace-nowrap">{badge}</span>
             </div>
-            <p class="text-sm text-gray-600 leading-relaxed mb-4">{desc}</p>
-            <ul class="space-y-1">
-              {points.map(p => (
+            <p class="text-gray-400 text-sm leading-relaxed mb-5">{body}</p>
+            <ul class="space-y-2">
+              {pts.map(p => (
                 <li class="flex items-center gap-2 text-xs text-gray-500">
-                  <span class="text-indigo-500 flex-shrink-0">✓</span>
-                  {p}
+                  <span class="text-indigo-400 shrink-0">✓</span>{p}
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
-    </div>
-  </section>
-
-  <!-- ===== FREE TOOL HIGHLIGHT ===== -->
-  <section class="py-16 px-4 bg-gradient-to-br from-indigo-600 to-violet-600 text-white">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="text-indigo-200 text-sm font-semibold mb-3">登録なし・完全無料</p>
-      <h2 class="text-2xl sm:text-3xl font-black mb-4">
-        まずは参考文献フォーマッターを<br class="hidden sm:block" />試してみてください
-      </h2>
-      <p class="text-indigo-100 mb-8 text-base leading-relaxed">
-        著者名・タイトル・発行年を入力するだけで<br class="hidden sm:block" />
-        APA・MLA・日本語形式の参考文献が即生成されます。
-      </p>
-      <a
-        href="/tools/citation/"
-        class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg"
-      >
-        参考文献ツールを使う（無料・登録不要）→
-      </a>
-    </div>
-  </section>
-
-  <!-- ===== HOW IT WORKS ===== -->
-  <section class="py-20 px-4 bg-gray-50">
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-black text-center text-gray-900 mb-3">
-        使い方はシンプル3ステップ
-      </h2>
-      <p class="text-center text-gray-500 mb-12">難しい操作は一切なし</p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {[
-          {
-            step: '01',
-            icon: '✏️',
-            title: 'テーマを入力',
-            desc: 'レポートのテーマや課題を入力。学部・文字数・文体も選択するだけ。',
-          },
-          {
-            step: '02',
-            icon: '🔍',
-            title: 'CiNii論文が集まる',
-            desc: '関連する学術論文が自動でリストアップ。使いたい論文にチェックをつけるだけ。',
-          },
-          {
-            step: '03',
-            icon: '📄',
-            title: '引用付きレポートを出力',
-            desc: '参考文献リスト付きのレポート本文をAIが生成。自分で編集して提出へ。',
-          },
-        ].map(({ step, icon, title, desc }) => (
-          <div class="flex flex-col items-center text-center">
-            <div class="relative mb-4">
-              <div class="w-16 h-16 bg-white border-2 border-indigo-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
-                {icon}
-              </div>
-              <span class="absolute -top-2 -right-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-black rounded-full w-6 h-6 flex items-center justify-center">
-                {step.slice(1)}
-              </span>
-            </div>
-            <h3 class="font-bold text-gray-900 mb-2">{title}</h3>
-            <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
-          </div>
-        ))}
-      </div>
 
       <div class="mt-12 text-center">
-        <a
-          href={APP_URL}
-          class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg shadow-indigo-500/20"
-        >
-          ✦ 今すぐ試してみる
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl px-8 py-4 text-lg transition shadow-2xl shadow-indigo-900/50">
+          ポチレポを無料で試す →
         </a>
       </div>
     </div>
   </section>
 
   <!-- ===== PRICING ===== -->
-  <section id="pricing" class="py-20 px-4">
+  <section id="pricing" class="py-24 px-4 bg-[#faf9f6]">
     <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-black text-center text-gray-900 mb-3">料金プラン</h2>
-      <p class="text-center text-gray-500 mb-12">まず無料で体験。物足りなくなったらアップグレード。</p>
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-indigo-600 mb-3 tracking-wide">料金プラン</p>
+        <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-4">
+          まず無料で、試してください。
+        </h2>
+        <p class="text-gray-500 text-base">物足りなくなってからアップグレードすれば十分です。</p>
+      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <!-- Free -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+        <!-- Free Plan -->
         <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">無料</p>
-          <p class="text-3xl font-black text-gray-900 mb-0.5">¥0</p>
-          <p class="text-xs text-gray-400 mb-5">ずっと無料・クレカ不要</p>
-          <a href={APP_URL} class="block w-full text-center border border-gray-300 text-gray-700 font-semibold rounded-xl py-2.5 text-sm hover:bg-gray-50 transition mb-5">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">無料</p>
+          <p class="text-4xl font-black text-gray-900 mb-0.5">¥0</p>
+          <p class="text-xs text-gray-400 mb-6">ずっと無料 · クレカ不要</p>
+          <a href={APP_URL} class="block w-full text-center border-2 border-gray-200 text-gray-700 font-bold rounded-xl py-3 text-sm hover:bg-gray-50 transition mb-6">
             無料で始める
           </a>
-          <ul class="space-y-2 text-sm flex-1">
+          <ul class="space-y-2.5 text-sm flex-1">
             {[
-              { ok: true,  label: 'AI生成 2回まで（通算）' },
+              { ok: true,  label: 'AI生成 2回（通算）' },
               { ok: true,  label: '最大 2,000字' },
-              { ok: true,  label: '参考資料 1件まで' },
-              { ok: false, label: 'CiNii 論文検索' },
+              { ok: true,  label: '参考資料 1件' },
+              { ok: false, label: 'レポート品質スコア詳細' },
               { ok: false, label: 'ファイル読み込み' },
               { ok: false, label: '音声文字起こし' },
-              { ok: false, label: 'Word エクスポート' },
-              { ok: false, label: 'PDF エクスポート' },
+              { ok: false, label: 'Word / PDF エクスポート' },
             ].map(({ ok, label }) => (
-              <li class={`flex items-center gap-2 ${ok ? 'text-gray-700' : 'text-gray-300'}`}>
-                <span class={`text-xs shrink-0 ${ok ? 'text-emerald-500' : 'text-gray-200'}`}>{ok ? '✓' : '✗'}</span>
+              <li class={`flex items-center gap-2.5 ${ok ? 'text-gray-700' : 'text-gray-300'}`}>
+                <span class={`text-xs shrink-0 ${ok ? 'text-emerald-500' : 'text-gray-200'}`}>{ok ? '✓' : '—'}</span>
                 {label}
               </li>
             ))}
           </ul>
         </div>
 
-        <!-- Standard -->
-        <div class="bg-white border-2 border-indigo-500 rounded-2xl p-6 shadow-lg relative flex flex-col">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold rounded-full px-4 py-1 whitespace-nowrap">
+        <!-- Standard Plan (recommended) -->
+        <div class="bg-white border-2 border-indigo-500 rounded-2xl p-6 shadow-xl relative flex flex-col">
+          <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold rounded-full px-4 py-1 whitespace-nowrap shadow-lg">
             おすすめ
           </span>
-          <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Standard</p>
-          <p class="text-3xl font-black text-gray-900 mb-0.5">¥1,000<span class="text-base font-normal text-gray-500">/月</span></p>
-          <p class="text-xs text-gray-400 mb-5">いつでも解約OK</p>
-          <a href={APP_URL} class="block w-full text-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold rounded-xl py-2.5 text-sm hover:opacity-90 transition mb-5">
+          <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">Standard</p>
+          <p class="text-4xl font-black text-gray-900 mb-0.5">¥1,000<span class="text-base font-normal text-gray-400">/月</span></p>
+          <p class="text-xs text-gray-400 mb-6">いつでも解約OK · 初期ユーザー特別価格</p>
+          <a href={APP_URL} class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl py-3 text-sm transition mb-6 shadow-lg shadow-indigo-500/25">
             Standardを始める
           </a>
-          <ul class="space-y-2 text-sm flex-1">
+          <ul class="space-y-2.5 text-sm flex-1">
             {[
-              { ok: true,  label: 'AI生成 月40回まで' },
+              { ok: true,  label: 'AI生成 月40回' },
               { ok: true,  label: '最大 5,000字' },
-              { ok: true,  label: '参考資料 3件まで' },
-              { ok: true,  label: 'CiNii 論文検索' },
+              { ok: true,  label: '参考資料 3件' },
+              { ok: true,  label: 'レポート品質スコア詳細' },
               { ok: true,  label: 'ファイル読み込み' },
               { ok: true,  label: '音声文字起こし' },
               { ok: true,  label: 'Word エクスポート' },
-              { ok: false, label: 'PDF エクスポート' },
             ].map(({ ok, label }) => (
-              <li class={`flex items-center gap-2 ${ok ? 'text-gray-700' : 'text-gray-300'}`}>
-                <span class={`text-xs shrink-0 ${ok ? 'text-indigo-500' : 'text-gray-200'}`}>{ok ? '✓' : '✗'}</span>
+              <li class={`flex items-center gap-2.5 ${ok ? 'text-gray-700' : 'text-gray-300'}`}>
+                <span class={`text-xs shrink-0 ${ok ? 'text-indigo-500' : 'text-gray-200'}`}>{ok ? '✓' : '—'}</span>
                 {label}
               </li>
             ))}
           </ul>
         </div>
 
-        <!-- Pro -->
-        <div class="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-sm text-white flex flex-col">
-          <p class="text-xs font-semibold text-purple-300 uppercase tracking-wide mb-1">Pro</p>
-          <p class="text-3xl font-black mb-0.5">¥2,000<span class="text-base font-normal text-gray-400">/月</span></p>
-          <p class="text-xs text-gray-500 mb-5">いつでも解約OK</p>
-          <a href={APP_URL} class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl py-2.5 text-sm hover:opacity-90 transition mb-5">
+        <!-- Pro Plan -->
+        <div class="bg-gray-950 border border-gray-700 rounded-2xl p-6 shadow-sm text-white flex flex-col">
+          <p class="text-xs font-bold text-purple-300 uppercase tracking-widest mb-1">Pro</p>
+          <p class="text-4xl font-black mb-0.5">¥2,000<span class="text-base font-normal text-gray-500">/月</span></p>
+          <p class="text-xs text-gray-600 mb-6">いつでも解約OK</p>
+          <a href={APP_URL} class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold rounded-xl py-3 text-sm transition mb-6">
             Proを始める
           </a>
-          <ul class="space-y-2 text-sm flex-1">
+          <ul class="space-y-2.5 text-sm flex-1">
             {[
-              { ok: true, label: 'AI生成 月50回まで' },
-              { ok: true, label: '最大 10,000字' },
-              { ok: true, label: '参考資料 3件まで' },
-              { ok: true, label: 'CiNii 論文検索' },
-              { ok: true, label: 'ファイル読み込み' },
-              { ok: true, label: '音声文字起こし' },
-              { ok: true, label: 'Word エクスポート' },
-              { ok: true, label: 'PDF エクスポート' },
-            ].map(({ ok, label }) => (
-              <li class="flex items-center gap-2 text-gray-300">
-                <span class="text-xs shrink-0 text-purple-400">✓</span>
-                {label}
+              'AI生成 月50回',
+              '最大 10,000字',
+              '参考資料 3件',
+              'レポート品質スコア詳細',
+              'ファイル読み込み',
+              '音声文字起こし',
+              'Word / PDF エクスポート',
+            ].map(label => (
+              <li class="flex items-center gap-2.5 text-gray-300">
+                <span class="text-xs text-purple-400 shrink-0">✓</span>{label}
               </li>
             ))}
           </ul>
         </div>
+
       </div>
 
       <p class="text-center text-xs text-gray-400">クレジットカード決済 · Stripe で安全に処理 · いつでもキャンセル可能</p>
@@ -376,73 +928,98 @@ const faqSchema = {
   </section>
 
   <!-- ===== FAQ ===== -->
-  <section id="faq" class="py-20 px-4 bg-gray-50">
+  <section id="faq" class="py-24 px-4 bg-white">
     <div class="max-w-2xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-black text-center text-gray-900 mb-12">よくある質問</h2>
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-indigo-600 mb-3 tracking-wide">よくある質問</p>
+        <h2 class="text-4xl font-black text-gray-900">気になること、全部答えます。</h2>
+      </div>
 
-      <div class="space-y-4">
+      <div class="space-y-3">
         {[
           {
             q: 'ChatGPTと何が違うの？',
-            a: 'ChatGPTは文章生成が得意ですが、実在する学術論文を引用してくれません。ポチレポはCiNii APIと連携して実際の論文を検索し、正しい引用フォーマットで文章に組み込みます。「参考文献つきで先生に出せるレポート」を作れる点が大きな違いです。',
+            a: 'ChatGPTなど汎用AIは、存在しない論文タイトルや架空の情報をあたかも実在するかのように生成することがあります。先生が調べると「この論文、存在しない」となるリスクがあります。ポチレポはあなたが入力した実在の資料だけを根拠にするため、架空の参考文献が出ません。情報の確実性・文章の正確さ・スピードの三つが揃った、既存AIへの不満を解消するための学生特化型AIです。',
           },
           {
-            q: '大学にバレませんか？',
-            a: 'ポチレポは「全自動生成」ではなく「作業効率化」を目的としています。自分の考えや授業メモ、集めた論文をもとに構成と表現をサポートします。最終的には自分で内容を確認・編集することで、自分のレポートとして仕上げてください。',
+            q: 'AIを使っていいの？正しい使い方は？',
+            a: 'ポチレポの正しい使い方は「自分の資料を入れて、構成と表現をサポートしてもらう」ことです。電子図書館のリンク・授業メモ・自分で探した論文を入力すると、それをベースにした文章が生成されます。ChatGPTと違い「あなたの資料から書く」ので、自分の考えが反映された内容になります。最終的に自分で内容を確認・編集して提出することで、学習にもなり、先生に出せるレポートに仕上がります。',
           },
           {
             q: '無料でどこまで使えますか？',
-            a: '無料プランではレポート生成を2回（通算）まで、最大2,000字で利用できます。参考文献フォーマッターはユーザー登録なしで無制限に使えます。CiNii論文検索・音声文字起こし・ファイル読み込みはStandard以上のプランです。',
-          },
-          {
-            q: 'スマートフォンでも使えますか？',
-            a: 'はい、スマートフォン・タブレットにも対応しています。ただしレポートの編集や長文入力にはパソコンでのご利用をおすすめします。',
+            a: '無料プランではレポート生成を2回（通算）、最大2,000字で利用できます。参考文献フォーマッターはユーザー登録なしで無制限に使えます。音声文字起こし・ファイル読み込みはStandard以上のプランです。',
           },
           {
             q: '対応している学部・分野は？',
-            a: '法学・経済学・社会学・文学・教育学・心理学・経営学など、主に文系の学部に対応しています。理系の実験レポートには現時点では最適化されていません。',
+            a: '法学・経済学・社会学・文学・教育学・心理学・経営学など、主に文系9学部に対応しています。理系の実験レポートには現時点では最適化されていません。',
           },
           {
-            q: 'CiNiiって何ですか？',
-            a: 'CiNii（サイニィ）は国立情報学研究所が運営する国内最大の学術情報データベースです。日本の大学・研究機関が発表した論文を2,000万件以上収録しています。大学のレポートで引用する論文を探すのに最適です。',
+            q: '参考文献が「実在する」というのはどういう意味ですか？',
+            a: 'ChatGPTなど汎用AIは「それらしい論文タイトル」「それらしい著者名」を生成することがあります。見た目は本物そっくりですが、実際には存在しない架空の情報です。ポチレポはあなたが貼った電子図書館のURLや、アップロードしたPDFなど実在の資料だけを根拠にするため、架空の情報が混入しません。',
+          },
+          {
+            q: 'スマートフォンでも使えますか？',
+            a: 'はい、スマートフォン・タブレットに対応しています。ただし長文入力や編集作業にはパソコンでのご利用をおすすめします。',
           },
         ].map(({ q, a }) => (
-          <details class="group bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <summary class="flex justify-between items-center cursor-pointer px-5 py-4 font-semibold text-gray-800 hover:bg-gray-50 transition list-none">
+          <details class="group bg-[#faf9f6] rounded-2xl border border-gray-100 overflow-hidden">
+            <summary class="flex justify-between items-center cursor-pointer px-6 py-5 font-bold text-gray-800 hover:bg-gray-100/60 transition list-none text-sm sm:text-base">
               {q}
-              <span class="text-gray-400 group-open:rotate-180 transition-transform text-lg ml-2">▾</span>
+              <span class="text-gray-400 group-open:rotate-180 transition-transform ml-3 shrink-0 text-lg">▾</span>
             </summary>
-            <p class="px-5 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">{a}</p>
+            <p class="px-6 pb-6 text-sm text-gray-600 leading-relaxed border-t border-gray-100/80 pt-4">{a}</p>
           </details>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ===== FINAL CTA ===== -->
-  <section class="py-20 px-4 bg-gradient-to-br from-gray-900 to-gray-800 text-white text-center">
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-black mb-4">
-        今すぐレポートの悩みを<br />解決しよう
+  <!-- ===== REFERRAL INCENTIVE ===== -->
+  <section class="py-16 px-4 bg-[#faf9f6]">
+    <div class="max-w-2xl mx-auto text-center">
+      <p class="text-sm font-semibold text-emerald-600 mb-3 tracking-wide">友達に紹介すると無料回数が増える</p>
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mb-4">
+        友達を1人誘うと、<br class="sm:hidden">生成回数が<span class="text-emerald-600">+1回</span>もらえる
       </h2>
-      <p class="text-gray-400 mb-8">
-        登録30秒・Googleアカウントで即スタート。<br />
-        無料プランはクレジットカード不要です。
+      <p class="text-gray-500 text-sm leading-relaxed mb-6">
+        ポチレポを使って「これいい」と思ったら、友達に紹介してみてください。<br>
+        あなたが紹介した友達が登録して使い始めると、あなたの生成回数が1回増えます。<br>
+        無料プランでも、紹介するたびに何度でも回数が増えます。
+      </p>
+      <div class="inline-flex items-center gap-3 bg-white border border-emerald-200 rounded-2xl px-6 py-4 text-sm text-gray-700 shadow-sm">
+        <span class="text-2xl">🎁</span>
+        <span>友達1人紹介 → <strong class="text-emerald-600">生成 +1回</strong>（上限なし）</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA ===== -->
+  <section class="py-28 px-4 bg-[#0e0c0a] text-white text-center">
+    <div class="max-w-xl mx-auto">
+      <p class="text-indigo-400 text-sm font-semibold mb-4 tracking-wide">さあ、はじめよう</p>
+      <h2 class="text-4xl sm:text-5xl font-black leading-tight mb-6">
+        締め切り前夜の<br>
+        焦りを、なくそう。
+      </h2>
+      <p class="text-gray-400 text-base mb-10 leading-relaxed">
+        登録は30秒。Googleアカウントがあれば、<br>
+        今すぐ使えます。無料プランはクレカ不要。
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
           href={APP_URL}
-          class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-bold text-lg rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg"
+          class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg rounded-xl px-8 py-4 transition shadow-2xl shadow-indigo-900/50"
         >
-          ✦ 無料で始める
+          無料で始める — Googleで30秒
         </a>
         <a
           href="/tools/citation/"
-          class="inline-flex items-center justify-center gap-2 border border-gray-600 text-gray-300 font-semibold text-base rounded-xl px-6 py-4 hover:bg-gray-700 transition"
+          class="inline-flex items-center justify-center gap-2 border border-gray-700 text-gray-400 font-semibold text-base rounded-xl px-6 py-4 hover:bg-gray-800 hover:text-white transition"
         >
           参考文献ツールを試す
         </a>
       </div>
+      <p class="text-xs text-gray-600 mt-5">クレジットカード不要 · いつでも解約OK · 2回まで無料</p>
     </div>
   </section>
 

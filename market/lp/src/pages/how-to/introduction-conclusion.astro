@@ -1,0 +1,140 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "レポートの序論はどう書き始めればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "序論は「テーマの背景」「問い（何を明らかにするか）」「論じ方の予告」の3点で構成するのが基本です。「本稿では、〜について、〜という観点から論じる」のように、これから書く内容を最初に宣言することで、読み手に全体像が伝わりやすくなります。" }
+    },
+    {
+      "@type": "Question",
+      "name": "レポートの結論はどう締めればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "結論は「本論で述べた内容の要約」「序論で立てた問いへの回答」「残された課題（あれば）」の順で書きます。新しい情報や論点を結論で初めて出すのは避け、本論で論じた範囲内でまとめることが重要です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "「思います」を使わずに書くにはどうすればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "「〜だと思う」は「〜と考えられる」「〜と言える」「〜と推察される」などに置き換えられます。根拠がある場合は「〜という事実から、〜と考えられる」のように、根拠とセットで述べると説得力のある文章になります。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="レポートの序論・本論・結論の書き方｜書き出し例文集【大学生向け】"
+  description="大学レポートの序論・本論・結論をどう書けばいいかを、すぐに使える例文付きで解説。書き出しのテンプレート、「思います」を避ける言い換え表現、結論のまとめ方まで紹介します。"
+  canonical="https://pochi-repo.jp/how-to/introduction-conclusion/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-violet-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-violet-700 mb-3 uppercase tracking-wide">書き方ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          レポートの序論・本論・結論の書き方<br />
+          <span class="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+            すぐに使える書き出し例文集
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          「何から書けばいいかわからない」を解決する、<br class="hidden sm:block" />
+          序論・本論・結論それぞれのテンプレートと例文を紹介します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          レポートの叩き台をポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">序論・本論・結論の役割</h2>
+        <p class="text-gray-500 text-sm mb-8">それぞれの役割を理解すれば、書く内容に迷わない</p>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '序論：背景・問い・論じ方の予告',
+              desc: '「なぜこのテーマを扱うのか」という背景と、「何を明らかにするか」という問いを示し、これからどう論じるかを予告する。',
+              example: '「近年、〜が問題となっている。本稿では、〜という観点から、〜について論じる。まず〜を整理し、次に〜を分析したうえで、〜を考察する。」',
+            },
+            {
+              step: '本論：根拠に基づく分析・論述',
+              desc: '授業資料や文献などの根拠を示しながら、序論で立てた問いについて分析・論述する。複数の論点がある場合は段落・見出しを分けて整理する。',
+              example: '「〜によれば、〜という指摘がある（〇〇、20xx）。この点について、〜という事例を踏まえると、〜と考えられる。」',
+            },
+            {
+              step: '結論：要約・問いへの回答・残された課題',
+              desc: '本論の内容を要約し、序論で立てた問いに対する回答を述べる。新しい情報は出さず、本論の範囲内でまとめる。必要であれば今後の課題にも触れる。',
+              example: '「以上、〜について論じてきた。〜という点から、〜と言える。ただし、〜については今後さらに検討する余地がある。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-violet-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-violet-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-violet-300">
+                例: {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">「思います」を避ける言い換え表現</h2>
+        <p class="text-gray-500 text-sm mb-8">主観的な表現を学術的な文体に変換する</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { before: '〜だと思います', after: '〜と考えられる' },
+            { before: '〜だと感じました', after: '〜と推察される' },
+            { before: '〜が大切だと思います', after: '〜が重要であると言える' },
+            { before: '〜ではないでしょうか', after: '〜と考えられるのではないか' },
+            { before: 'まず最初に〜について書きます', after: '本稿ではまず〜について整理する' },
+            { before: '〜ということがわかりました', after: '〜であることが明らかになった' },
+          ].map(({ before, after }) => (
+            <div class="bg-white rounded-xl border border-gray-100 p-4 flex gap-3 items-start">
+              <div class="text-red-400 text-xs font-bold mt-0.5 shrink-0">変換前</div>
+              <div class="flex-1">
+                <p class="text-sm text-gray-500 line-through mb-1">{before}</p>
+                <p class="text-sm text-violet-700 font-semibold">→ {after}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-violet-700 to-fuchsia-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-violet-200 text-sm font-semibold mb-3">序論・本論・結論をまとめて生成</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">授業資料のURLを入れるだけ<br />学術的な文体の叩き台が3分で完成</h2>
+        <p class="text-violet-100 text-sm leading-relaxed mb-8">
+          ポチレポは授業スライド・教科書のURLをもとに、<br />
+          序論・本論・結論の構成で、実在する情報のみを使った叩き台を生成します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-violet-700 font-bold rounded-xl px-8 py-4 hover:bg-violet-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-violet-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

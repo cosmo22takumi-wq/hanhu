@@ -5,6 +5,7 @@ import type { PlanType } from '../utils/planTypes'
 interface Props {
   onClose: () => void
   planType: PlanType
+  fromLimit?: boolean
 }
 
 const PLANS = [
@@ -16,7 +17,7 @@ const PLANS = [
     features: [
       { label: 'AI生成 2回まで（通算）', ok: true },
       { label: '最大 2,000字', ok: true },
-      { label: '参考資料 1件まで', ok: true },
+      { label: '参考資料 1件（URL・ファイル対応）', ok: true },
       { label: 'CiNii 論文検索', ok: false },
       { label: 'ファイル読み込み', ok: false },
       { label: '音声文字起こし', ok: false },
@@ -36,9 +37,9 @@ const PLANS = [
     features: [
       { label: 'AI生成 月40回まで', ok: true },
       { label: '最大 5,000字', ok: true },
-      { label: '参考資料 3件まで', ok: true },
+      { label: '参考資料 1件（URL・ファイル対応）', ok: true },
       { label: 'CiNii 論文検索', ok: true },
-      { label: 'ファイル読み込み', ok: true },
+      { label: 'ファイル読み込み（1件）', ok: true },
       { label: '音声文字起こし', ok: true },
       { label: 'Word エクスポート', ok: true },
       { label: 'PDF エクスポート', ok: false },
@@ -70,7 +71,7 @@ const PLANS = [
   },
 ]
 
-export default function Pricing({ onClose, planType }: Props) {
+export default function Pricing({ onClose, planType, fromLimit = false }: Props) {
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
 
@@ -132,12 +133,24 @@ export default function Pricing({ onClose, planType }: Props) {
         {/* Header */}
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-bold mb-1">プランを選択</h2>
-            <p className="text-indigo-100 text-sm">
-              {planType === 'free' ? '無料プランをご利用中です' :
-               planType === 'standard' ? 'Standard プランをご利用中です' :
-               'Pro プランをご利用中です'}
-            </p>
+            {fromLimit ? (
+              <>
+                <p className="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-1">無料枠を使い切りました</p>
+                <h2 className="text-2xl font-bold mb-1">続きはプランで</h2>
+                <p className="text-indigo-100 text-sm">
+                  Standard は<strong>月40回・最大5,000字</strong>。コーヒー1杯分（¥1,000）でレポート何十本でも。
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold mb-1">プランを選択</h2>
+                <p className="text-indigo-100 text-sm">
+                  {planType === 'free' ? '無料プランをご利用中です' :
+                   planType === 'standard' ? 'Standard プランをご利用中です' :
+                   'Pro プランをご利用中です'}
+                </p>
+              </>
+            )}
           </div>
           <button onClick={onClose} className="text-white/70 hover:text-white text-2xl leading-none">×</button>
         </div>

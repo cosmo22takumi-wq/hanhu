@@ -1,0 +1,172 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "哲学レポートで「自分の意見」はどこまで書いていいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "哲学レポートでも「自分の意見」は重要ですが、根拠が必要です。「〜と思う」ではなく「カントの〜論に従えば、〜と考えられる」「〜という反論に対して、〜という点で問題がある」のように、先行する哲学者の論をベースに展開します。自分の意見は考察・結論部分で「先行研究を踏まえると〜」という形で述べるのが学術的です。" }
+    },
+    {
+      "@type": "Question",
+      "name": "哲学レポートで参考文献には何を使いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "哲学レポートでは、哲学者の原著（翻訳書含む）と学術論文が主な資料です。カント・ヘーゲル・デカルトなどの原典は大学図書館や電子図書館で入手できます。CiNii・J-STAGEでも哲学・倫理学の論文が検索できます。Wikipediaは参考文献として使えません。" }
+    },
+    {
+      "@type": "Question",
+      "name": "倫理学レポートと哲学レポートは書き方が違いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "基本構成（問い→論証→考察）は同じですが、倫理学は「〜はよいか悪いか」「〜は許容されるか」といった規範的な問いを扱うことが多いです。哲学的な概念分析に加えて、具体的な事例（安楽死・AI倫理・環境倫理など）を論じることが多いのが特徴です。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="哲学レポートの書き方｜論証・考察・参考文献まで大学生向け完全解説"
+  description="哲学レポートの書き方を解説。論証の構造、哲学的な問いの立て方、考察の書き方、参考文献まで。倫理学レポートにも対応。ポチレポは哲学・倫理学の文体で授業資料から叩き台を生成。"
+  canonical="https://pochi-repo.jp/how-to/philosophy-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          哲学・倫理学レポートの書き方<br />
+          <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            論証の構造・考察の書き方
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          哲学レポートは「問いを立てて、論証して、考察する」が基本です。<br class="hidden sm:block" />
+          ChatGPTには書けない授業固有の問いに、正しく答える方法を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          哲学向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">哲学レポートの基本構成</h2>
+        <p class="text-gray-500 text-sm mb-8">「問いを立てて論証する」のが哲学レポートの核心</p>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8">
+          <p class="text-sm font-bold text-amber-700 mb-2">なぜChatGPTで哲学レポートは書けないか</p>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            哲学レポートで求められるのは「あなたの授業で扱った哲学者・テキストをもとに論じること」です。ChatGPTは一般的な哲学知識は出せますが、「この先生がこの授業でどの観点を強調したか」は知りません。授業ノート・テキストを根拠にした論証でなければ、評価されません。
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '序論：問いの設定',
+              desc: '何について論じるかを明示する。「〜とは何か」「〜は正当化できるか」のような哲学的な問いを一文で示す。問いが曖昧だとレポート全体がぼけます。',
+              example: '「本稿では、カントの定言命法に基づき、嘘をつくことは道徳的に許容されるかという問いを検討する。」',
+            },
+            {
+              step: '本論：論証の展開',
+              desc: '授業で扱った哲学者の立場を正確に説明し、その論理を展開する。「〇〇はこう主張した。なぜなら〜だからである。これに対して〜という反論がある。」という対話的構造が有効。',
+              example: '「カント（1785）は〜と主張した。この立場によれば〜となる。しかし、〜という状況ではこの原則に問題が生じる。」',
+            },
+            {
+              step: '考察・結論',
+              desc: '論証から何が言えるか自分の立場で示す。「〜とは言えない」「〜という留保が必要だ」といった結論でも構わない。断定より論理の一貫性が重要。',
+              example: '「以上から、カントの定言命法は〜という点で説得力を持つが、〜という状況では修正が必要と考えられる。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-indigo-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-indigo-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-indigo-300">
+                例: {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">哲学レポートでよく使う表現</h2>
+        <p class="text-gray-500 text-sm mb-8">論証・考察を学術的に書くための言葉</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { before: '〜だと思う', after: '〜と考えられる / 〜が示唆される' },
+            { before: '〜は正しい', after: '〜は妥当である / 〜には一定の説得力がある' },
+            { before: '〜はおかしい', after: '〜には問題がある / 〜には反論が成立する' },
+            { before: 'カントが言うには', after: 'カント（1785）によれば / カントは〜と論じた' },
+            { before: '賛成か反対か', after: '〜の立場を支持する / 〜に疑問を呈する' },
+            { before: '難しくてわからない', after: '〜については更なる考察が必要である' },
+          ].map(({ before, after }) => (
+            <div class="bg-white rounded-xl border border-gray-100 p-4 flex gap-3 items-start">
+              <div class="text-red-400 text-xs font-bold mt-0.5 shrink-0">変換前</div>
+              <div class="flex-1">
+                <p class="text-sm text-gray-500 line-through mb-1">{before}</p>
+                <p class="text-sm text-indigo-700 font-semibold">→ {after}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ポチレポで哲学レポートを書く方法</h2>
+        <p class="text-gray-500 text-sm mb-8">「授業のテキストに基づいた論証」が3分で叩き台になる</p>
+
+        <div class="space-y-3">
+          {[
+            { n: '1', title: '授業資料をアップロード', desc: '使用テキストのURL（大学の電子図書館）、授業スライド、授業ノートを入れます。哲学者名・テキスト名が含まれていることが重要です。' },
+            { n: '2', title: 'テーマと問いを入力', desc: '「哲学部・2000字・カントの義務論について論じなさい」のように入力。問いが具体的なほど精度が上がります。' },
+            { n: '3', title: '叩き台が生成される', desc: '入れたテキストをベースに、哲学・倫理学の文体（論証・考察形式）で序論〜結論まで生成。架空の引用は出ません。' },
+          ].map(({ n, title, desc }) => (
+            <div class="flex gap-4 items-start bg-white rounded-xl border border-gray-100 p-4">
+              <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">
+                {n}
+              </div>
+              <div>
+                <p class="font-bold text-gray-900 text-sm mb-0.5">{title}</p>
+                <p class="text-sm text-gray-500 leading-relaxed">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-indigo-700 to-purple-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-indigo-200 text-sm font-semibold mb-3">哲学・倫理学レポートに特化</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">授業テキストをもとに<br />論証・考察形式の叩き台を生成</h2>
+        <p class="text-indigo-100 text-sm leading-relaxed mb-8">
+          ChatGPTには書けない「この授業の哲学者・テキスト」を根拠にした叩き台。<br />
+          架空の引用・存在しない論文は出ません。入れた資料だけを根拠にします。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-indigo-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

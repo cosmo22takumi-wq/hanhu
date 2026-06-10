@@ -39,13 +39,13 @@ next-env.d.ts
 
 # market (社内ツール群: 機密情報・ビルド成果物・依存関係)
 market/credentials.json
-market/node_modules/
+market/**/node_modules/
 market/dist/
 market/out/
 market/dev.log
-market/lp/node_modules/
 market/lp/.astro/
 market/lp/dist/
+market/**/.env
 **/data/*.db
 **/data/*.json
 **/data/*.png

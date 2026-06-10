@@ -1,0 +1,195 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+---
+
+<Base
+  title="文学部・人文学部レポートの書き方｜原典引用・MLA形式・テキスト分析"
+  description="文学部・人文学部レポートの書き方を解説。原典引用の方法、MLA形式の参考文献、テキスト分析・作品論の構成まで。ポチレポは文学部の文体システムに対応。"
+  canonical="https://pochi-repo.jp/how-to/literature-report/"
+>
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-rose-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-rose-600 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          文学部・人文学部レポートの書き方<br />
+          <span class="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+            原典引用・MLA形式・テキスト分析
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          文学部レポートは「原典（一次資料）の引用と解釈」が評価の中心です。<br class="hidden sm:block" />
+          原典引用の作法・MLA形式・作品論の書き方を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          文学部向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">文学部レポートの種類と構成</h2>
+        <p class="text-gray-500 text-sm mb-8">課題タイプによって構成が変わる</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              type: '作品論・テキスト分析',
+              desc: '特定の作品（小説・詩・映画・絵画など）を分析するレポート',
+              structure: ['序論：作品の紹介と分析の視点（何を明らかにするか）', '本論①：テキストの読解（具体的な引用と解釈）', '本論②：先行研究・批評との比較', '本論③：独自の解釈・論証', '結論：分析のまとめと意義'],
+            },
+            {
+              type: '比較研究',
+              desc: '2つ以上の作品・作家・時代を比較するレポート',
+              structure: ['序論：比較の視点と問い', '本論①：対象Aの分析', '本論②：対象Bの分析', '本論③：比較と共通点・相違点の論証', '結論：比較から見えてくること'],
+            },
+            {
+              type: '思想・哲学系',
+              desc: '哲学者・思想家の概念を解説・批判するレポート',
+              structure: ['序論：取り上げる問いと論じ方', '本論①：対象思想の正確な説明', '本論②：批判的検討・解釈', '本論③：現代への適用・含意', '結論：考察のまとめ'],
+            },
+          ].map(({ type, desc, structure }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div class="px-5 py-3 bg-rose-50 border-b border-gray-200">
+                <p class="font-black text-rose-700 text-sm">{type}</p>
+                <p class="text-xs text-gray-500 mt-0.5">{desc}</p>
+              </div>
+              <div class="px-5 py-4">
+                <ol class="space-y-1">
+                  {structure.map((item, i) => (
+                    <li class="flex gap-2 text-sm text-gray-700">
+                      <span class="text-rose-500 shrink-0 font-bold">{i + 1}.</span>
+                      {item}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">原典（一次資料）の引用方法</h2>
+        <p class="text-gray-500 text-sm mb-8">文学レポートの根幹は「テキストを正確に引用して解釈する」こと</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              title: '短い引用（3行以内）',
+              note: '本文中に「」で括る',
+              example: '夏目漱石は「智に働けば角が立つ」（夏目, 1906/2005, p. 1）と書き出し、近代知識人の葛藤を一文で示した。',
+            },
+            {
+              title: '長い引用（4行以上）',
+              note: '本文から切り離してブロック引用（字下げ）',
+              example: '夏目漱石は『草枕』の冒頭で次のように述べる。\n　智に働けば角が立つ。情に棹させば流される。意地を通せば窮屈だ。（夏目, 1906/2005, p. 1）\nこの三項対立は、近代的自我の矛盾を端的に示している。',
+            },
+            {
+              title: '翻訳書・外国語文献の引用',
+              note: '翻訳版と原典の両方を示すのが丁寧',
+              example: 'ロラン・バルトは「作者の死」において「作者の誕生は読者の死によって償われなければならない」（Barthes, 1968/1979, p. 89）と主張した。',
+            },
+          ].map(({ title, note, example }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <div class="flex items-center gap-2 mb-2">
+                <p class="font-bold text-gray-900 text-sm">{title}</p>
+                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{note}</span>
+              </div>
+              <div class="bg-gray-50 rounded-lg px-4 py-3">
+                <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{example}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">MLA形式の参考文献の書き方</h2>
+        <p class="text-gray-500 text-sm mb-8">文学・言語学・人文学で広く使われる引用形式</p>
+
+        <div class="space-y-3">
+          {[
+            {
+              type: '書籍（日本語）',
+              format: '著者名. 『書名』. 出版社, 出版年.',
+              example: '夏目漱石. 『草枕』. 岩波文庫, 2005.',
+            },
+            {
+              type: '書籍（英語）',
+              format: '著者名. Title of Book. Publisher, Year.',
+              example: 'Barthes, Roland. Image-Music-Text. Fontana Press, 1977.',
+            },
+            {
+              type: '翻訳書',
+              format: '著者名. 『書名』. 訳者名訳. 出版社, 出版年（原著出版年）.',
+              example: 'バルト, ロラン. 『映像の修辞学』. 蓮實重彦・杉本紀子訳. みすず書房, 2005（1964）.',
+            },
+            {
+              type: '学術論文',
+              format: '著者名. 「論文タイトル」. 『雑誌名』, 巻号, 出版年, 頁数.',
+              example: '山田太郎. 「夏目漱石における近代性の問題」. 『日本文学』, 52, 2003, pp. 23–45.',
+            },
+            {
+              type: '本文中の引用',
+              format: '（著者名 頁数）',
+              example: '「智に働けば角が立つ」（夏目 1）という書き出しから〜',
+            },
+          ].map(({ type, format, example }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <p class="font-bold text-gray-900 text-sm mb-2">{type}</p>
+              <div class="bg-gray-100 rounded px-3 py-2 mb-2 font-mono text-xs text-gray-600">{format}</div>
+              <p class="text-sm text-gray-700">{example}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">文学部の文体・MLA形式でレポートを自動生成</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          ポチレポは文学部向けの原典引用・MLA形式の参考文献リストに対応。<br />
+          テーマと資料を入れるだけで文学部向けのレポートが完成します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/citation/', title: '参考文献の書き方 完全ガイド', desc: 'APA・MLA・日本語形式の違いと書き方' },
+            { href: '/how-to/report-structure/', title: '大学レポートの書き方と構成', desc: '序論・本論・結論の書き方を完全解説' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

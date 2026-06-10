@@ -1,0 +1,399 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+import CitationTool from '../../components/tools/CitationTool'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "引用文献と参考文献の違いは何ですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "「引用文献」は本文中で直接引用・参照した文献のみ。「参考文献」は執筆に際して読んだすべての文献です。大学によって求められる範囲が異なるため、授業の指定を確認してください。" }
+    },
+    {
+      "@type": "Question",
+      "name": "APAとMLAはどちらを使えばいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "APA形式は心理学・教育学・社会科学系で多く使われます。MLA形式は文学・人文学系で主に使われます。指定がない場合は授業に確認するか、学部の慣例に合わせてください。" }
+    },
+    {
+      "@type": "Question",
+      "name": "ポチレポは参考文献リストも出してくれますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "はい。レポート本文を生成する際、使用したCiNii論文の書誌情報をもとに参考文献リストも自動で出力されます。手動で書誌情報を入力する必要はありません。Standard・Proプランで利用できます。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="大学レポートの参考文献の書き方 | APA・MLA・日本語形式 完全ガイド"
+  description="大学レポートの参考文献の書き方をAPA・MLA・日本語形式ごとにわかりやすく解説。自動生成ツール付き。架空の参考文献が出ないレポートAI「ポチレポ」も紹介。"
+  canonical="https://pochi-repo.jp/how-to/citation/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">ポチレポ</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          参考文献も本文も、<br />
+          <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            AIがまるごと書く
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          実在する文献だけを根拠に、学部に合った文体でレポートを生成。<br class="hidden sm:block" />
+          架空の参考文献ゼロ・参考文献リストも自動で出力。
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+            無料で試す（2回まで）→
+          </a>
+          <a href="#guide" class="inline-flex items-center justify-center border border-gray-300 text-gray-600 font-medium px-7 py-3 rounded-xl hover:bg-gray-50 transition text-sm">
+            参考文献の書き方を見る ↓
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 自動生成ツール -->
+    <section class="py-12 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">参考文献を自動生成する（無料）</h2>
+        <p class="text-gray-500 text-sm mb-8">情報を入力するだけで日本語・APA・MLA形式の参考文献を自動で生成します</p>
+        <CitationTool client:load />
+      </div>
+    </section>
+
+    <!-- 悩み → 解決 -->
+    <section class="py-14 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">こんな悩み、ありませんか？</h2>
+        <p class="text-gray-500 text-sm mb-8">レポートで詰まる場面のほとんどに、ポチレポは対応しています</p>
+
+        <div class="space-y-3">
+          {[
+            {
+              pain: '参考文献の形式（APA・MLA・日本語形式）を覚えられない、いつも間違える',
+              fix: '書誌情報を入力するだけで正しい形式に自動変換。覚えなくていい',
+            },
+            {
+              pain: 'ChatGPTに参考文献を頼んだら実在しない論文を出された',
+              fix: '実在する文献だけを根拠に生成するため、架空の参考文献がゼロ。提出前の確認作業が不要になる',
+            },
+            {
+              pain: 'ChatGPTで書いたらAI臭い文章になって教授にバレた',
+              fix: '学部別の文体ルール（だ・である調の厳密な管理）で、授業に書いた文章との区別がつかない出力になる',
+            },
+            {
+              pain: '指定の文字数にいつも収まらない（余ったり・足りなかったり）',
+              fix: '指定文字数の95〜108%に収まるよう自動管理。序論・本論・結論・参考文献の割合まで調整している',
+            },
+            {
+              pain: '授業の内容を踏まえてと言われても、ノートも録音も活かし方がわからない',
+              fix: 'PDFスライドや授業録音をアップロードして資料として使える。授業の内容に沿ったレポートが書ける',
+            },
+          ].map(({ pain, fix }) => (
+            <div class="border border-gray-200 rounded-xl overflow-hidden">
+              <div class="flex items-start gap-3 px-5 py-4 bg-white">
+                <span class="text-gray-300 font-black text-lg mt-0.5 shrink-0">✗</span>
+                <p class="text-gray-700 text-sm font-medium">{pain}</p>
+              </div>
+              <div class="flex items-start gap-3 px-5 py-4 bg-indigo-50 border-t border-gray-100">
+                <span class="text-indigo-600 font-black text-lg mt-0.5 shrink-0">✓</span>
+                <p class="text-gray-700 text-sm">{fix}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ポチレポの強み -->
+    <section class="py-14 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">ポチレポが解決する</h2>
+        <p class="text-gray-500 text-sm mb-8">実在する文献だけを根拠に、参考文献リストつきのレポートをAIが生成します</p>
+
+        <div class="space-y-4">
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-lg shrink-0">🎓</div>
+              <div>
+                <p class="font-bold text-gray-800 mb-1">学部を選ぶだけで文体が変わる</p>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                  法学部なら条文解釈・判例引用、文学部なら本文批評・引用、理工学部なら実験データ・統計の引用。
+                  学部ごとに異なる「正しい書き方」を内包しているため、
+                  教授が違和感を持つ文章でレポートが出てきます。ChatGPTには真似できない設定です。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-violet-100 text-violet-600 rounded-xl flex items-center justify-center text-lg shrink-0">✨</div>
+              <div>
+                <p class="font-bold text-gray-800 mb-1">AI臭くならない。だ・である調が徹底</p>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                  「〜することが重要であると考えられます」「〜と言えるでしょう」といったAI文体を排除。
+                  一文ごとの長さ・段落の引用遷移・主語と述語の対応・学術論文日本語のルールをプロンプトに組み込んでいます。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-lg shrink-0">📊</div>
+              <div>
+                <p class="font-bold text-gray-800 mb-1">文字数ぴったりに収まる</p>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                  指定文字数の95〜108%に収まるよう設定。序論15%・本論65%・結論15%・参考文献5%の構成比も自動管理。
+                  「2,000字以上」の課題で1,800字で終わる、という心配が要りません。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-lg shrink-0">📚</div>
+              <div>
+                <p class="font-bold text-gray-800 mb-1">参考文献リストも自動で出る</p>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                  使用したCiNii論文の書誌情報をもとに、参考文献リストも本文と同時に生成されます。
+                  手動で書誌情報をコピーしてフォーマットを整える手間が一切不要です。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href={APP_URL} class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
+            ポチレポを無料で試す →
+          </a>
+          <p class="text-xs text-gray-400 mt-2">Googleアカウントで30秒登録・2回まで無料</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 料金プラン -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">レポートが週1本以上あるなら</h2>
+        <p class="text-gray-500 text-sm mb-8">2回の無料枠を使ってみて、Standardプランが最もコスパよく使えます</p>
+
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div class="border border-gray-200 rounded-2xl p-5 bg-white">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">無料</p>
+            <p class="text-2xl font-black text-gray-900 mb-4">¥0</p>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li class="flex gap-2"><span class="text-gray-400">✓</span> 生成2回（永久）</li>
+              <li class="flex gap-2"><span class="text-gray-400">✓</span> 最大2,000字</li>
+              <li class="flex gap-2"><span class="text-red-300">✗</span> <span class="text-gray-400">CiNii論文検索</span></li>
+              <li class="flex gap-2"><span class="text-red-300">✗</span> <span class="text-gray-400">ファイル・録音</span></li>
+              <li class="flex gap-2"><span class="text-red-300">✗</span> <span class="text-gray-400">Word/PDF出力</span></li>
+            </ul>
+          </div>
+
+          <div class="border-2 border-indigo-500 rounded-2xl p-5 bg-white relative">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">おすすめ</div>
+            <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Standard</p>
+            <p class="text-2xl font-black text-gray-900 mb-4">¥1,000<span class="text-sm font-normal text-gray-500">/月</span></p>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> 月40回生成</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> 最大5,000字</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> CiNii論文自動検索</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> ファイル・録音読み込み</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> Wordエクスポート</li>
+            </ul>
+          </div>
+
+          <div class="border border-gray-200 rounded-2xl p-5 bg-white">
+            <p class="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-1">Pro</p>
+            <p class="text-2xl font-black text-gray-900 mb-4">¥2,000<span class="text-sm font-normal text-gray-500">/月</span></p>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> 月50回生成</li>
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> 最大10,000字</li>
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> Standard全機能</li>
+              <li class="flex gap-2"><span class="text-violet-500">✓</span> PDFエクスポート</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 参考文献の書き方ガイド（コンテンツ兼SEO） -->
+    <section id="guide" class="py-14 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">参考文献の書き方 基本ガイド</h2>
+        <p class="text-gray-500 text-sm mb-8">形式ごとの違いとテンプレートを確認できます</p>
+
+        <!-- 形式比較 -->
+        <div class="overflow-x-auto mb-10">
+          <table class="w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold">形式</th>
+                <th class="px-4 py-3 text-left font-semibold">主な使用学部</th>
+                <th class="px-4 py-3 text-left font-semibold">出版年の位置</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <tr>
+                <td class="px-4 py-3 font-semibold text-indigo-700">日本語形式</td>
+                <td class="px-4 py-3 text-gray-600">文系全般・日本語レポート</td>
+                <td class="px-4 py-3 text-gray-600">著者名の直後</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-semibold text-violet-700">APA 第7版</td>
+                <td class="px-4 py-3 text-gray-600">心理学・教育学・社会科学</td>
+                <td class="px-4 py-3 text-gray-600">著者名の直後</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-semibold text-emerald-700">MLA 第9版</td>
+                <td class="px-4 py-3 text-gray-600">文学・人文学・語学</td>
+                <td class="px-4 py-3 text-gray-600">末尾</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-xs text-gray-400 mt-2">※ 指定がない場合は授業シラバスまたは担当教員に確認してください</p>
+        </div>
+
+        <!-- 書き方例 -->
+        <div class="space-y-8">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3">日本語形式 — 学術論文</h3>
+            <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">テンプレート</p>
+              <p class="text-sm font-mono text-gray-700 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                著者名（出版年）「論文タイトル」『雑誌名』巻（号）pp.開始-終了.
+              </p>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">記入例</p>
+              <p class="text-sm font-mono text-gray-800 bg-white rounded-lg px-3 py-2 border border-indigo-200">
+                田中太郎（2022）「現代日本における若者言葉の変容」『社会言語学研究』15（2）pp.45-67.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3">APA形式 — 学術論文</h3>
+            <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">テンプレート</p>
+              <p class="text-sm font-mono text-gray-700 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                著者姓, イニシャル. (出版年). 論文タイトル. <em>雑誌名, 巻</em>(号), 開始-終了.
+              </p>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">記入例</p>
+              <p class="text-sm font-mono text-gray-800 bg-white rounded-lg px-3 py-2 border border-violet-200">
+                Suzuki, H. (2022). Language change among youth in Japan. <em>Sociolinguistics, 15</em>(2), 45-67.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3">MLA形式 — 書籍</h3>
+            <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">テンプレート</p>
+              <p class="text-sm font-mono text-gray-700 bg-white rounded-lg px-3 py-2 border border-gray-200">
+                著者姓, 名. <em>書名</em>. 出版社, 出版年.
+              </p>
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">記入例</p>
+              <p class="text-sm font-mono text-gray-800 bg-white rounded-lg px-3 py-2 border border-emerald-200">
+                Yamada, Taro. <em>Introduction to Academic Writing</em>. University Press, 2023.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-14 px-4 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: '引用文献と参考文献の違いは何ですか？',
+              a: '「引用文献」は本文中で直接引用・参照した文献のみ。「参考文献」は執筆に際して読んだすべての文献です。大学によって求められる範囲が異なるため、授業の指定を確認してください。',
+            },
+            {
+              q: 'APAとMLAはどちらを使えばいいですか？',
+              a: 'APA形式は心理学・教育学・社会科学系で多く使われます。MLA形式は文学・人文学系で主に使われます。指定がない場合は授業に確認するか、学部の慣例に合わせてください。',
+            },
+            {
+              q: '著者が複数いる場合はどう書く？',
+              a: '日本語形式は「山田太郎・鈴木花子」のように中黒で繋げます。APA形式は「Yamada, T., & Suzuki, H.」、MLA形式は「Yamada, Taro, and Hanako Suzuki」で表記します。',
+            },
+            {
+              q: 'ポチレポは参考文献リストも出してくれますか？',
+              a: 'はい。レポート本文を生成する際、使用したCiNii論文の書誌情報をもとに参考文献リストも自動で出力されます。手動で書誌情報を入力する必要はありません。Standard・Proプランで利用できます。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">参考文献も本文も、まとめてAIに任せる</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          ポチレポは実在する文献だけを根拠にレポートを書くAIです。<br />
+          架空の参考文献ゼロ・学部別の文体・文字数管理・参考文献リストも出力。
+        </p>
+        <a
+          href={APP_URL}
+          class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg"
+        >
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <!-- 関連コンテンツ -->
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/tools/citation/', title: '参考文献フォーマット自動生成ツール', desc: '書誌情報を入力するだけで自動生成（無料）' },
+            { href: '/how-to/cinii/', title: 'CiNiiの使い方・大学生向け完全ガイド', desc: '国内最大の論文DBを使いこなす' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

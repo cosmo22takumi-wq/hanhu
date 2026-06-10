@@ -1,0 +1,134 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+---
+
+<Base
+  title="大学レポートにAIを使う正しい方法【2026年版】｜ポチレポ"
+  description="大学レポートにAIを使っていい？バレる？正しい使い方を解説。実在する文献だけを根拠に生成することで、架空の参考文献ゼロ・先生に出せる品質のレポートをAIで作る方法。"
+>
+  <Header />
+
+  <article class="max-w-3xl mx-auto px-4 py-16">
+
+    <div class="mb-10">
+      <p class="text-sm font-semibold text-indigo-600 mb-3">使い方ガイド</p>
+      <h1 class="text-3xl sm:text-4xl font-black text-gray-900 leading-tight mb-5">
+        大学レポートにAIを使う<br>正しい方法【2026年版】
+      </h1>
+      <p class="text-gray-500 text-base leading-relaxed">
+        ChatGPTで書いたらバレた、先生に指摘された——そんな経験がある人へ。
+        AIを「正しく」使えば、学習にもなり、先生に出せる品質のレポートが作れます。
+        このガイドでは、文系大学生が実際にやっている方法を解説します。
+      </p>
+    </div>
+
+    <div class="prose prose-gray max-w-none">
+
+      <h2>なぜChatGPTのレポートはバレるのか</h2>
+      <p>
+        ChatGPTがバレる最大の理由は<strong>「根拠がない文章」</strong>になるからです。
+        ChatGPTは「それっぽい文章」を生成するのは得意ですが、実在する論文や文献を正確に引用することができません。
+        架空の論文タイトルを生成してしまうこともあり、先生が確認すると一発でわかります。
+      </p>
+      <p>
+        また、ChatGPTの文体には特徴があります。
+        「〜と言えるでしょう」「〜が求められます」「非常に重要な要素であると考えられます」——
+        こうした表現が連発されると、読んだ先生には一目でわかります。
+      </p>
+
+      <h2>AIを「正しく」使う3つの原則</h2>
+
+      <h3>① 自分の資料をベースにする</h3>
+      <p>
+        AIにゼロから書かせるのではなく、<strong>「自分が集めた資料をAIに読み込ませて書いてもらう」</strong>のが正しい使い方です。
+        電子図書館で借りた本、授業のメモ、CiNiiで見つけた論文——これらを入力することで、
+        「あなたが学習した内容」をベースにした文章になります。
+      </p>
+
+      <h3>② 実在する文献を引用する</h3>
+      <p>
+        参考文献は必ず実在するものを使ってください。
+        CiNii（国立情報学研究所）には国内の学術論文が2,000万件以上収録されています。
+        大学の電子図書館（Maruzen eBook、KinoDen など）には購読中の学術書があります。
+        これらの実在する文献をAIに渡すことで、正確な引用ができます。
+      </p>
+
+      <h3>③ 生成後に自分で確認・編集する</h3>
+      <p>
+        AIが生成した文章をそのまま提出するのではなく、必ず自分で読んで内容を確認してください。
+        「この論文でこういうことが言われている」という理解があった上で提出することが、
+        学習効果にもつながり、先生からの質問にも答えられるようになります。
+      </p>
+
+      <h2>電子図書館のURLをそのまま使う方法</h2>
+      <p>
+        知らない人が多いのですが、<strong>大学の電子図書館のURLをそのまま貼るだけで、本の内容を資料として使えます。</strong>
+      </p>
+      <ol>
+        <li>大学の電子図書館（Maruzen eBook など）にログイン</li>
+        <li>レポートのテーマに関連する本を検索</li>
+        <li>その本のURLをコピー</li>
+        <li>ポチレポの「ファイル」または「手動追加」タブにURLを貼る</li>
+        <li>テーマと学部を入力して生成</li>
+      </ol>
+      <p>
+        これにより、大学図書館が購入した学術書の内容をベースにしたレポートが生成されます。
+        参考文献も自動で正しい形式（APA・MLA・日本語形式）に整形されます。
+      </p>
+
+      <h2>CiNiiで論文を探して使う方法</h2>
+      <p>
+        CiNii（サイニィ）は国立情報学研究所が運営する、国内最大の学術論文データベースです。
+        大学のレポートで引用できる日本語の学術論文がここに揃っています。
+      </p>
+      <p>
+        ポチレポの「論文検索」タブからキーワードを入れると、CiNiiを自動検索して関連論文をリストアップします。
+        使いたい論文を選ぶと、参考文献として自動でレポートに組み込まれます。
+        CiNiiの使い方を覚える必要はありません。
+      </p>
+
+      <h2>学部別の引用ルールについて</h2>
+      <p>
+        文系学部によって、参考文献の書き方（引用形式）が違います。
+      </p>
+      <ul>
+        <li><strong>法学部</strong>：判例・条文の引用形式、三段論法の構成</li>
+        <li><strong>経済学部</strong>：統計データの引用、APA形式</li>
+        <li><strong>文学部・人文学部</strong>：一次資料（原典）の引用、MLA形式</li>
+        <li><strong>社会学部・教育学部</strong>：フィールドワーク・インタビューの引用方法</li>
+      </ul>
+      <p>
+        ポチレポでは学部・分野を選ぶだけで、そのルールに合った文体と引用形式でレポートを生成します。
+      </p>
+
+      <h2>まとめ</h2>
+      <p>
+        AIをレポートに使う正しい方法は、<strong>「自分の資料 + AI支援」</strong>の組み合わせです。
+        電子図書館やCiNiiの実在する文献をAIに渡すことで、根拠のある文章になり、参考文献も正しく整形されます。
+        生成後に自分で確認・編集することで、あなた自身のレポートとして仕上げることができます。
+      </p>
+
+      <div class="not-prose mt-10 p-7 bg-indigo-50 rounded-2xl border border-indigo-100">
+        <h3 class="font-black text-gray-900 text-xl mb-3">ポチレポで試してみる</h3>
+        <p class="text-gray-600 text-sm mb-5 leading-relaxed">
+          実在する文献をベースにしたレポート生成を、2回まで無料で試せます。
+          Googleアカウントで30秒登録。
+        </p>
+        <a
+          href={APP_URL}
+          class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl px-6 py-3 transition text-sm"
+        >
+          無料で試す — Googleで30秒 →
+        </a>
+        <p class="text-xs text-gray-400 mt-3">クレジットカード不要 · 2回まで無料</p>
+      </div>
+    </div>
+
+  </article>
+
+  <Footer />
+</Base>

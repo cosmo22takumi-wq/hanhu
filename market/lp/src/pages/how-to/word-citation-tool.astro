@@ -1,0 +1,136 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Wordで参考文献リストを自動作成できますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Wordには「参考文献」機能があり、「参考資料」タブ→「引用文献の挿入」→「新しい資料文献の追加」から著者名・タイトル・出版年などを入力すると、APAやMLAなど指定した形式で自動的に文献リストを作成できます。本文中に引用を挿入すると、文末の参考文献リストに自動で反映されます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Wordの引用スタイル（APA・MLAなど）はどこで変更しますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "「参考資料」タブの「スタイル」というプルダウンメニューから、APA・MLA・シカゴなど引用形式を選択できます。授業で指定された形式を選んでから引用文献を入力すると、その形式に沿った表記で自動整形されます。途中でスタイルを変更しても、一覧で再適用されます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Wordの参考文献機能を使うときの注意点は？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Word機能はあくまで「入力した情報を整形するだけ」で、文献情報そのものの正しさは保証しません。著者名・出版年・URLなどは、CiNiiや出版社サイトなど元の情報源で必ず確認してから入力してください。ChatGPTが生成した架空の文献情報をそのままWordに入力しないよう注意が必要です。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="Wordで参考文献・引用を自動作成する方法｜APA・MLA対応【大学生向け】"
+  description="Wordの「引用文献の挿入」機能を使って、参考文献リストを自動作成する手順をAPA・MLA形式に対応して解説。レポート作成を効率化するWordの使い方と、文献情報を正しく入力するための注意点を紹介。"
+  canonical="https://pochi-repo.jp/how-to/word-citation-tool/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-blue-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-blue-700 mb-3 uppercase tracking-wide">ツール活用ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          Wordで参考文献・引用を<br />
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            自動作成する方法【APA・MLA対応】
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          Wordの「引用文献の挿入」機能を使えば、参考文献リストは自動で整形できます。<br class="hidden sm:block" />
+          手順と、文献情報を正しく入力するためのコツを解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          レポート本文をポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">Wordで参考文献を自動作成する手順</h2>
+        <p class="text-gray-500 text-sm mb-8">「参考資料」タブから3ステップで設定できる</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-8">
+          <p class="text-sm font-bold text-blue-700 mb-2">注意：Wordは「整形」するだけ</p>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            Wordの参考文献機能は、入力した著者名・出版年などの情報を指定形式に整えてくれるだけです。情報そのものの正しさは保証されません。特にChatGPTが提示した文献情報は架空のことがあるため、CiNiiや出版社サイトなど一次情報で実在を確認してから入力してください。
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: 'STEP1：引用スタイルを選択',
+              desc: '「参考資料」タブ→「スタイル」のプルダウンから、授業で指定された引用形式（APA・MLA・シカゴなど）を選択する。',
+              example: '指定がなければ、文系学部ではAPA形式が使われることが多い。',
+            },
+            {
+              step: 'STEP2：引用文献を挿入',
+              desc: '本文中の引用箇所にカーソルを置き、「引用文献の挿入」→「新しい資料文献の追加」から著者・タイトル・出版年・出版社などを入力する。同じ文献を再度引用する場合は一覧から選ぶだけでよい。',
+              example: '入力例: 著者名「山田太郎」、タイトル「〜に関する研究」、出版年「2023」',
+            },
+            {
+              step: 'STEP3：文献目録を挿入',
+              desc: 'レポートの最後に「参考資料」タブ→「文献目録」をクリックすると、これまで入力した文献が指定形式で自動的にリスト化される。本文を書き終えた最後にまとめて挿入するのが効率的。',
+              example: '本文中で文献を追加・削除した場合は、文献目録を選択して「フィールドの更新」で反映される。',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-blue-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-blue-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-blue-300">
+                {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">文献リストはWord、本文はAIで効率化</h2>
+        <p class="text-gray-500 text-sm mb-8">役割分担で効率よくレポートを仕上げる</p>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <p class="text-sm text-gray-700 leading-relaxed">
+            参考文献リストの整形はWordの機能に任せられますが、本文の構成・論述に時間がかかるのは変わりません。
+            ポチレポは授業資料のURLを入力するだけで、実在する情報のみを使ってレポートの叩き台を生成します。
+            生成した本文に、Wordで整形した参考文献リストを添えれば、効率よくレポートを完成させられます。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-blue-700 to-indigo-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-blue-200 text-sm font-semibold mb-3">本文作成はポチレポにおまかせ</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">授業資料のURLを入れるだけ<br />架空文献ゼロのレポート叩き台を生成</h2>
+        <p class="text-blue-100 text-sm leading-relaxed mb-8">
+          ポチレポは授業スライド・教科書のURLをもとに、<br />
+          実在する情報だけを使ってレポートの叩き台を3分で生成します。<br />
+          文献情報はWordの参考文献機能で整形すればOK。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-blue-700 font-bold rounded-xl px-8 py-4 hover:bg-blue-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-blue-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

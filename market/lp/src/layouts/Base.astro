@@ -1,0 +1,68 @@
+---
+import '../styles/global.css'
+
+export interface Props {
+  title: string
+  description: string
+  canonical?: string
+  ogType?: string
+  noindex?: boolean
+}
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+const SITE_URL = 'https://pochi-repo.jp'
+
+const {
+  title,
+  description,
+  canonical = Astro.url.href,
+  ogType = 'website',
+  noindex = false,
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <title>{title}</title>
+    <link rel="canonical" href={canonical} />
+
+    <!-- OGP -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="ポチレポ" />
+    <meta property="og:locale" content="ja_JP" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Google Fonts: Noto Sans JP (only essential weights) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <slot name="head" />
+
+    <!-- Cloudflare Web Analytics -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "CLOUDFLARE_ANALYTICS_TOKEN"}'></script>
+  </head>
+  <body class="font-sans text-gray-900 bg-white antialiased">
+    <slot />
+  </body>
+</html>

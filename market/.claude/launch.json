@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tiktok-marketer-ui",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "ui:dev", "--", "--port", "5174"],
+      "port": 5174
+    },
+    {
+      "name": "tiktok-marketer-preview",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5175", "--directory", "dist/renderer"],
+      "port": 5175
+    }
+  ]
+}

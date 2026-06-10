@@ -7,13 +7,16 @@ interface Props {
 export default function WhisperRecorder({ onTranscribed }: Props) {
   const [recording, setRecording] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [vttLoading, setVttLoading] = useState(false)
   const [error, setError] = useState('')
   const [lastText, setLastText] = useState('')
   const mediaRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const lastBlobRef = useRef<Blob | null>(null)
 
   async function transcribe(blob: Blob) {
+    lastBlobRef.current = blob
     setLoading(true)
     setError('')
     try {
@@ -31,6 +34,35 @@ export default function WhisperRecorder({ onTranscribed }: Props) {
       setError(String(err))
     }
     setLoading(false)
+  }
+
+  async function downloadVtt() {
+    if (!lastBlobRef.current) return
+    setVttLoading(true)
+    setError('')
+    try {
+      const blob = lastBlobRef.current
+      const res = await fetch('/api/whisper?format=vtt', {
+        method: 'POST',
+        headers: { 'Content-Type': blob.type || 'audio/webm' },
+        body: blob,
+      })
+      if (!res.ok) {
+        const data = await res.json() as { error?: string }
+        throw new Error(data.error ?? 'VTT 取得エラー')
+      }
+      const vttText = await res.text()
+      const vttBlob = new Blob([vttText], { type: 'text/vtt' })
+      const url = URL.createObjectURL(vttBlob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'transcription.vtt'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(String(err))
+    }
+    setVttLoading(false)
   }
 
   async function startRecording() {
@@ -69,7 +101,7 @@ export default function WhisperRecorder({ onTranscribed }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-gray-500">
-        Hugging Face Whisper large-v3 による文字起こし。HF_TOKEN の設定が必要です。
+        OpenAI Whisper による文字起こし。録音またはファイルをアップロードしてください。
       </p>
 
       <div className="flex gap-2 flex-wrap">
@@ -107,7 +139,7 @@ export default function WhisperRecorder({ onTranscribed }: Props) {
       {loading && (
         <div className="flex items-center gap-2 text-sm text-indigo-600">
           <div className="w-4 h-4 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin" />
-          文字起こし中（最大60秒かかる場合があります）...
+          文字起こし中...
         </div>
       )}
 
@@ -117,6 +149,21 @@ export default function WhisperRecorder({ onTranscribed }: Props) {
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
           <p className="text-xs font-semibold text-gray-500 mb-1">文字起こし結果（入力エリアに追加済み）</p>
           <p className="text-sm text-gray-700 line-clamp-3">{lastText}</p>
+          <button
+            type="button"
+            onClick={downloadVtt}
+            disabled={vttLoading}
+            className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-700 hover:bg-gray-800 text-white transition disabled:opacity-50"
+          >
+            {vttLoading ? (
+              <>
+                <div className="w-3 h-3 border-2 border-gray-400 border-t-white rounded-full animate-spin" />
+                生成中...
+              </>
+            ) : (
+              <>↓ VTT でダウンロード</>
+            )}
+          </button>
         </div>
       )}
     </div>

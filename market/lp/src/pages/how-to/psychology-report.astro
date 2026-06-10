@@ -1,0 +1,177 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "心理学レポートで「だ・である調」は必須ですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "心理学レポートは学術論文に準じた「だ・である調」が基本です。ただし教授の指示が優先されます。「〜と考えられる」「〜が示唆される」などの婉曲表現を使い、断定を避けた表現が学術的文体として好まれます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "心理学レポートの参考文献はどの形式を使いますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "心理学ではAPA形式（American Psychological Association）が標準です。著者名（発行年）「タイトル」雑誌名、巻（号）、ページ. の形式です。学部によっては独自形式を指定することもあるため、シラバスや教授の指示を必ず確認してください。" }
+    },
+    {
+      "@type": "Question",
+      "name": "心理学レポートに「仮説」は必要ですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "実験・調査レポートでは「仮説」の明示が必須です。文献レビュー型のレポートでは必ずしも仮説形式でなくても構いませんが、「問い」を明確にすることは同じです。先行研究を踏まえた問いを序論で示してください。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="心理学レポートの書き方｜APA形式・仮説・考察まで大学生向け完全解説"
+  description="心理学レポートの書き方をわかりやすく解説。APA形式の参考文献、仮説・方法・結果・考察の構成、だ・である調の文体、先行研究の引用まで。ポチレポは心理学部の文体に対応。"
+  canonical="https://pochi-repo.jp/how-to/psychology-report/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-purple-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-purple-600 mb-3 uppercase tracking-wide">学部別ガイド</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          心理学レポートの書き方<br />
+          <span class="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            APA形式・仮説・考察の書き方
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          心理学レポートは「先行研究を踏まえた問い」と「APA形式の引用」が鍵です。<br class="hidden sm:block" />
+          構成・文体・参考文献の書き方を解説します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          心理学向けレポートをポチレポで作る →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">心理学レポートの基本構成</h2>
+        <p class="text-gray-500 text-sm mb-8">文献レビュー型と実験レポート型で構成が異なります</p>
+
+        <div class="space-y-4 mb-8">
+          {[
+            {
+              step: '序論（問いの設定）',
+              desc: '何について論じるのかを明確に示す。先行研究を参照しながら「この問いがなぜ重要か」を説明する。',
+              example: '「本稿では、認知的不協和理論（Festinger, 1957）を踏まえ、現代のSNS使用と自己認識の乖離について検討する。」',
+            },
+            {
+              step: '先行研究レビュー',
+              desc: 'テーマに関する主要な研究を整理して紹介する。複数の研究を比較しながら、論点の流れを作る。',
+              example: '「A（2020）は〜と主張し、一方B（2022）は〜と論じている。これらの知見は〜という点で共通しているが、〜という点では異なる。」',
+            },
+            {
+              step: '考察・結論',
+              desc: '先行研究から何が言えるかを自分の言葉でまとめる。断定的な表現を避け「〜と考えられる」「〜が示唆される」を使う。',
+              example: '「以上の先行研究から、〜という傾向が示唆される。ただし、〜という点については更なる検討が必要である。」',
+            },
+          ].map(({ step, desc, example }) => (
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <p class="font-bold text-purple-700 text-sm mb-2">{step}</p>
+              <p class="text-gray-600 text-sm leading-relaxed mb-3">{desc}</p>
+              <div class="bg-purple-50 rounded-xl p-3 text-xs text-gray-600 leading-relaxed border-l-4 border-purple-300">
+                例: {example}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">APA形式の参考文献の書き方</h2>
+        <p class="text-gray-500 text-sm mb-8">心理学部で最もよく使われる引用形式</p>
+
+        <div class="space-y-3">
+          {[
+            {
+              type: '雑誌論文',
+              format: '著者名（発行年）「論文タイトル」『雑誌名』巻（号）, ページ.',
+              ex: '田中一郎（2021）「認知的不協和と自己評価の関連について」『心理学研究』92（3）, 145-158.',
+            },
+            {
+              type: '単行本',
+              format: '著者名（発行年）『書名』出版社.',
+              ex: '鈴木花子（2019）『現代の社会心理学』〇〇出版.',
+            },
+            {
+              type: '翻訳書',
+              format: '原著者名（原著発行年／翻訳発行年）『書名』（訳者名 訳）出版社.',
+              ex: 'Festinger, L.（1957／2009）『認知的不協和の理論』（末永俊郎 訳）誠信書房.',
+            },
+          ].map(({ type, format, ex }) => (
+            <div class="bg-white rounded-xl border border-gray-100 p-5">
+              <p class="text-xs font-bold text-purple-600 mb-1">{type}</p>
+              <p class="text-xs font-mono text-gray-500 mb-2 bg-gray-50 rounded px-2 py-1">{format}</p>
+              <p class="text-xs text-gray-600">{ex}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">心理学レポートでよくある間違い</h2>
+        <p class="text-gray-500 text-sm mb-8">提出前に必ず確認してください</p>
+        <div class="space-y-3">
+          {[
+            { bad: '「〜だと思う」「〜と感じる」', good: '「〜と考えられる」「〜が示唆される」', why: '一人称の感情表現は学術文体ではありません' },
+            { bad: '参考文献が先行研究の「まとめサイト」や「Wikipedia」', good: '原著論文・教科書・学術図書', why: '一次文献を使うことが求められます' },
+            { bad: '「ChatGPTによると〜」と書く', good: '著者名と発行年がある実在の文献を引用', why: 'AIの出力は参考文献として使えません' },
+          ].map(({ bad, good, why }) => (
+            <div class="rounded-xl border border-gray-100 overflow-hidden">
+              <div class="flex">
+                <div class="w-1/2 p-4 bg-red-50">
+                  <p class="text-xs text-red-500 font-bold mb-1">✗ NG</p>
+                  <p class="text-sm text-gray-700">{bad}</p>
+                </div>
+                <div class="w-1/2 p-4 bg-green-50">
+                  <p class="text-xs text-green-600 font-bold mb-1">✓ OK</p>
+                  <p class="text-sm text-gray-700">{good}</p>
+                </div>
+              </div>
+              <div class="px-4 pb-3 bg-gray-50">
+                <p class="text-xs text-gray-500">{why}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 bg-gradient-to-br from-purple-700 to-indigo-700 text-white text-center">
+      <div class="max-w-xl mx-auto">
+        <p class="text-purple-200 text-sm font-semibold mb-3">心理学レポートに特化</p>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">APA形式 · 先行研究の引用 · 考察の文体<br />全部自動で対応</h2>
+        <p class="text-purple-100 text-sm leading-relaxed mb-8">
+          ポチレポに心理学の教科書URLや授業スライドを入れると、<br />
+          心理学の文体・APA形式の参考文献つきで叩き台を生成します。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center gap-2 bg-white text-purple-700 font-bold rounded-xl px-8 py-4 hover:bg-purple-50 transition shadow-xl">
+          無料で試す（2回まで）→
+        </a>
+        <p class="text-purple-300 text-xs mt-3">登録30秒 · クレジットカード不要</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>
