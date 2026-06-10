@@ -6,13 +6,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as https from 'https';
 import * as crypto from 'crypto';
+import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+
 // ── Supabase 設定 ──────────────────────────────────────
-const SUPABASE_URL = 'https://nosgpdtsxxdglhlyvaqn.supabase.co';
-const SERVICE_ROLE_KEY = '***REMOVED_SUPABASE_SERVICE_ROLE_KEY***';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
 
 // ── Google SA 設定 ─────────────────────────────────────
 const CREDENTIALS_PATH = path.resolve(__dirname, '../market/credentials.json');
