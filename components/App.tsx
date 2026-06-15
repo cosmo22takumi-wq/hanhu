@@ -1000,7 +1000,7 @@ export default function App() {
                 type="button"
                 onClick={() => {
                   const link = `${window.location.origin}/?ref=${user.id}`
-                  const message = `ChatGPTでレポート書くのやめた\n\n・電子図書館のURL貼るだけ\n・授業スライドそのまま使える\n・AIっぽさスコアで安心確認\n・2回無料\n\n${link}`
+                  const message = `ChatGPTでレポート書くのやめた\n\n・電子図書館のURL貼るだけ\n・授業スライドそのまま使える\n・AIっぽさスコアで安心確認\n・7日間無料トライアル(月500円)\n\n${link}`
                   navigator.clipboard.writeText(message).then(() => alert('メッセージをコピーしました！'))
                 }}
                 className="w-full text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 rounded-lg transition"
