@@ -455,7 +455,7 @@ export const TEMPLATES: Template[] = [
   },
   {
     category: 'report_struggle',
-    content: '構成で詰まったときポチレポにテーマと講義資料ぶち込んだら序論〜結論まで作ってくれた。2回無料だよ。プロフにリンク貼ってある',
+    content: '構成で詰まったときポチレポにテーマと講義資料ぶち込んだら序論〜結論まで作ってくれた。7日間無料で試せて月500円。プロフにリンク貼ってある',
     has_cta: true, weight: 0.8,
   },
   {
@@ -465,7 +465,7 @@ export const TEMPLATES: Template[] = [
   },
   {
     category: 'citation_hell',
-    content: '参考文献探しで2時間消えてたんだけど、ポチレポに電子図書館のURLそのまま貼ったら自動で引用してくれた。形式もAPA・日本語形式どっちも対応してる。2回無料。プロフ',
+    content: '参考文献探しで2時間消えてたんだけど、ポチレポに電子図書館のURLそのまま貼ったら自動で引用してくれた。形式もAPA・日本語形式どっちも対応してる。7日間無料・月500円。プロフ',
     has_cta: true, weight: 1.0,
   },
   {
@@ -475,7 +475,7 @@ export const TEMPLATES: Template[] = [
   },
   {
     category: 'citation_hell',
-    content: 'Maruzen eBookのURLコピーしてポチレポに貼ったら本1冊が丸ごと資料になった。あとはテーマ入れてポチるだけ。2回無料だよ。プロフ見て',
+    content: 'Maruzen eBookのURLコピーしてポチレポに貼ったら本1冊が丸ごと資料になった。あとはテーマ入れてポチるだけ。7日間無料で試せて月500円。プロフ見て',
     has_cta: true, weight: 1.0,
   },
 
