@@ -114,6 +114,11 @@ function _buildStatements() {
        WHERE p.status='posted'
        ORDER BY p.posted_at DESC LIMIT 20`
     ),
+    postGetRecentTemplateIds: db.prepare(
+      `SELECT template_id FROM posts
+       WHERE status IN ('posted', 'pending') AND template_id IS NOT NULL
+       ORDER BY id DESC LIMIT @limit`
+    ),
 
     // engagement
     engInsert: db.prepare(
@@ -198,6 +203,7 @@ export const postQueries = {
   get getPending() { return stmts().postGetPending; },
   get getPostedUnanalyzed() { return stmts().postGetPostedUnanalyzed; },
   get getRecent() { return stmts().postGetRecent; },
+  get getRecentTemplateIds() { return stmts().postGetRecentTemplateIds; },
 };
 
 export const engagementQueries = {

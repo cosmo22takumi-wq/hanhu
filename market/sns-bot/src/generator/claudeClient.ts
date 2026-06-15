@@ -12,6 +12,10 @@ export async function generateVariationClaude(baseText: string, hasCta: boolean)
     ? '最後に「プロフ見て」または「プロフにリンク貼ってある」という一言を自然に入れること。'
     : 'サービスの宣伝は一切入れないこと。';
 
+  // 元のテンプレートの長さに応じて上限を決める（短い文章を無理に43文字に収めようとすると失敗しやすいため）
+  const minLen = 10;
+  const maxLen = Math.min(100, Math.max(43, baseText.length + 15));
+
   try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -31,7 +35,7 @@ ${baseText}
 - 必ずみくの一人称視点・体験として書く（「〜したんだけど」「〜なんだよね」）
 - 「〜です」「〜ます」「〜でしょう」「非常に」は絶対に使わない
 - AIっぽい表現・説明口調は禁止
-- 20〜43文字以内（必ず43文字を超えないこと）
+- ${minLen}〜${maxLen}文字以内（必ず${maxLen}文字を超えないこと）
 - ${ctaNote}
 - ツイート本文だけを出力。説明・引用符・ハッシュタグは不要
 
@@ -40,7 +44,7 @@ ${baseText}
     });
 
     const text = message.content[0].type === 'text' ? message.content[0].text.trim() : null;
-    if (!text || text.length < 10 || text.length > 43) return null;
+    if (!text || text.length < minLen || text.length > maxLen) return null;
 
     return text.replace(/^[「『"']|[」』"']$/g, '').split('\n')[0].trim();
   } catch (err) {

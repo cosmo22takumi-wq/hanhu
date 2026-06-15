@@ -7,7 +7,8 @@ export type Category =
   | 'citation_hell'
   | 'university_vibe'
   | 'latenight'
-  | 'daily_life';
+  | 'daily_life'
+  | 'self_made_app';
 
 export interface Template {
   category: Category;
@@ -476,5 +477,42 @@ export const TEMPLATES: Template[] = [
     category: 'citation_hell',
     content: 'Maruzen eBookのURLコピーしてポチレポに貼ったら本1冊が丸ごと資料になった。あとはテーマ入れてポチるだけ。2回無料だよ。プロフ見て',
     has_cta: true, weight: 1.0,
+  },
+
+  // ──────── 自作アプリ告白系（悩み→自作のストーリー）────────
+  {
+    category: 'self_made_app',
+    content: '毎回レポートで同じところで詰まってるの、さすがに自分でもうアホらしくなってきた。これもう自分でなんとかするしかないのでは',
+    has_cta: false, weight: 1.4,
+  },
+  {
+    category: 'self_made_app',
+    content: '参考文献探しとか構成とか、毎回同じことで2〜3時間溶かしてる自分にうんざりして、ついにツール作ることにした。文系でプログラミングなんてやったことないのに',
+    has_cta: false, weight: 1.4,
+  },
+  {
+    category: 'self_made_app',
+    content: 'レポートに追われすぎて、結局AIで叩き台作ってくれるアプリ自分で作っちゃった。文系のド素人が見様見真似で作ったやつだけど普通に便利。プロフにあるよ',
+    has_cta: true, weight: 1.6,
+  },
+  {
+    category: 'self_made_app',
+    content: '参考文献探しに毎回時間溶かしてたのが本当に嫌で、講義資料読み込んで自動で書いてくれるアプリ作った。まさか自分が個人開発するとは思ってなかった。プロフ見て',
+    has_cta: true, weight: 1.6,
+  },
+  {
+    category: 'self_made_app',
+    content: '「それアプリにすればいいのに」って前から言われてたけど、課題に追われすぎてついに本当に作った。文系でも作れるんだなって自分が一番びっくりしてる',
+    has_cta: false, weight: 1.4,
+  },
+  {
+    category: 'self_made_app',
+    content: 'ChatGPTのレポートが浅すぎて毎回直すの疲れたから、講義資料読み込んで書いてくれるアプリ自作した。今は普通に自分も毎回使ってる。プロフにリンクあるよ',
+    has_cta: true, weight: 1.6,
+  },
+  {
+    category: 'self_made_app',
+    content: '友達に「レポート手伝って」って配ったアプリ、思った以上にみんな使ってくれてて、自分の悩みって結構みんなの悩みだったんだなと実感した',
+    has_cta: true, weight: 1.5,
   },
 ];
