@@ -1,0 +1,243 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "ChatGPT無料版とポチレポ、何が違うんですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "最大の違いは参考文献です。ChatGPTは実在しない論文タイトル・著者名を生成することがあり、提出後に教授が確認すると一発でバレます。ポチレポはCiNiiや電子図書館から取得した実在の文献だけを使うため、架空文献はゼロです。また、自分の授業資料・講義スライドを読み込んで内容に反映できる点もChatGPTにはありません。" }
+    },
+    {
+      "@type": "Question",
+      "name": "架空の参考文献を使うとどうなりますか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "存在しない論文・著者を引用することは、学術的には捏造・剽窃に近い扱いを受ける可能性があります。多くの大学のレポート規定で「存在しない出典の引用」は不正行為に該当しうると明記されており、発覚すれば単位取り消しや厳重注意につながるリスクがあります。" }
+    },
+    {
+      "@type": "Question",
+      "name": "ChatGPTでも参考文献を聞けば出てくるのでは？",
+      "acceptedAnswer": { "@type": "Answer", "text": "ChatGPTに参考文献を聞くと、それっぽいタイトル・著者名・出版年を作文してしまうことがあります。実際に検索しても見つからない論文が出てくるケースが多数報告されています。ポチレポはCiNiiや大学電子図書館（Maruzen eBookなど）と連携し、実在する文献情報のみを使用します。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="ChatGPT無料版とポチレポの違い｜参考文献が実在する理由【2026年】"
+  description="ChatGPT無料版とポチレポは何が違う？最大の差は参考文献の実在性。ChatGPTは架空の論文を生成することがあり、提出後に発覚すると剽窃扱いのリスクも。ポチレポはCiNii・電子図書館連携で実在文献のみを使用します。"
+  canonical="https://pochi-repo.jp/how-to/chatgpt-vs-pochirepo/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">徹底比較</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          「ChatGPTでいいのでは？」<br />
+          <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            と思った人へ
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          ChatGPTとポチレポ、レポート作成における一番の違いは<strong>「参考文献が本物かどうか」</strong>です。<br class="hidden sm:block" />
+          ここを知らずに提出すると、思わぬリスクを抱えることになります。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+          実在文献だけで作るAIを試す →
+        </a>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wide">利用者の声</p>
+        <h2 class="text-2xl font-black text-gray-900 mb-8">使った人から、こんな声が届いています</h2>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          {[
+            '授業のPDF資料をそのまま読んでくれるのがめっちゃアツい。',
+            '参考文献の書き方がしっかりしていて安心感がある。',
+            '参考にした論文・資料を保存しておけるのがいい。',
+            '外部リンクを読み込んで内容に反映してくれるのがすごく便利。',
+          ].map((quote) => (
+            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+              <p class="text-gray-700 text-sm leading-relaxed">「{quote}」</p>
+            </div>
+          ))}
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mt-6">
+          これはChatGPTでは絶対に再現できない体験です。なぜなら、ChatGPTは「参考文献を探す」のではなく
+          <strong>「参考文献っぽい文章を作文する」</strong>から。次の章で、この違いがどれほど大きなリスクになるかを説明します。
+        </p>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">機能比較：ChatGPT無料版 vs ポチレポ</h2>
+        <p class="text-gray-500 text-sm mb-8">「レポートを書いてくれるAI」という点では同じに見えても、内容は大きく違います</p>
+
+        <div class="overflow-x-auto -mx-4 px-4">
+          <table class="w-full border border-gray-200 rounded-xl overflow-hidden text-sm min-w-[480px]">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="text-left p-3 font-bold text-gray-700 w-2/5">項目</th>
+                <th class="text-center p-3 font-bold text-gray-500">ChatGPT無料版</th>
+                <th class="text-center p-3 font-bold text-indigo-600">ポチレポ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['参考文献の実在性', '保証なし（架空の場合あり）', 'CiNii連携・実在文献のみ'],
+                ['自分の授業資料の反映', '×（読み込めない）', '○（PDF・スライド・録音OK）'],
+                ['大学電子図書館連携', '×', '○（Maruzen eBook等のURL対応）'],
+                ['AI特有の文体対策', '対策なし', '学術文体・学部別に最適化'],
+                ['文字数・構成の指定', '都度自分で指示が必要', '目標文字数で自動構成'],
+                ['提出時の安心感', '架空文献リスクあり', '実在文献で確認可能'],
+              ].map(([item, chatgpt, pochi]) => (
+                <tr class="border-t border-gray-100">
+                  <td class="p-3 font-semibold text-gray-800">{item}</td>
+                  <td class="p-3 text-center text-gray-400">{chatgpt}</td>
+                  <td class="p-3 text-center text-indigo-700 font-semibold">{pochi}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100 bg-red-50">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-xs font-bold text-red-500 mb-2 uppercase tracking-wide">知っておくべきリスク</p>
+        <h2 class="text-2xl font-black text-gray-900 mb-6">架空の参考文献は「剽窃」と同じ扱いを受けることがある</h2>
+
+        <div class="space-y-4">
+          <div class="bg-white border border-red-200 rounded-xl p-5">
+            <p class="font-bold text-gray-900 text-sm mb-2">存在しない論文を引用してしまうと…</p>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              ChatGPTは「それっぽい論文タイトル・著者名・出版年」を作文することがあります。
+              これを確認せずに提出すると、<strong>実在しない出典を引用した</strong>ことになり、
+              多くの大学のレポート規定では捏造・剽窃に類する不正行為として扱われる可能性があります。
+            </p>
+          </div>
+          <div class="bg-white border border-red-200 rounded-xl p-5">
+            <p class="font-bold text-gray-900 text-sm mb-2">バレるタイミングは「教授がCiNiiで検索した瞬間」</p>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              教授は引用された文献を実際に確認することがあります。CiNiiや図書館で検索して見つからない時点で、
+              レポート全体の信頼性が疑われ、最悪の場合は単位取り消し・厳重注意の対象になります。
+            </p>
+          </div>
+          <div class="bg-white border-2 border-green-300 rounded-xl p-5">
+            <p class="font-bold text-gray-900 text-sm mb-2">ポチレポなら、この心配が要りません</p>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              ポチレポはCiNiiや大学電子図書館と連携し、<strong>実在する文献情報だけ</strong>を使って参考文献を構成します。
+              生成された文献は実際に検索して確認できるので、提出前の不安がなくなります。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">「自分の授業」を読み込めるのはポチレポだけ</h2>
+        <p class="text-gray-500 text-sm mb-8">ChatGPTはあなたの授業内容を知りません</p>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-4">
+          「授業内容を踏まえて論じよ」という課題、ChatGPTに投げても授業で何を話したか知らないので的外れな内容になります。
+          ポチレポは講義スライド（PDF）・録音データ・メモをそのまま読み込んで、
+          <strong>その授業で実際に習った内容をベースに</strong>レポートを構成します。
+        </p>
+
+        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
+          <p class="text-sm text-gray-700 leading-relaxed">
+            大学の電子図書館（Maruzen eBookなど）のURLをそのまま貼るだけで、本1冊が参考資料になります。
+            この「電子図書館URL → 自動で資料化」は、日本の大学のインフラに合わせてポチレポが独自に作った機能です。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">「でも法的リスクがあるな」と思ったら</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          実在する参考文献だけで、自分の授業資料をベースにしたレポートを作りませんか。<br />
+          架空文献の心配なし、提出後も安心。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: 'ChatGPT無料版とポチレポ、何が違うんですか？',
+              a: '最大の違いは参考文献です。ChatGPTは実在しない論文タイトル・著者名を生成することがあり、提出後に教授が確認すると一発でバレます。ポチレポはCiNiiや電子図書館から取得した実在の文献だけを使うため、架空文献はゼロです。',
+            },
+            {
+              q: '架空の参考文献を使うとどうなりますか？',
+              a: '存在しない論文・著者を引用することは、学術的には捏造・剽窃に近い扱いを受ける可能性があります。多くの大学のレポート規定で不正行為に該当しうると明記されています。',
+            },
+            {
+              q: 'ChatGPTでも参考文献を聞けば出てくるのでは？',
+              a: 'ChatGPTに参考文献を聞くと、それっぽいタイトル・著者名・出版年を作文してしまうことがあります。ポチレポはCiNiiや大学電子図書館と連携し、実在する文献情報のみを使用します。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/chatgpt-detected/', title: 'ChatGPTのレポートがバレる理由', desc: '架空参考文献・AI文体の問題を詳しく解説' },
+            { href: '/how-to/cinii/', title: 'CiNiiで参考文献を探す方法', desc: '実在する論文の検索・引用のやり方' },
+            { href: '/how-to/ebook-library/', title: '大学電子図書館の使い方', desc: 'Maruzen eBookをレポートに活用する方法' },
+            { href: '/how-to/ai-report-guide/', title: 'AIを使ったレポートの正しい作り方', desc: 'バレないではなく出せるレベルを目指す方法' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>

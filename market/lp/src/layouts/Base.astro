@@ -64,5 +64,18 @@ const {
   </head>
   <body class="font-sans text-gray-900 bg-white antialiased">
     <slot />
+
+    <!-- 流入元トラッキング: アプリへのリンクに src パラメータを付与 -->
+    <script>
+      const incoming = new URLSearchParams(location.search).get('src')
+      const fallback = location.pathname === '/' ? 'lp_home' : 'lp_seo'
+      document.querySelectorAll('a[href*="report-saas-bay.vercel.app"]').forEach((a) => {
+        const url = new URL((a as HTMLAnchorElement).href)
+        if (!url.searchParams.has('src')) {
+          url.searchParams.set('src', incoming || fallback)
+          ;(a as HTMLAnchorElement).href = url.toString()
+        }
+      })
+    </script>
   </body>
 </html>
