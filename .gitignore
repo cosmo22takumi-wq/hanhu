@@ -53,6 +53,7 @@ market/**/.env
 **/data/*.json
 **/data/*.png
 market/chiebukuro-bot/logs/
+market/note-bot/logs/
 
 # video-lab: generated/analyzed media outputs (large binaries)
 market/video-lab/generated/**/*.mp4
