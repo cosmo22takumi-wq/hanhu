@@ -67,7 +67,7 @@ export default function Auth() {
         )}
 
         <p className="text-xs text-indigo-600 font-semibold text-center">
-          7日間無料トライアル → その後¥1,000/月（いつでも解約可）
+          7日間無料トライアル → その後月額¥500（いつでも解約可・業界最安級）
         </p>
 
         <p className="text-xs text-gray-400 text-center">

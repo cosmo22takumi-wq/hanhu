@@ -34,7 +34,7 @@ export default function TrialGate() {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
         <h1 className="text-2xl font-black text-gray-900 mb-2">ポチレポ</h1>
         <p className="text-gray-500 text-sm mb-6">
-          7日間無料トライアル → その後 ¥1,000/月（いつでも解約可）
+          7日間無料トライアル → その後 月額¥500（いつでも解約可）
         </p>
 
         <ul className="text-left space-y-1.5 mb-6 mx-auto inline-block">

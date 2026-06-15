@@ -26,8 +26,8 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "無料で使えますか？",
-      "acceptedAnswer": { "@type": "Answer", "text": "はい。Googleアカウントで登録すれば2回まで無料で使えます。有料プランはStandard（¥1,000/月・月40回・最大5,000字）とPro（¥2,000/月・月50回・最大10,000字）があります。" }
+      "name": "料金はいくらですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "7日間の無料トライアル後、月額¥500（1日あたり約17円）で全機能が使えます。CiNii論文検索・ファイル・録音読み込み・Word/PDFエクスポートもすべて含まれます。いつでも解約可能です。" }
     }
   ]
 }
@@ -207,7 +207,7 @@ const faqSchema = {
           <a href={APP_URL} class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
             ポチレポを無料で試す →
           </a>
-          <p class="text-xs text-gray-400 mt-2">Googleアカウントで30秒登録・2回まで無料</p>
+          <p class="text-xs text-gray-400 mt-2">7日間無料トライアル・その後月額¥500</p>
         </div>
       </div>
     </section>
@@ -340,7 +340,7 @@ const faqSchema = {
           <a href="https://report-saas-bay.vercel.app" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base rounded-xl px-8 py-4 hover:opacity-90 transition shadow-lg">
             ポチレポを無料で試す →
           </a>
-          <p class="text-xs text-gray-400 mt-2">Googleアカウントで30秒登録・2回まで無料</p>
+          <p class="text-xs text-gray-400 mt-2">7日間無料トライアル・その後月額¥500</p>
         </div>
       </div>
     </section>
@@ -349,41 +349,20 @@ const faqSchema = {
     <section class="py-14 px-4">
       <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-black text-gray-900 mb-2">料金プラン</h2>
-        <p class="text-gray-500 text-sm mb-8">まず2回無料で試せます</p>
+        <p class="text-gray-500 text-sm mb-8">7日間無料トライアル、その後は月額¥500だけ。プランで悩む必要はありません。</p>
 
-        <div class="grid sm:grid-cols-3 gap-4">
-          <div class="border border-gray-200 rounded-2xl p-5 bg-white">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">無料</p>
-            <p class="text-2xl font-black text-gray-900 mb-4">¥0</p>
-            <ul class="space-y-2 text-sm text-gray-600">
-              <li class="flex gap-2"><span class="text-gray-400">✓</span> 生成2回（永久）</li>
-              <li class="flex gap-2"><span class="text-gray-400">✓</span> 最大2,000字</li>
-              <li class="flex gap-2"><span class="text-red-300">✗</span> <span class="text-gray-400">CiNii論文検索</span></li>
-              <li class="flex gap-2"><span class="text-red-300">✗</span> <span class="text-gray-400">ファイル・録音</span></li>
-            </ul>
-          </div>
-
+        <div class="max-w-sm mx-auto">
           <div class="border-2 border-indigo-500 rounded-2xl p-5 bg-white relative">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">おすすめ</div>
-            <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Standard</p>
-            <p class="text-2xl font-black text-gray-900 mb-4">¥1,000<span class="text-sm font-normal text-gray-500">/月</span></p>
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">シンプルな1プラン</div>
+            <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">ポチレポ プラン</p>
+            <p class="text-2xl font-black text-gray-900 mb-0.5">¥500<span class="text-sm font-normal text-gray-500">/月</span></p>
+            <p class="text-xs text-emerald-600 font-semibold mb-4">業界最安級・1日あたり約17円</p>
             <ul class="space-y-2 text-sm text-gray-700">
-              <li class="flex gap-2"><span class="text-indigo-500">✓</span> 月40回生成</li>
-              <li class="flex gap-2"><span class="text-indigo-500">✓</span> 最大5,000字</li>
-              <li class="flex gap-2"><span class="text-indigo-500">✓</span> CiNii論文自動検索</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> 月50回生成・最大10,000字</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> CiNii論文自動検索（無制限）</li>
               <li class="flex gap-2"><span class="text-indigo-500">✓</span> ファイル・録音読み込み</li>
-              <li class="flex gap-2"><span class="text-indigo-500">✓</span> Wordエクスポート</li>
-            </ul>
-          </div>
-
-          <div class="border border-gray-200 rounded-2xl p-5 bg-white">
-            <p class="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-1">Pro</p>
-            <p class="text-2xl font-black text-gray-900 mb-4">¥2,000<span class="text-sm font-normal text-gray-500">/月</span></p>
-            <ul class="space-y-2 text-sm text-gray-700">
-              <li class="flex gap-2"><span class="text-violet-500">✓</span> 月50回生成</li>
-              <li class="flex gap-2"><span class="text-violet-500">✓</span> 最大10,000字</li>
-              <li class="flex gap-2"><span class="text-violet-500">✓</span> Standard全機能</li>
-              <li class="flex gap-2"><span class="text-violet-500">✓</span> PDFエクスポート</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> AI添削（月20回）</li>
+              <li class="flex gap-2"><span class="text-indigo-500">✓</span> Word / PDFエクスポート</li>
             </ul>
           </div>
         </div>
@@ -409,8 +388,8 @@ const faqSchema = {
               a: '9学部の文体システム・だ・である調の徹底・実在するCiNii論文の引用・文字数管理（95-108%）を組み合わせています。ChatGPTのような汎用AI出力と異なり、学部別の論証パターンと学術日本語の構文ルールをプロンプトに組み込んでいます。',
             },
             {
-              q: '無料で使えますか？',
-              a: 'はい。Googleアカウントで登録すれば2回まで無料で使えます。有料プランはStandard（¥1,000/月・月40回・最大5,000字）とPro（¥2,000/月・月50回・最大10,000字）があります。',
+              q: '料金はいくらですか？',
+              a: '7日間の無料トライアル後、月額¥500（1日あたり約17円）で全機能が使えます。月50回・最大10,000字のレポート生成、CiNii論文検索、ファイル・録音読み込み、AI添削、Word/PDFエクスポートまでこの1プランに含まれています。いつでも解約可能です。',
             },
           ].map(item => (
             <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
@@ -435,7 +414,7 @@ const faqSchema = {
         <h2 class="text-2xl font-black mb-3">ChatGPTじゃなく、大学レポート専用AIを使う</h2>
         <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
           ポチレポは学部別文体・だ・である調・CiNii実在論文・文字数管理を専用設計したレポートAIです。<br />
-          まず2回無料で試してください。
+          7日間無料トライアルで試してください。
         </p>
         <a
           href={APP_URL}
@@ -443,7 +422,7 @@ const faqSchema = {
         >
           ポチレポを無料で試す →
         </a>
-        <p class="text-indigo-200 text-xs mt-3">Googleアカウントで30秒登録・2回まで無料</p>
+        <p class="text-indigo-200 text-xs mt-3">7日間無料トライアル・その後月額¥500</p>
       </div>
     </section>
 

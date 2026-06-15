@@ -13,9 +13,7 @@ const schema = {
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Web",
   "offers": [
-    { "@type": "Offer", "price": "0", "priceCurrency": "JPY", "name": "無料プラン" },
-    { "@type": "Offer", "price": "1000", "priceCurrency": "JPY", "name": "Standardプラン" },
-    { "@type": "Offer", "price": "2000", "priceCurrency": "JPY", "name": "Proプラン" }
+    { "@type": "Offer", "price": "500", "priceCurrency": "JPY", "name": "ポチレポ（7日間無料トライアル付き）" }
   ]
 }
 
@@ -41,10 +39,10 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "無料でどこまで使えますか？",
+      "name": "料金はいくらですか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "無料プランではレポート生成を2回（通算）まで、最大2,000字で利用できます。参考文献フォーマッターはユーザー登録なしで無制限に使えます。"
+        "text": "7日間の無料トライアル後、月額¥500（1日あたり約17円）で全機能が使えます。いつでも解約可能です。参考文献フォーマッターはユーザー登録なしで無制限に使えます。"
       }
     },
     {
@@ -61,7 +59,7 @@ const faqSchema = {
 
 <Base
   title="ポチレポ｜電子図書館のURLを貼るだけ。授業資料を読んでレポートを書くAI"
-  description="大学の電子図書館URL・講義スライドPDF・授業録音をそのまま入れるだけ。ChatGPTが知らない「あなたの授業」の内容でレポートを書くAI。登録30秒・無料から使えます。"
+  description="大学の電子図書館URL・講義スライドPDF・授業録音をそのまま入れるだけ。ChatGPTが知らない「あなたの授業」の内容でレポートを書くAI。7日間無料トライアル、その後月額¥500。"
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
@@ -393,7 +391,7 @@ const faqSchema = {
             href={APP_URL}
             class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-base sm:text-lg rounded-xl px-7 py-4 transition shadow-2xl shadow-indigo-900/60"
           >
-            無料で始める — Googleで30秒
+            7日間無料トライアルを始める
           </a>
           <a
             href="/tools/citation/"
@@ -404,7 +402,7 @@ const faqSchema = {
         </div>
 
         <!-- Trust micro-copy -->
-        <p class="text-xs text-gray-500">クレジットカード不要 · Googleアカウントで即スタート · 2回まで無料</p>
+        <p class="text-xs text-gray-500">7日間無料トライアル · その後月額¥500（業界最安級・1日あたり約17円） · いつでも解約OK</p>
       </div>
     </div>
   </section>
@@ -482,7 +480,7 @@ const faqSchema = {
           {[
             { icon: '✅', title: '引用元が全部残る', desc: '入れた資料が根拠になるから「どこから？」と聞かれても答えられる' },
             { icon: '📄', title: 'Word / PDFで出力', desc: 'そのまま提出できる形式でダウンロード。フォーマット整形不要' },
-            { icon: '🎁', title: '友達を招待すると+1回', desc: '紹介した友達が使い始めると生成回数が1回増える' },
+            { icon: '💰', title: '月額¥500・1日約17円', desc: '7日間は無料。お試し後も業界最安級の価格で使い続けられる' },
           ].map(({ icon, title, desc }) => (
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
               <span class="text-xl mb-2 block">{icon}</span>
@@ -495,9 +493,9 @@ const faqSchema = {
 
       <div class="text-center">
         <a href={APP_URL} class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl px-8 py-4 text-lg transition shadow-2xl shadow-indigo-900/50">
-          今すぐ無料で試す →
+          7日間無料トライアルを始める →
         </a>
-        <p class="text-xs text-gray-600 mt-3">クレジットカード不要 · 2回まで無料</p>
+        <p class="text-xs text-gray-600 mt-3">その後月額¥500（業界最安級・1日あたり約17円） · いつでも解約OK</p>
       </div>
     </div>
   </section>
@@ -797,35 +795,35 @@ const faqSchema = {
           {
             icon: '📚',
             title: '電子図書館URLをそのまま資料に',
-            badge: '全プラン対応',
+            badge: 'トライアルから使える',
             body: 'Maruzen eBook・KinoDenなど大学の電子図書館URLをコピーして貼るだけ。本1冊まるごと読み込んで、レポートに使える形で引用してくれます。',
             pts: ['URLを貼るだけで本の内容を資料化', '参考文献リストも自動生成', '英語の本も日本語で引用できる'],
           },
           {
             icon: '🗂️',
             title: '授業スライドを根拠に書く',
-            badge: 'Standard以上',
+            badge: 'トライアルから使える',
             body: '先生が配布したPDFスライドをアップロードするだけ。ChatGPTが知らない授業の内容が根拠になるから、「授業内容を踏まえて論じよ」という課題に正面から答えられる。',
             pts: ['PDFをそのままアップロード', '先生が言ったことが引用の根拠になる', 'ChatGPTにはできない授業特化の文章'],
           },
           {
             icon: '🎤',
             title: '授業録音がそのまま根拠になる',
-            badge: 'Standard以上',
+            badge: 'トライアルから使える',
             body: '授業の録音ファイルをアップロードすると文字起こし→資料に変換。ノートがなくても、録音さえあれば先生が言ったことを根拠にしたレポートが書けます。',
             pts: ['Whisper AIで高精度文字起こし', '録音→資料→レポートまで自動', '「授業を聞いて書いた」レポートになる'],
           },
           {
             icon: '🔬',
             title: '架空の参考文献が出ない',
-            badge: '無料で月3回お試し可',
+            badge: 'トライアルから無制限',
             body: 'ChatGPTは存在しない論文や架空の情報を「実在するかのように」生成することがあります。ポチレポはCiNii（国立情報学研究所）の論文データベースと連携し、実在する論文だけを根拠にするため、先生に「この論文どこにある？」と言われることがありません。',
-            pts: ['CiNii連携で実在する論文のみを引用根拠にする', '無料プランでも月3回CiNii検索が可能', '参考文献リストは入力した資料から自動生成'],
+            pts: ['CiNii連携で実在する論文のみを引用根拠にする', 'トライアル中から回数無制限でCiNii検索可能', '参考文献リストは入力した資料から自動生成'],
           },
           {
             icon: '📝',
             title: '提出前に「評価が不安」を解消するAI添削',
-            badge: 'Standard以上',
+            badge: 'トライアルから使える',
             body: '「このレポートで単位もらえるか不安」という人のためのAI添削機能。自分で書いたレポートを貼り付けるだけで、誤字脱字・論理の飛躍・引用不足・構成のバランスを教授目線で厳しくチェックし、改善点を具体的に指摘します。',
             pts: ['誤字脱字・論理の飛躍・引用不足を自動チェック', '構成（序論・本論・結論）のバランスも診断', '提出前にその場で何度でも確認できる'],
           },
@@ -864,98 +862,43 @@ const faqSchema = {
       <div class="text-center mb-14">
         <p class="text-sm font-semibold text-indigo-600 mb-3 tracking-wide">料金プラン</p>
         <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-4">
-          まず無料で、試してください。
+          7日間無料、その後は<br class="sm:hidden" />月額¥500だけ。
         </h2>
-        <p class="text-gray-500 text-base">物足りなくなってからアップグレードすれば十分です。</p>
+        <p class="text-gray-500 text-base">プランで悩む必要はありません。全機能が、業界最安級の価格で使えます。</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-        <!-- Free Plan -->
-        <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col">
-          <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">無料</p>
-          <p class="text-4xl font-black text-gray-900 mb-0.5">¥0</p>
-          <p class="text-xs text-gray-400 mb-6">ずっと無料 · クレカ不要</p>
-          <a href={APP_URL} class="block w-full text-center border-2 border-gray-200 text-gray-700 font-bold rounded-xl py-3 text-sm hover:bg-gray-50 transition mb-6">
-            無料で始める
-          </a>
-          <ul class="space-y-2.5 text-sm flex-1">
-            {[
-              { ok: true,  label: 'AI生成 2回（通算）' },
-              { ok: true,  label: '最大 2,000字' },
-              { ok: true,  label: '参考資料 1件' },
-              { ok: false, label: 'レポート品質スコア詳細' },
-              { ok: false, label: 'ファイル読み込み' },
-              { ok: false, label: '音声文字起こし' },
-              { ok: false, label: 'Word / PDF エクスポート' },
-            ].map(({ ok, label }) => (
-              <li class={`flex items-center gap-2.5 ${ok ? 'text-gray-700' : 'text-gray-300'}`}>
-                <span class={`text-xs shrink-0 ${ok ? 'text-emerald-500' : 'text-gray-200'}`}>{ok ? '✓' : '—'}</span>
-                {label}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <!-- Standard Plan (recommended) -->
-        <div class="bg-white border-2 border-indigo-500 rounded-2xl p-6 shadow-xl relative flex flex-col">
+      <div class="max-w-md mx-auto mb-8">
+        <div class="bg-white border-2 border-indigo-500 rounded-2xl p-8 shadow-xl relative flex flex-col">
           <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold rounded-full px-4 py-1 whitespace-nowrap shadow-lg">
-            おすすめ
+            シンプルな1プラン
           </span>
-          <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">Standard</p>
-          <p class="text-4xl font-black text-gray-900 mb-0.5">¥1,000<span class="text-base font-normal text-gray-400">/月</span></p>
-          <p class="text-xs text-gray-400 mb-6">いつでも解約OK · 初期ユーザー特別価格</p>
+          <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">ポチレポ プラン</p>
+          <p class="text-4xl font-black text-gray-900 mb-0.5">¥500<span class="text-base font-normal text-gray-400">/月</span></p>
+          <p class="text-xs text-emerald-600 font-semibold mb-1">業界最安級・1日あたり約17円</p>
+          <p class="text-xs text-gray-400 mb-6">7日間無料トライアル付き · いつでも解約OK</p>
           <a href={APP_URL} class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl py-3 text-sm transition mb-6 shadow-lg shadow-indigo-500/25">
-            Standardを始める
+            7日間無料トライアルを始める
           </a>
           <ul class="space-y-2.5 text-sm flex-1">
             {[
-              { ok: true,  label: 'AI生成 月40回' },
-              { ok: true,  label: '最大 5,000字' },
-              { ok: true,  label: '参考資料 3件' },
-              { ok: true,  label: 'レポート品質スコア詳細' },
-              { ok: true,  label: 'AI添削（提出前チェック・月5回）' },
-              { ok: true,  label: 'ファイル読み込み' },
-              { ok: true,  label: '音声文字起こし' },
-              { ok: true,  label: 'Word エクスポート' },
-            ].map(({ ok, label }) => (
-              <li class={`flex items-center gap-2.5 ${ok ? 'text-gray-700' : 'text-gray-300'}`}>
-                <span class={`text-xs shrink-0 ${ok ? 'text-indigo-500' : 'text-gray-200'}`}>{ok ? '✓' : '—'}</span>
-                {label}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <!-- Pro Plan -->
-        <div class="bg-gray-950 border border-gray-700 rounded-2xl p-6 shadow-sm text-white flex flex-col">
-          <p class="text-xs font-bold text-purple-300 uppercase tracking-widest mb-1">Pro</p>
-          <p class="text-4xl font-black mb-0.5">¥2,000<span class="text-base font-normal text-gray-500">/月</span></p>
-          <p class="text-xs text-gray-600 mb-6">いつでも解約OK</p>
-          <a href={APP_URL} class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold rounded-xl py-3 text-sm transition mb-6">
-            Proを始める
-          </a>
-          <ul class="space-y-2.5 text-sm flex-1">
-            {[
-              'AI生成 月50回',
+              'AI生成 月50回まで',
               '最大 10,000字',
-              '参考資料 3件',
-              'レポート品質スコア詳細',
-              'AI添削（提出前チェック・月20回）',
+              '参考資料 3件まで（URL・ファイル対応）',
+              'CiNii 論文検索（無制限）',
               'ファイル読み込み',
               '音声文字起こし',
+              'レポート校閲・校正 月20回まで',
               'Word / PDF エクスポート',
             ].map(label => (
-              <li class="flex items-center gap-2.5 text-gray-300">
-                <span class="text-xs text-purple-400 shrink-0">✓</span>{label}
+              <li class="flex items-center gap-2.5 text-gray-700">
+                <span class="text-xs text-indigo-500 shrink-0">✓</span>{label}
               </li>
             ))}
           </ul>
         </div>
-
       </div>
 
-      <p class="text-center text-xs text-gray-400">クレジットカード決済 · Stripe で安全に処理 · いつでもキャンセル可能</p>
+      <p class="text-center text-xs text-gray-400">トライアル開始時にクレジットカード登録が必要です · Stripe で安全に処理 · いつでもキャンセル可能</p>
     </div>
   </section>
 
@@ -978,12 +921,12 @@ const faqSchema = {
             a: 'ポチレポの正しい使い方は「自分の資料を入れて、構成と表現をサポートしてもらう」ことです。電子図書館のリンク・授業メモ・自分で探した論文を入力すると、それをベースにした文章が生成されます。ChatGPTと違い「あなたの資料から書く」ので、自分の考えが反映された内容になります。最終的に自分で内容を確認・編集して提出することで、学習にもなり、先生に出せるレポートに仕上がります。',
           },
           {
-            q: '無料でどこまで使えますか？',
-            a: '無料プランではレポート生成を2回（通算）、最大2,000字で利用できます。CiNii論文検索（架空引用ゼロの核心機能）も月3回まで無料でお試しいただけます。参考文献フォーマッターはユーザー登録なしで無制限に使えます。音声文字起こし・ファイル読み込みはStandard以上のプランです。',
+            q: '料金はいくらですか？',
+            a: '7日間の無料トライアル後、月額¥500（1日あたり約17円）で全機能が使えます。プラン分けはなく、AI生成・CiNii論文検索・ファイル読み込み・音声文字起こし・AI添削・Word/PDFエクスポートまで、すべて1つの料金に含まれています。いつでも解約可能です。参考文献フォーマッターはユーザー登録なしで無制限に使えます。',
           },
           {
             q: '自分で書いたレポートをAIに添削してもらえますか？',
-            a: 'はい。Standardプラン以上で使える「AI添削」機能を使うと、自分で書いたレポートを貼り付けるだけで、誤字脱字・論理の飛躍・引用や根拠の不足・構成のバランス・テーマへの適合度を教授目線で厳しくチェックし、改善点を具体的に指摘してくれます。提出前の最終チェックとして何度でも使えます。',
+            a: 'はい。「AI添削」機能を使うと、自分で書いたレポートを貼り付けるだけで、誤字脱字・論理の飛躍・引用や根拠の不足・構成のバランス・テーマへの適合度を教授目線で厳しくチェックし、改善点を具体的に指摘してくれます。月20回まで、提出前の最終チェックとして使えます。',
           },
           {
             q: '対応している学部・分野は？',
@@ -1010,21 +953,21 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- ===== REFERRAL INCENTIVE ===== -->
+  <!-- ===== AFFORDABILITY REASSURANCE ===== -->
   <section class="py-16 px-4 bg-[#faf9f6]">
     <div class="max-w-2xl mx-auto text-center">
-      <p class="text-sm font-semibold text-emerald-600 mb-3 tracking-wide">友達に紹介すると無料回数が増える</p>
+      <p class="text-sm font-semibold text-emerald-600 mb-3 tracking-wide">だから、気軽に試せます</p>
       <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mb-4">
-        友達を1人誘うと、<br class="sm:hidden">生成回数が<span class="text-emerald-600">+1回</span>もらえる
+        7日間は無料。<br class="sm:hidden">その後も<span class="text-emerald-600">月額¥500</span>だけ。
       </h2>
       <p class="text-gray-500 text-sm leading-relaxed mb-6">
-        ポチレポを使って「これいい」と思ったら、友達に紹介してみてください。<br>
-        あなたが紹介した友達が登録して使い始めると、あなたの生成回数が1回増えます。<br>
-        無料プランでも、紹介するたびに何度でも回数が増えます。
+        合わなければトライアル中にいつでも解約できるので、料金は発生しません。<br>
+        継続しても、1日あたり約17円。コンビニのおにぎり1個より安い金額で、<br>
+        レポート作成のすべての機能が使い放題になります。
       </p>
       <div class="inline-flex items-center gap-3 bg-white border border-emerald-200 rounded-2xl px-6 py-4 text-sm text-gray-700 shadow-sm">
-        <span class="text-2xl">🎁</span>
-        <span>友達1人紹介 → <strong class="text-emerald-600">生成 +1回</strong>（上限なし）</span>
+        <span class="text-2xl">💸</span>
+        <span>7日間無料 → <strong class="text-emerald-600">月額¥500</strong>・いつでも解約OK</span>
       </div>
     </div>
   </section>
@@ -1039,14 +982,14 @@ const faqSchema = {
       </h2>
       <p class="text-gray-400 text-base mb-10 leading-relaxed">
         登録は30秒。Googleアカウントがあれば、<br>
-        今すぐ使えます。無料プランはクレカ不要。
+        今すぐ使えます。7日間は無料、その後も月額¥500。
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
           href={APP_URL}
           class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg rounded-xl px-8 py-4 transition shadow-2xl shadow-indigo-900/50"
         >
-          無料で始める — Googleで30秒
+          7日間無料トライアルを始める
         </a>
         <a
           href="/tools/citation/"
@@ -1055,7 +998,7 @@ const faqSchema = {
           参考文献ツールを試す
         </a>
       </div>
-      <p class="text-xs text-gray-600 mt-5">クレジットカード不要 · いつでも解約OK · 2回まで無料</p>
+      <p class="text-xs text-gray-600 mt-5">7日間無料トライアル · その後月額¥500（業界最安級） · いつでも解約OK</p>
     </div>
   </section>
 

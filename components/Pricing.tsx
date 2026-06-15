@@ -108,9 +108,10 @@ export default function Pricing({ onClose, status, currentPeriodEnd, fromLimit =
         <div className="p-6">
           <div className="border-2 border-indigo-300 rounded-xl p-5">
             <h3 className="text-base font-bold text-gray-800 mb-1">ポチレポ プラン</h3>
-            <p className="text-2xl font-bold text-gray-900 mb-4">
-              ¥1,000<span className="text-sm font-normal text-gray-500">/月</span>
+            <p className="text-2xl font-bold text-gray-900 mb-1">
+              ¥500<span className="text-sm font-normal text-gray-500">/月</span>
             </p>
+            <p className="text-xs text-emerald-600 font-semibold mb-4">業界最安級・1日あたり約17円</p>
 
             <ul className="space-y-1.5 mb-5">
               {FEATURES.map((f) => (
