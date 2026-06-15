@@ -52,3 +52,4 @@ market/**/.env
 **/data/*.db
 **/data/*.json
 **/data/*.png
+market/chiebukuro-bot/logs/
