@@ -5,15 +5,12 @@ import type { CiNiiPaper } from '../pages/api/cinii'
 
 interface Props {
   user: User
-  isPro: boolean
-  ciniiUsed?: number
-  ciniiLimit?: number | null
   onSearched?: () => void
   onAdded?: () => void
   onUpgrade?: () => void
 }
 
-export default function CiNiiSearch({ user, isPro, ciniiUsed = 0, ciniiLimit = null, onSearched, onAdded, onUpgrade }: Props) {
+export default function CiNiiSearch({ user, onSearched, onAdded, onUpgrade }: Props) {
   const [query, setQuery] = useState('')
   const [papers, setPapers] = useState<CiNiiPaper[]>([])
   const [total, setTotal] = useState(0)
@@ -23,11 +20,8 @@ export default function CiNiiSearch({ user, isPro, ciniiUsed = 0, ciniiLimit = n
   const [adding, setAdding] = useState<Set<string>>(new Set())
   const [sortorder, setSortorder] = useState<'1' | '0'>('1') // 1=新しい順, 0=関連度順
 
-  const limitReached = !isPro && ciniiLimit !== null && ciniiUsed >= ciniiLimit
-
   async function search(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (limitReached) { onUpgrade?.(); return }
     if (!query.trim()) return
     setLoading(true)
     setError('')
@@ -41,12 +35,10 @@ export default function CiNiiSearch({ user, isPro, ciniiUsed = 0, ciniiLimit = n
       })
       if (res.status === 402) {
         const data = await res.json() as { error?: string; message?: string }
-        if (data.error === 'CINII_LIMIT_REACHED') {
-          setError(data.message ?? '無料プランの検索回数上限に達しました')
-          onUpgrade?.()
-          setLoading(false)
-          return
-        }
+        setError(data.message ?? '利用上限に達しました')
+        onUpgrade?.()
+        setLoading(false)
+        return
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json() as { papers: CiNiiPaper[]; total: number; error?: string }
@@ -78,24 +70,6 @@ export default function CiNiiSearch({ user, isPro, ciniiUsed = 0, ciniiLimit = n
     if (!dbErr) { setAdded((prev) => new Set([...prev, key])); onAdded?.() }
   }
 
-  if (limitReached) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 h-full py-8 text-center">
-        <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-2xl">🔒</div>
-        <div>
-          <p className="text-sm font-bold text-gray-700 mb-1">無料プランのCiNii検索（月{ciniiLimit}回）の上限に達しました</p>
-          <p className="text-xs text-gray-500">Standard以上にアップグレードすると、CiNii論文検索が無制限で使えます。実在する論文だけを引用するので「架空の参考文献」が混じる心配がありません。</p>
-        </div>
-        <button
-          onClick={onUpgrade}
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:opacity-90 transition"
-        >
-          プランを見る
-        </button>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col gap-3">
       <form onSubmit={search} className="flex gap-2">
@@ -113,12 +87,6 @@ export default function CiNiiSearch({ user, isPro, ciniiUsed = 0, ciniiLimit = n
           {loading ? '検索中...' : '検索'}
         </button>
       </form>
-
-      {!isPro && ciniiLimit !== null && (
-        <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-1.5">
-          無料プランの検索 残り{Math.max(ciniiLimit - ciniiUsed, 0)}/{ciniiLimit}回（実在する論文のみヒットするので、架空の参考文献は出てきません）
-        </p>
-      )}
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-gray-400">CiNii Research（国立情報学研究所）</p>

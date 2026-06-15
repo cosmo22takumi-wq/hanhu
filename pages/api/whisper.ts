@@ -31,8 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const plan = await getPlanType(user.id, user.email ?? '')
       if (plan === 'free') {
         return res.status(402).json({
-          error: 'PRO_REQUIRED',
-          message: '音声文字起こしには Standard 以上のプランが必要です。',
+          error: 'TRIAL_REQUIRED',
+          message: '無料トライアルを開始するにはカード登録が必要です。',
         })
       }
     }

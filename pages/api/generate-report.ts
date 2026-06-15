@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
 import { Resend } from 'resend'
-import { adminSupabase, getPlanType, getActualPlanType, isPromoActive } from '../../utils/checkSubscription'
+import { adminSupabase, getPlanType } from '../../utils/checkSubscription'
 import { YoutubeTranscript } from 'youtube-transcript'
 
 export const config = { maxDuration: 300 }
@@ -269,7 +269,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY が設定されていません。' })
   }
 
-  const FREE_LIMIT = isPromoActive() ? 3 : 2
   const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com'
 
   // 認証必須（未ログインは拒否）
@@ -304,84 +303,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
   }
 
-  const PLAN_MONTHLY_LIMIT: Record<string, number> = { standard: 40, pro: 50 }
+  const MONTHLY_LIMIT = 50
 
   // 生成回数チェック
   if (!isAdmin) {
     try {
-      const planType = await getActualPlanType(userId, userEmail)
+      const planType = await getPlanType(userId, userEmail)
       const currentMonthKey = new Date().toISOString().slice(0, 7) // "2026-05"
+
+      if (planType === 'free') {
+        return res.status(402).json({
+          error: 'TRIAL_REQUIRED',
+          message: '無料トライアルを開始するにはカード登録が必要です。',
+        })
+      }
 
       const { data: usageData } = await adminSupabase
         .from('usage')
-        .select('report_count, monthly_count, month_key')
+        .select('monthly_count, month_key')
         .eq('user_id', userId)
         .maybeSingle()
 
-      if (planType === 'free') {
-        const currentCount = (usageData?.report_count as number | null) ?? 0
-        if (currentCount >= FREE_LIMIT) {
-          return res.status(402).json({
-            error: 'FREE_LIMIT_REACHED',
-            message: `無料プランの生成回数（${FREE_LIMIT}回）に達しました。プランにアップグレードしてください。`,
-            count: currentCount,
-            limit: FREE_LIMIT,
-          })
-        }
-        await adminSupabase.from('usage').upsert(
-          { user_id: userId, report_count: currentCount + 1, updated_at: new Date().toISOString() },
-          { onConflict: 'user_id' }
-        )
-        // 初回生成時：紹介元ユーザーをクレジット（report_count を -1 して実質+1回）
-        if (currentCount === 0) {
-          const { data: referral } = await adminSupabase
-            .from('referrals')
-            .select('id, referrer_id')
-            .eq('referred_user_id', userId)
-            .eq('credited', false)
-            .maybeSingle()
-          if (referral) {
-            const { data: referrerUsage } = await adminSupabase
-              .from('usage')
-              .select('report_count')
-              .eq('user_id', referral.referrer_id)
-              .maybeSingle()
-            const referrerCount = (referrerUsage?.report_count as number | null) ?? 0
-            await Promise.all([
-              adminSupabase.from('usage').upsert(
-                { user_id: referral.referrer_id, report_count: Math.max(0, referrerCount - 1), updated_at: new Date().toISOString() },
-                { onConflict: 'user_id' }
-              ),
-              adminSupabase.from('referrals').update({ credited: true }).eq('id', referral.id),
-            ]).catch(() => {})
-          }
-        }
-      } else {
-        // 有料プラン：月次制限チェック
-        const monthKey = (usageData?.month_key as string | null) ?? ''
-        const monthlyCount = monthKey === currentMonthKey
-          ? ((usageData?.monthly_count as number | null) ?? 0)
-          : 0
-        const limit = PLAN_MONTHLY_LIMIT[planType] ?? 50
+      const monthKey = (usageData?.month_key as string | null) ?? ''
+      const monthlyCount = monthKey === currentMonthKey
+        ? ((usageData?.monthly_count as number | null) ?? 0)
+        : 0
 
-        if (monthlyCount >= limit) {
-          return res.status(402).json({
-            error: 'MONTHLY_LIMIT_REACHED',
-            message: `今月の生成回数（${limit}回）に達しました。来月1日にリセットされます。`,
-            count: monthlyCount,
-            limit,
-          })
-        }
-        await adminSupabase.from('usage').upsert(
-          {
-            user_id: userId,
-            monthly_count: monthlyCount + 1,
-            month_key: currentMonthKey,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'user_id' }
-        )
+      if (monthlyCount >= MONTHLY_LIMIT) {
+        return res.status(402).json({
+          error: 'MONTHLY_LIMIT_REACHED',
+          message: `今月の生成回数（${MONTHLY_LIMIT}回）に達しました。来月1日にリセットされます。`,
+          count: monthlyCount,
+          limit: MONTHLY_LIMIT,
+        })
       }
+      await adminSupabase.from('usage').upsert(
+        {
+          user_id: userId,
+          monthly_count: monthlyCount + 1,
+          month_key: currentMonthKey,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' }
+      )
     } catch (err) {
       console.error('usage check error:', err)
       return res.status(500).json({ error: `利用チェックエラー: ${String(err)}` })
@@ -413,21 +377,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ── Phase 1: 執筆（大学生）──
     res.write(`data: ${JSON.stringify({ phase: 'writing' })}\n\n`)
 
-    const writerMsg = await anthropic.messages.create({
+    const writerStream = anthropic.messages.stream({
       model,
       max_tokens: maxTokens,
       system: writerPrompt,
       messages: [{ role: 'user', content: userMessage }],
     })
 
-    const draft = writerMsg.content[0]?.type === 'text' ? writerMsg.content[0].text : ''
+    let draft = ''
+    for await (const chunk of writerStream) {
+      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+        draft += chunk.delta.text
+        res.write(`data: ${JSON.stringify({ phase: 'writing', content: chunk.delta.text })}\n\n`)
+      }
+    }
+
     if (!draft) {
       res.write(`data: ${JSON.stringify({ error: '執筆フェーズで内容を取得できませんでした' })}\n\n`)
       res.end(); return
     }
 
     // ── Phase 2: 校閲（教授）ストリーミング ──
-    res.write(`data: ${JSON.stringify({ phase: 'reviewing' })}\n\n`)
+    res.write(`data: ${JSON.stringify({ phase: 'reviewing', reset: true })}\n\n`)
 
     const professorStream = anthropic.messages.stream({
       model,

@@ -3,7 +3,6 @@ import { supabase } from '../utils/supabaseClient'
 import type { ProofreadResult } from '../pages/api/proofread'
 
 interface Props {
-  isPro: boolean
   initialText?: string
   proofreadUsed?: number
   proofreadLimit?: number | null
@@ -18,16 +17,15 @@ const SEVERITY_STYLE: Record<string, string> = {
   low: 'bg-gray-50 border-gray-200 text-gray-600',
 }
 
-export default function ProofreadPanel({ isPro, initialText = '', proofreadUsed = 0, proofreadLimit = null, onUpgrade, onUsed }: Props) {
+export default function ProofreadPanel({ initialText = '', proofreadUsed = 0, proofreadLimit = null, onUpgrade, onUsed }: Props) {
   const [text, setText] = useState(initialText)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [result, setResult] = useState<ProofreadResult | null>(null)
 
-  const limitReached = isPro && proofreadLimit !== null && proofreadUsed >= proofreadLimit
+  const limitReached = proofreadLimit !== null && proofreadUsed >= proofreadLimit
 
   async function runProofread() {
-    if (!isPro) { onUpgrade?.(); return }
     if (limitReached) { onUpgrade?.(); return }
     if (!text.trim()) return
     setLoading(true)
@@ -58,33 +56,13 @@ export default function ProofreadPanel({ isPro, initialText = '', proofreadUsed 
     setLoading(false)
   }
 
-  if (!isPro) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 h-full py-8 text-center">
-        <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-2xl">📝</div>
-        <div>
-          <p className="text-sm font-bold text-gray-700 mb-1">AI添削は Standard 以上のプランで使えます</p>
-          <p className="text-xs text-gray-500 max-w-sm">
-            自分で書いたレポートを提出する前に、誤字脱字・論理の飛躍・引用不足・構成のバランスをAIが厳しくチェック。「このまま出して大丈夫か不安」を解消します。
-          </p>
-        </div>
-        <button
-          onClick={onUpgrade}
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:opacity-90 transition"
-        >
-          プランを見る
-        </button>
-      </div>
-    )
-  }
-
   if (limitReached) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 h-full py-8 text-center">
         <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-2xl">🔒</div>
         <div>
           <p className="text-sm font-bold text-gray-700 mb-1">今月のAI添削回数（{proofreadLimit}回）の上限に達しました</p>
-          <p className="text-xs text-gray-500">Pro にアップグレードすると、月{20}回までAI添削が使えます。</p>
+          <p className="text-xs text-gray-500">来月1日にリセットされます。</p>
         </div>
         <button
           onClick={onUpgrade}

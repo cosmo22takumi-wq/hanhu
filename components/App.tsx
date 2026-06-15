@@ -3,8 +3,10 @@ import type { User } from '@supabase/supabase-js'
 import { supabase, ADMIN_EMAIL } from '../utils/supabaseClient'
 import type { PlanType } from '../utils/planTypes'
 import Auth from './Auth'
+import TrialGate from './TrialGate'
 import CiNiiSearch from './CiNiiSearch'
 import ProofreadPanel from './ProofreadPanel'
+import type { ProofreadResult } from '../pages/api/proofread'
 import WhisperRecorder from './WhisperRecorder'
 import MaterialList, { type Material } from './MaterialList'
 import AdminPanel from './AdminPanel'
@@ -45,29 +47,29 @@ const TONES = [
   { value: '政策提言型', label: '政策提言型' },
 ]
 
-// プランごとの文字数上限
-const PLAN_CHAR_LIMIT: Record<PlanType, number> = {
-  free: 2000,
-  standard: 5000,
-  pro: 10000,
+const CHAR_LIMIT = 10000
+
+const SEVERITY_LABEL: Record<string, string> = { high: '重要', medium: '中', low: '軽微' }
+const SEVERITY_STYLE: Record<string, string> = {
+  high: 'bg-red-50 border-red-200 text-red-700',
+  medium: 'bg-amber-50 border-amber-200 text-amber-700',
+  low: 'bg-gray-50 border-gray-200 text-gray-600',
 }
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [plan, setPlan] = useState<PlanType>('free')
-  const [isPromoUser, setIsPromoUser] = useState(false)
-  const [freeUsed, setFreeUsed] = useState(0)
+  const [subLoading, setSubLoading] = useState(true)
+  const [subStatus, setSubStatus] = useState<string>('free')
+  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(null)
   const [monthlyUsed, setMonthlyUsed] = useState(0)
   const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null)
-  const [ciniiUsed, setCiniiUsed] = useState(0)
-  const [ciniiLimit, setCiniiLimit] = useState<number | null>(null)
   const [proofreadUsed, setProofreadUsed] = useState(0)
   const [proofreadLimit, setProofreadLimit] = useState<number | null>(null)
   const [showPricing, setShowPricing] = useState(false)
   const [pricingFromLimit, setPricingFromLimit] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
-  const [showPostGenUpsell, setShowPostGenUpsell] = useState(false)
   const [savedReports, setSavedReports] = useState<SavedReport[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
   const [scores, setScores] = useState<{ aiScore: number; citationScore: number; fitScore: number; aiComment: string; citationComment: string; fitComment: string } | null>(null)
@@ -95,30 +97,40 @@ export default function App() {
   const [copied, setCopied] = useState(false)
   const [exporting, setExporting] = useState<'docx' | 'pdf' | null>(null)
 
+  const [reviewRunning, setReviewRunning] = useState(false)
+  const [reviewError, setReviewError] = useState('')
+  const [reviewResult, setReviewResult] = useState<ProofreadResult | null>(null)
+
   const reportRef = useRef<HTMLTextAreaElement>(null)
 
   const isPro = plan !== 'free'
-  const isProMax = plan === 'pro'
+
+  const logEvent = useCallback((userId: string, eventType: string) => {
+    const deviceType = window.innerWidth < 1024 ? 'mobile' : 'desktop'
+    const source = eventType === 'app_loaded' ? (localStorage.getItem('pochi_src') ?? 'direct') : undefined
+    supabase.from('events').insert({ user_id: userId, event_type: eventType, device_type: deviceType, source }).then(() => {})
+  }, [])
 
   const checkSubscription = useCallback(async (token: string, email: string) => {
-    if (email === ADMIN_EMAIL) { setPlan('pro'); return }
+    if (email === ADMIN_EMAIL) { setPlan('pro'); setSubLoading(false); return }
     try {
       const res = await fetch('/api/subscription/status', {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json() as { planType?: PlanType; isPromoUser?: boolean; generationsUsed?: number; monthlyUsed?: number; monthlyLimit?: number | null; ciniiUsed?: number; ciniiLimit?: number | null; proofreadUsed?: number; proofreadLimit?: number | null }
+        const data = await res.json() as { planType?: PlanType; status?: string; currentPeriodEnd?: string | null; monthlyUsed?: number; monthlyLimit?: number | null; proofreadUsed?: number; proofreadLimit?: number | null }
         setPlan(data.planType ?? 'free')
-        setIsPromoUser(data.isPromoUser ?? false)
-        setFreeUsed(data.generationsUsed ?? 0)
+        setSubStatus(data.status ?? 'free')
+        setCurrentPeriodEnd(data.currentPeriodEnd ?? null)
         setMonthlyUsed(data.monthlyUsed ?? 0)
         setMonthlyLimit(data.monthlyLimit ?? null)
-        setCiniiUsed(data.ciniiUsed ?? 0)
-        setCiniiLimit(data.ciniiLimit ?? null)
         setProofreadUsed(data.proofreadUsed ?? 0)
         setProofreadLimit(data.proofreadLimit ?? null)
       }
-    } catch { /* ignore */ }
+    } catch { /* ignore */
+    } finally {
+      setSubLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -128,6 +140,7 @@ export default function App() {
       if (session) {
         checkSubscription(session.access_token, session.user.email ?? '')
         if (!localStorage.getItem('pochi_onboarded')) setShowOnboarding(true)
+        logEvent(session.user.id, 'app_loaded')
       }
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -154,6 +167,10 @@ export default function App() {
     const refParam = params.get('ref')
     if (refParam) localStorage.setItem('pochi_ref', refParam)
 
+    // 流入元をlocalStorageに保存（初回のみ）
+    const srcParam = params.get('src')
+    if (srcParam && !localStorage.getItem('pochi_src')) localStorage.setItem('pochi_src', srcParam)
+
     if (params.get('payment') === 'success') {
       window.history.replaceState({}, '', '/')
       setShowPricing(false)
@@ -174,10 +191,19 @@ export default function App() {
     setHistoryLoading(true)
     const { data } = await supabase
       .from('reports')
-      .select('id, theme, faculty, char_count, created_at, content')
+      .select('id, theme, faculty, body_markdown, created_at')
       .order('created_at', { ascending: false })
       .limit(20)
-    if (data) setSavedReports(data as SavedReport[])
+    if (data) {
+      setSavedReports(data.map((r) => ({
+        id: r.id,
+        theme: r.theme,
+        faculty: r.faculty,
+        content: r.body_markdown ?? '',
+        char_count: (r.body_markdown ?? '').length,
+        created_at: r.created_at,
+      })))
+    }
     setHistoryLoading(false)
   }
 
@@ -224,8 +250,6 @@ export default function App() {
       setGenError('参考資料は最大3件まで選択できます。チェックを外してください。')
       return
     }
-    // free / standard: 2件以上はProが必要
-    if (enabledCount >= 2 && !isProMax) { setShowPricing(true); return }
 
     setGenerating(true)
     setGenPhase('writing')
@@ -233,6 +257,9 @@ export default function App() {
     setScores(null)
     setScoresLoading(false)
     setReport('')
+    setReviewResult(null)
+    setReviewError('')
+    if (user) logEvent(user.id, 'generate_click')
 
     try {
       const { data: { session } } = await supabase.auth.getSession()
@@ -251,8 +278,7 @@ export default function App() {
 
       if (!res.ok) {
         const err = await res.json() as { error?: string; message?: string; count?: number }
-        if (err.error === 'FREE_LIMIT_REACHED') {
-          if (err.count !== undefined) setFreeUsed(err.count)
+        if (err.error === 'TRIAL_REQUIRED') {
           setPricingFromLimit(true)
           setShowPricing(true)
           setGenerating(false)
@@ -283,9 +309,11 @@ export default function App() {
           const data = line.slice(6).trim()
           if (data === '[DONE]') continue
           try {
-            const parsed = JSON.parse(data) as { content?: string; phase?: string; error?: string }
-            if (parsed.phase === 'writing') { setGenPhase('writing') }
-            else if (parsed.phase === 'reviewing') { setGenPhase('reviewing') }
+            const parsed = JSON.parse(data) as { content?: string; phase?: string; error?: string; reset?: boolean }
+            if (parsed.phase === 'reviewing') {
+              setGenPhase('reviewing')
+              if (parsed.reset) { accumulated = ''; setReport('') }
+            } else if (parsed.phase === 'writing') { setGenPhase('writing') }
             else if (parsed.error) { throw new Error(parsed.error) }
             else if (parsed.content) { accumulated += parsed.content; setReport(accumulated) }
           } catch (e) { if (e instanceof Error) throw e }
@@ -293,6 +321,7 @@ export default function App() {
       }
 
       if (!accumulated) throw new Error('レポートが生成されませんでした')
+      if (user) logEvent(user.id, 'generate_success')
       // スコア評価（バックグラウンド）
       setScoresLoading(true)
       const { data: { session: evalSession } } = await supabase.auth.getSession()
@@ -307,15 +336,12 @@ export default function App() {
       // 履歴に保存（エラーは無視）
       supabase.from('reports').insert({
         user_id: user?.id,
+        title: theme,
         theme,
         faculty,
-        content: accumulated,
-        char_count: accumulated.length,
+        target_chars: charCount,
+        body_markdown: accumulated,
       }).then(() => loadHistory())
-      if (plan === 'free') {
-        setFreeUsed((n) => Math.min(n + 1, 2))
-        setShowPostGenUpsell(true)
-      }
     } catch (err) {
       setGenError(String(err))
     }
@@ -334,7 +360,7 @@ export default function App() {
   }
 
   async function handleExportPdf() {
-    if (!report || !isProMax) { setShowPricing(true); return }
+    if (!report || !isPro) { setShowPricing(true); return }
     setExporting('pdf')
     try {
       await exportPdf({ title: theme || 'レポート', content: report, author: user?.email ?? '', studentId, studentName })
@@ -349,6 +375,39 @@ export default function App() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  async function runReportReview() {
+    if (!report.trim()) return
+    if (!isPro) { setPricingFromLimit(true); setShowPricing(true); return }
+    if (proofreadLimit !== null && proofreadUsed >= proofreadLimit) { setPricingFromLimit(true); setShowPricing(true); return }
+
+    setReviewRunning(true)
+    setReviewError('')
+    setReviewResult(null)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token ?? ''
+      const res = await fetch('/api/proofread', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ report, theme, faculty }),
+      })
+      if (res.status === 402 || res.status === 403) {
+        const data = await res.json() as { message?: string }
+        setReviewError(data.message ?? '校閲の利用上限に達しました')
+        setPricingFromLimit(true)
+        setShowPricing(true)
+        return
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json() as ProofreadResult
+      setReviewResult(data)
+      setProofreadUsed((n) => n + 1)
+    } catch (err) {
+      setReviewError(`校閲エラー: ${String(err)}`)
+    }
+    setReviewRunning(false)
+  }
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -360,8 +419,19 @@ export default function App() {
   if (!user) return <Auth />
 
   const isAdmin = user.email === ADMIN_EMAIL
+
+  if (subLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-6 h-6 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!isAdmin && plan === 'free') return <TrialGate />
+
   const enabledMaterialsCount = materials.filter((m) => m.enabled).length
-  const charLimit = isAdmin ? 10000 : PLAN_CHAR_LIMIT[plan]
+  const charLimit = CHAR_LIMIT
 
   const tabBtn = (id: InputTab, label: string) => (
     <button
@@ -407,7 +477,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {showPricing && <Pricing planType={isPromoUser ? 'free' : plan} onClose={() => { setShowPricing(false); setPricingFromLimit(false) }} fromLimit={pricingFromLimit} />}
+      {showPricing && <Pricing status={subStatus} currentPeriodEnd={currentPeriodEnd} onClose={() => { setShowPricing(false); setPricingFromLimit(false) }} fromLimit={pricingFromLimit} />}
 
       {showOnboarding && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -453,46 +523,24 @@ export default function App() {
 
           {isAdmin ? (
             <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2.5 py-0.5 rounded-full">無制限</span>
-          ) : isPromoUser ? (
+          ) : subStatus === 'trialing' ? (
             <>
-              <span className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">お試し</span>
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+                トライアル中{currentPeriodEnd ? `（残り${Math.max(0, Math.ceil((new Date(currentPeriodEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}日）` : ''}
+              </span>
               <button
                 onClick={() => setShowPricing(true)}
-                className="text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-3 py-1.5 rounded-lg hover:opacity-90 transition"
+                className="text-xs border border-gray-300 rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 transition"
               >
-                アップグレード
+                プラン詳細
               </button>
             </>
-          ) : plan === 'pro' ? (
+          ) : (
             <>
-            <span className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Pro</span>
-            {monthlyLimit !== null && (
-              <span className="text-xs text-gray-400 hidden sm:inline">今月 {monthlyUsed}/{monthlyLimit}回</span>
-            )}
-          </>
-          ) : plan === 'standard' ? (
-            <>
-              <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Standard</span>
+              <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">ご利用中</span>
               {monthlyLimit !== null && (
                 <span className="text-xs text-gray-400 hidden sm:inline">今月 {monthlyUsed}/{monthlyLimit}回</span>
               )}
-            </>
-          ) : freeUsed >= 2 ? (
-            <button
-              onClick={() => setShowPricing(true)}
-              className="text-xs bg-red-100 text-red-600 font-bold px-2.5 py-0.5 rounded-full border border-red-200 hover:bg-red-200 transition"
-            >
-              無料上限達成
-            </button>
-          ) : (
-            <>
-              <span className="text-xs text-gray-400 hidden sm:inline">生成 {freeUsed}/2回</span>
-              <button
-                onClick={() => setShowPricing(true)}
-                className="text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-3 py-1.5 rounded-lg hover:opacity-90 transition"
-              >
-                アップグレード
-              </button>
             </>
           )}
 
@@ -509,7 +557,7 @@ export default function App() {
       <main className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-[1400px] mx-auto w-full">
 
         {/* TOP-LEFT: Data input */}
-        <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 min-h-[400px]">
+        <section className="order-3 lg:order-1 bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 min-h-[400px]">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-700">データ入力・連携</h2>
             <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
@@ -525,10 +573,6 @@ export default function App() {
             {inputTab === 'cinii' && (
               <CiNiiSearch
                 user={user}
-                isPro={isPro}
-                ciniiUsed={ciniiUsed}
-                ciniiLimit={ciniiLimit}
-                onSearched={() => setCiniiUsed((n) => n + 1)}
                 onAdded={() => setMaterialListKey((k) => k + 1)}
                 onUpgrade={() => { setPricingFromLimit(true); setShowPricing(true) }}
               />
@@ -546,7 +590,6 @@ export default function App() {
 
             {inputTab === 'proofread' && (
               <ProofreadPanel
-                isPro={isPro}
                 initialText={report}
                 proofreadUsed={proofreadUsed}
                 proofreadLimit={proofreadLimit}
@@ -576,7 +619,7 @@ export default function App() {
         </section>
 
         {/* TOP-RIGHT: Material list / History / Admin */}
-        <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 min-h-[400px]">
+        <section className="order-4 lg:order-2 bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 min-h-[400px]">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-700">
               {rightTab === 'materials' ? '資料リスト' : rightTab === 'history' ? '生成履歴' : '管理者コンソール'}
@@ -589,7 +632,7 @@ export default function App() {
           </div>
           <div className="flex-1 overflow-hidden">
             {rightTab === 'materials' && (
-              <MaterialList key={materialListKey} user={user} onChange={setMaterials} materialLimit={isProMax ? 3 : 1} />
+              <MaterialList key={materialListKey} user={user} onChange={setMaterials} materialLimit={3} />
             )}
             {rightTab === 'history' && (
               <div className="h-full flex flex-col gap-2 overflow-y-auto">
@@ -623,14 +666,9 @@ export default function App() {
         </section>
 
         {/* BOTTOM-LEFT: Report generation */}
-        <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-4 min-h-[480px]">
+        <section className="order-1 lg:order-3 bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-4 min-h-[480px]">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-700">AIレポート生成・編集</h2>
-            {!isPro && !isPromoUser && (
-              <span className="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-medium">
-                💡 テーマだけで今すぐ生成できます
-              </span>
-            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -646,7 +684,7 @@ export default function App() {
                     <button
                       key={t.label}
                       type="button"
-                      onClick={() => { setTheme(t.theme); setFaculty(t.faculty); setCharCount(t.charCount); setShowPostGenUpsell(false) }}
+                      onClick={() => { setTheme(t.theme); setFaculty(t.faculty); setCharCount(t.charCount) }}
                       className="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-md transition font-medium"
                     >
                       {t.label}
@@ -753,7 +791,7 @@ export default function App() {
             {generating ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                {genPhase === 'reviewing' ? '校閲中...' : '執筆中...'}
+                {genPhase === 'reviewing' ? '推敲・校閲中...' : '執筆中...'}
               </>
             ) : (
               <>
@@ -812,21 +850,6 @@ export default function App() {
             </div>
           )}
 
-          {showPostGenUpsell && !generating && (
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold text-indigo-800">生成できました！Standardにすると毎月40本まで</p>
-                <p className="text-xs text-indigo-600 mt-0.5">論文検索・ファイル読み込み・Word出力も使えます</p>
-              </div>
-              <button
-                onClick={() => { setShowPricing(true); setShowPostGenUpsell(false) }}
-                className="shrink-0 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition"
-              >
-                詳しく見る
-              </button>
-            </div>
-          )}
-
           {(report || generating) && (
             <div className="flex-1 flex flex-col gap-2">
               <div className="flex items-center justify-between">
@@ -848,12 +871,72 @@ export default function App() {
                 placeholder="レポートがここに生成されます..."
                 className="flex-1 w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400 min-h-[200px]"
               />
+
+              {report && !generating && (
+                <div className="space-y-3">
+                  <button
+                    onClick={runReportReview}
+                    disabled={reviewRunning}
+                    className="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-60 text-emerald-700 font-bold rounded-xl py-2.5 text-sm transition border border-emerald-200"
+                  >
+                    {reviewRunning ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-emerald-300 border-t-emerald-600 rounded-full animate-spin" />
+                        校閲中...
+                      </>
+                    ) : (
+                      <>📝 レポート校閲・校正{!isPro && <span className="text-xs bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">Standard+</span>}</>
+                    )}
+                  </button>
+
+                  {reviewError && <p className="text-sm text-red-500">{reviewError}</p>}
+
+                  {reviewResult && (
+                    <div className="space-y-3 border border-gray-200 rounded-xl p-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-bold text-gray-700">📊 総合スコア</p>
+                        <span className={`text-lg font-black ${
+                          reviewResult.overallScore >= 80 ? 'text-emerald-600' : reviewResult.overallScore >= 60 ? 'text-amber-600' : 'text-red-500'
+                        }`}>{reviewResult.overallScore}<span className="text-xs text-gray-400">/100</span></span>
+                      </div>
+                      <p className="text-xs text-gray-600">{reviewResult.overallComment}</p>
+
+                      {reviewResult.strengths?.length > 0 && (
+                        <div className="border border-emerald-100 bg-emerald-50/50 rounded-xl p-3">
+                          <p className="text-xs font-bold text-emerald-700 mb-2">良い点</p>
+                          <ul className="space-y-1">
+                            {reviewResult.strengths.map((s, i) => (
+                              <li key={i} className="text-xs text-emerald-800">・{s}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {reviewResult.issues?.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-gray-700">指摘事項（{reviewResult.issues.length}件）</p>
+                          {reviewResult.issues.map((issue, i) => (
+                            <div key={i} className={`border rounded-xl p-3 ${SEVERITY_STYLE[issue.severity] ?? SEVERITY_STYLE.low}`}>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/70">{SEVERITY_LABEL[issue.severity] ?? issue.severity}</span>
+                                <span className="text-[10px] font-semibold opacity-70">{issue.category}</span>
+                              </div>
+                              <p className="text-xs font-medium mb-1">{issue.point}</p>
+                              <p className="text-xs opacity-80">→ {issue.suggestion}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </section>
 
         {/* BOTTOM-RIGHT: Export */}
-        <section className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-4">
+        <section className="order-2 lg:order-4 bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-4">
           <h2 className="text-sm font-bold text-gray-700">エクスポート</h2>
 
           <div className="space-y-3">
@@ -869,7 +952,6 @@ export default function App() {
                   ? <div className="w-4 h-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
                   : <span>📄</span>}
                 Word (.docx) でダウンロード
-                {!isPro && <span className="ml-auto text-xs bg-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded">Standard+</span>}
               </button>
 
               <button
@@ -881,7 +963,6 @@ export default function App() {
                   ? <div className="w-4 h-4 border-2 border-red-300 border-t-red-600 rounded-full animate-spin" />
                   : <span>📕</span>}
                 PDF でダウンロード
-                {!isProMax && <span className="ml-auto text-xs bg-purple-100 text-purple-600 font-bold px-1.5 py-0.5 rounded">Pro</span>}
               </button>
 
               {!report && (
@@ -903,22 +984,6 @@ export default function App() {
           </div>
 
           <div className="mt-auto border-t border-gray-100 pt-4 space-y-2">
-            {(!isPro || isPromoUser) && (
-              <button
-                onClick={() => setShowPricing(true)}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 text-white font-bold rounded-xl py-2.5 text-sm transition"
-              >
-                ✦ プランを見る
-              </button>
-            )}
-            {isPro && !isPromoUser && plan !== 'pro' && (
-              <button
-                onClick={() => setShowPricing(true)}
-                className="w-full flex items-center justify-center gap-2 border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded-xl py-2.5 text-sm transition"
-              >
-                ✦ Pro にアップグレード（¥2,000/月）
-              </button>
-            )}
             {isAdmin && (
               <button
                 onClick={() => setRightTab('admin')}

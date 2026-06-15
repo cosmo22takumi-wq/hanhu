@@ -4,6 +4,10 @@ import { adminSupabase } from '../../../utils/checkSubscription'
 
 export const config = { api: { bodyParser: false } }
 
+function getPeriodEnd(sub: { current_period_end?: number; items?: { data?: { current_period_end?: number }[] } }): number | undefined {
+  return sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
+}
+
 function readRawBody(req: NextApiRequest): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = []
@@ -45,9 +49,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!userId) break
 
         let periodEnd: string | null = null
+        let status = 'active'
         if (session.subscription) {
-          const sub = await stripe.subscriptions.retrieve(String(session.subscription)) as unknown as { current_period_end: number }
-          periodEnd = new Date(sub.current_period_end * 1000).toISOString()
+          const sub = await stripe.subscriptions.retrieve(String(session.subscription)) as unknown as { status: string; current_period_end?: number; items?: { data?: { current_period_end?: number }[] } }
+          const end = getPeriodEnd(sub)
+          periodEnd = end ? new Date(end * 1000).toISOString() : null
+          status = sub.status
         }
 
         await adminSupabase.from('subscriptions').upsert(
@@ -55,13 +62,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             user_id: userId,
             stripe_customer_id: String(session.customer),
             stripe_subscription_id: String(session.subscription),
-            status: 'active',
+            status,
             plan_type: planType,
             current_period_end: periodEnd,
           },
           { onConflict: 'user_id' }
         )
-        console.log(`✓ Subscription activated: user=${userId} plan=${planType}`)
+        console.log(`✓ Subscription activated: user=${userId} plan=${planType} status=${status}`)
         break
       }
 
@@ -72,21 +79,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const sub = await stripe.subscriptions.retrieve(subId) as unknown as {
           metadata: Record<string, string>
-          current_period_end: number
+          current_period_end?: number
+          items?: { data?: { current_period_end?: number }[] }
         }
         const userId = sub.metadata?.user_id
         const planType = sub.metadata?.plan_type ?? 'standard'
         if (!userId) break
 
+        const end = getPeriodEnd(sub)
         await adminSupabase.from('subscriptions').upsert(
           {
             user_id: userId,
             status: 'active',
             plan_type: planType,
-            current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+            current_period_end: end ? new Date(end * 1000).toISOString() : null,
           },
           { onConflict: 'user_id' }
         )
+        break
+      }
+
+      case 'customer.subscription.updated': {
+        const sub = event.data.object as unknown as {
+          id: string
+          status: string
+          current_period_end?: number
+          items?: { data?: { current_period_end?: number }[] }
+          metadata: Record<string, string>
+        }
+        const planType = sub.metadata?.plan_type ?? 'standard'
+        const end = getPeriodEnd(sub)
+
+        await adminSupabase
+          .from('subscriptions')
+          .update({
+            status: sub.status,
+            plan_type: planType,
+            current_period_end: end ? new Date(end * 1000).toISOString() : null,
+          })
+          .eq('stripe_subscription_id', sub.id)
         break
       }
 

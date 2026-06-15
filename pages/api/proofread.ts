@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
-import { adminSupabase, getActualPlanType } from '../../utils/checkSubscription'
+import { adminSupabase, getPlanType } from '../../utils/checkSubscription'
+
+export const config = { maxDuration: 60 }
 
 export interface ProofreadIssue {
   severity: 'high' | 'medium' | 'low'
@@ -45,7 +47,7 @@ const PROOFREAD_PROMPT = `あなたは大学のレポート指導を専門とす
 }
 issuesは重要な指摘から順に最大8件まで。良い点(strengths)が見当たらない場合は空配列でよい。`
 
-const PLAN_PROOFREAD_LIMIT: Record<string, number> = { standard: 5, pro: 20 }
+const PROOFREAD_LIMIT = 20
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -62,19 +64,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!report || !report.trim()) return res.status(400).json({ error: 'report is required' })
 
   const isAdmin = user.email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? 'cosmo22.takumi@gmail.com')
-  const planType = await getActualPlanType(user.id, user.email ?? '')
+  const planType = await getPlanType(user.id, user.email ?? '')
 
   if (!isAdmin && planType === 'free') {
-    return res.status(403).json({
-      error: 'PROOFREAD_REQUIRES_STANDARD',
-      message: 'AI添削は Standard 以上のプランで使えます',
+    return res.status(402).json({
+      error: 'TRIAL_REQUIRED',
+      message: '無料トライアルを開始するにはカード登録が必要です。',
     })
   }
 
   const currentMonthKey = new Date().toISOString().slice(0, 7)
 
   if (!isAdmin) {
-    const limit = PLAN_PROOFREAD_LIMIT[planType] ?? 5
+    const limit = PROOFREAD_LIMIT
     const { data: usageData } = await adminSupabase
       .from('usage')
       .select('proofread_count, proofread_month_key')

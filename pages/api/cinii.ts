@@ -1,8 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { adminSupabase, getActualPlanType } from '../../utils/checkSubscription'
-
-// 無料プランは月3回までCiNii検索を体験可能（コア機能の認知ギャップ解消）
-export const FREE_CINII_LIMIT = 3
+import { adminSupabase, getPlanType } from '../../utils/checkSubscription'
 
 export interface CiNiiPaper {
   title: string
@@ -97,37 +94,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'q パラメータが必要です' })
   }
 
-  // 無料プランは月3回まで。Standard以上は無制限
-  const planType = await getActualPlanType(user.id, user.email ?? '')
+  const planType = await getPlanType(user.id, user.email ?? '')
   if (planType === 'free') {
-    const currentMonthKey = new Date().toISOString().slice(0, 7)
-    const { data: usageData } = await adminSupabase
-      .from('usage')
-      .select('cinii_count, cinii_month_key')
-      .eq('user_id', user.id)
-      .maybeSingle()
-
-    const sameMonth = (usageData?.cinii_month_key as string | null) === currentMonthKey
-    const currentCount = sameMonth ? ((usageData?.cinii_count as number | null) ?? 0) : 0
-
-    if (currentCount >= FREE_CINII_LIMIT) {
-      return res.status(402).json({
-        error: 'CINII_LIMIT_REACHED',
-        message: `無料プランのCiNii検索回数（月${FREE_CINII_LIMIT}回）に達しました。プランにアップグレードすると無制限で使えます。`,
-        count: currentCount,
-        limit: FREE_CINII_LIMIT,
-      })
-    }
-
-    await adminSupabase.from('usage').upsert(
-      {
-        user_id: user.id,
-        cinii_count: currentCount + 1,
-        cinii_month_key: currentMonthKey,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'user_id' }
-    )
+    return res.status(402).json({
+      error: 'TRIAL_REQUIRED',
+      message: '無料トライアルを開始するにはカード登録が必要です。',
+    })
   }
 
   const appid = process.env.CINII_APPID ? `&appid=${process.env.CINII_APPID}` : ''
