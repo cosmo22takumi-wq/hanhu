@@ -1,0 +1,233 @@
+---
+import Base from '../../layouts/Base.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://report-saas-bay.vercel.app'
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "先行研究は何本くらい読めばいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "学部レポートなら3〜5本程度で十分なことが多いです。重要なのは本数より「テーマに直結する部分」を正確に押さえること。全文を読み込む必要はなく、要旨（アブストラクト）と結論、自分のテーマに関わる章だけで構いません。" }
+    },
+    {
+      "@type": "Question",
+      "name": "論文を読むのが遅くて時間がかかります。どうすればいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "「最初から最後まで読む」のをやめましょう。①タイトル・アブストラクト→②結論→③自分のテーマに関係する章、の順に読むことで、1本あたりの読書時間を大幅に短縮できます。それでも内容を要約するのが大変な場合は、ポチレポにPDFや電子図書館のURLを読み込ませると要点を踏まえた文章を生成できます。" }
+    },
+    {
+      "@type": "Question",
+      "name": "先行研究はレポートのどこで使えばいいですか？",
+      "acceptedAnswer": { "@type": "Answer", "text": "主に「本論」で、自分の主張の根拠として引用します。「〇〇によれば〜」「先行研究では〜と指摘されている」という形で紹介し、そこに自分の考察を加えると説得力のある文章になります。序論では研究の背景・問題意識を示すために使うこともあります。" }
+    }
+  ]
+}
+---
+
+<Base
+  title="先行研究の読み方・まとめ方｜大学レポートで時間をかけずに引用する方法【2026年】"
+  description="先行研究を読むのに時間がかかる大学生向けに、効率的な読み方（アブストラクト→結論→該当章）とレポートでの引用の仕方を解説。ポチレポなら論文・電子図書館の資料をそのまま読み込んで本論に反映できます。7日間無料トライアル。"
+  canonical="https://pochi-repo.jp/how-to/literature-review/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+
+  <Header />
+
+  <main>
+
+    <section class="bg-gradient-to-br from-indigo-50 to-white py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xs font-semibold text-indigo-600 mb-3 uppercase tracking-wide">先行研究の読み方</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight">
+          先行研究、<br />
+          <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            何本も読み切れない問題
+          </span>
+        </h1>
+        <p class="text-gray-600 leading-relaxed mb-8">
+          論文を見つけたけど全部読む時間がない、結局何が書いてあったか覚えていない——<br class="hidden sm:block" />
+          先行研究を「正しく・短時間で」レポートに活かす方法を解説します。
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href={APP_URL} class="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-md">
+            ポチレポで資料を読み込ませる →
+          </a>
+          <a href="#how-to-read" class="inline-flex items-center justify-center border border-gray-300 text-gray-600 font-medium px-7 py-3 rounded-xl hover:bg-gray-50 transition text-sm">
+            読み方ガイドを見る ↓
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-to-read" class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">論文は「最初から最後まで」読まなくていい</h2>
+        <p class="text-gray-500 text-sm mb-8">レポートに必要なのは論文の要点だけ。3ステップで十分</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              num: '01',
+              title: 'タイトル・アブストラクト（要旨）を読む',
+              desc: 'まず「何についての研究か」「どんな結論が出たか」を最初の数百字で把握します。ここでテーマに関係なさそうなら、その論文は読む候補から外してOKです。',
+            },
+            {
+              num: '02',
+              title: '結論（おわりに・まとめ）を読む',
+              desc: '次に結論部分を読みます。アブストラクトより詳しく、研究の意義や限界が書かれていることが多く、レポートで引用しやすい一文が見つかります。',
+            },
+            {
+              num: '03',
+              title: '自分のテーマに関わる章だけ本文を読む',
+              desc: '目次や見出しを見て、自分のレポートのテーマに直結する章だけを読みます。関係ない実験手順や統計処理の詳細は読み飛ばして構いません。',
+            },
+          ].map(({ num, title, desc }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <div class="flex items-start gap-4">
+                <span class="text-3xl font-black text-gray-200 shrink-0">{num}</span>
+                <div class="flex-1">
+                  <p class="font-bold text-gray-900 mb-1">{title}</p>
+                  <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="bg-yellow-50 rounded-xl px-5 py-4 mt-4">
+          <p class="text-xs font-semibold text-yellow-700 mb-1">補足</p>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            「参考文献を読む」という行為そのものが学習につながります。時間短縮はあくまで「読む量を絞る」ためのもので、
+            読んだ内容を間違って引用しないよう、自分の言葉で要約できるかを確認しておきましょう。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100 bg-gray-50">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">先行研究をレポートで引用する書き方</h2>
+        <p class="text-gray-500 text-sm mb-8">読んだ内容を「自分の主張の根拠」として使う</p>
+
+        <div class="space-y-4">
+          {[
+            {
+              title: '本論で「根拠」として使う',
+              desc: '「〇〇（2020）によれば、△△という傾向が指摘されている。本レポートでもこの観点から……」のように、先行研究の知見を自分の主張につなげます。引用だけで終わらせず、自分の考察を必ず一文加えましょう。',
+            },
+            {
+              title: '序論で「研究の背景」として使う',
+              desc: '「これまでの研究では主に〇〇が論じられてきたが、△△については十分に検討されていない」のように、先行研究を踏まえて自分のレポートの問題意識・position を示せます。',
+            },
+            {
+              title: '複数の先行研究を比較する',
+              desc: '1本だけに依存すると視点が偏ります。立場が異なる2〜3本を並べて「A説では〜、一方B説では〜」と比較すると、論述に深みが出ます。',
+            },
+          ].map(({ title, desc }) => (
+            <div class="border border-gray-200 rounded-xl p-5 bg-white">
+              <p class="font-bold text-gray-900 text-sm mb-2">{title}</p>
+              <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-2">それでも時間がないときは</h2>
+        <p class="text-gray-500 text-sm mb-8">読む時間を作れない人のための最終手段</p>
+
+        <div class="bg-white border-2 border-indigo-400 rounded-xl p-6">
+          <p class="font-black text-gray-900 mb-1">ポチレポに資料を読み込ませる</p>
+          <p class="text-xs text-indigo-600 font-semibold mb-3">CiNii論文・電子図書館のURL・PDFをそのまま入力</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-4">
+            CiNiiで見つけた論文や、大学の電子図書館（Maruzen eBookなど）のURLをポチレポに貼ると、
+            その内容を踏まえたレポートの本論を生成できます。架空の参考文献は使わず、
+            <strong>実在するあなたの資料だけ</strong>が根拠になるので、引用も正確です。
+            生成後は必ず自分で読んで、内容が正しく反映されているか確認しましょう。
+          </p>
+          <a
+            href={APP_URL}
+            class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl px-6 py-3 transition text-sm"
+          >
+            7日間無料トライアルを試す →
+          </a>
+          <p class="text-xs text-gray-400 mt-3">7日間無料トライアル・その後月額¥500</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-black mb-3">先行研究探しから本論作成まで</h2>
+        <p class="text-indigo-100 mb-6 text-sm leading-relaxed">
+          CiNii論文の自動検索・電子図書館URLの資料化・授業録音の文字起こしまで。<br />
+          実在する資料だけを根拠にしたレポートをポチレポで。
+        </p>
+        <a href={APP_URL} class="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold text-base rounded-xl px-8 py-4 hover:bg-indigo-50 transition shadow-lg">
+          ポチレポを無料で試す →
+        </a>
+        <p class="text-indigo-200 text-xs mt-3">7日間無料トライアル・その後月額¥500</p>
+      </div>
+    </section>
+
+    <section class="py-14 px-4 border-b border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black text-gray-900 mb-8">よくある質問</h2>
+        <div class="space-y-4">
+          {[
+            {
+              q: '先行研究は何本くらい読めばいいですか？',
+              a: '学部レポートなら3〜5本程度で十分なことが多いです。本数より「テーマに直結する部分」を正確に押さえることが重要です。',
+            },
+            {
+              q: '論文を読むのが遅くて時間がかかります。どうすればいいですか？',
+              a: '「最初から最後まで読む」のをやめ、①タイトル・アブストラクト→②結論→③テーマに関係する章、の順に読みましょう。それでも大変な場合はポチレポにPDFやURLを読み込ませると要点を踏まえた文章を生成できます。',
+            },
+            {
+              q: '先行研究はレポートのどこで使えばいいですか？',
+              a: '主に本論で、自分の主張の根拠として「〇〇によれば〜」という形で引用します。序論では研究の背景を示すために使うこともあります。',
+            },
+          ].map(item => (
+            <details class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <summary class="flex justify-between items-center px-5 py-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-50 transition-colors text-sm">
+                <span>{item.q}</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="px-5 pb-5 pt-3 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 px-4 border-t border-gray-100">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-semibold text-gray-700 mb-4">関連コンテンツ</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: '/how-to/reference-search/', title: '参考文献が見つからないときの探し方', desc: 'CiNii・電子図書館・Google Scholarを使う' },
+            { href: '/how-to/citation/', title: '参考文献の書き方 完全ガイド', desc: 'APA・MLA・日本語形式の違いと書き方' },
+          ].map(({ href, title, desc }) => (
+            <a href={href} class="block border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:bg-indigo-50/30 transition">
+              <p class="font-semibold text-sm text-gray-900 mb-1">{title}</p>
+              <p class="text-xs text-gray-500">{desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+</Base>
