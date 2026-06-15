@@ -235,7 +235,7 @@ async function generateAnswer(title: string, body: string): Promise<string> {
 【ポチレポの紹介ルール】
 - 最後の2〜3文で自然に触れる
 - 「私も使っています」などの一人称で自然に
-- URL: https://pochi-repo.jp
+- URL: https://pochi-repo.jp/?src=chiebukuro
 - 宣伝っぽくなりすぎないこと
 - 回答の主体は本当に役立つ情報（ポチレポは補足程度）
 - ポチレポの強みは3つ：①情報の確実性（架空の参考文献が出ない。実在する資料だけを根拠にする）②文章の正確さ（学生向けの文体・AI臭さ除去）③スピード（3分で叩き台完成）
@@ -255,6 +255,29 @@ async function generateAnswer(title: string, body: string): Promise<string> {
   });
 
   return message.content[0].type === 'text' ? message.content[0].text : '';
+}
+
+// デバッグ用にスクリーンショットとモーダル周辺のHTMLを保存
+async function dumpDebugInfo(page: Page, label: string): Promise<void> {
+  try {
+    const ssPath = path.resolve(__dirname, `../data/post-debug-${label}.png`);
+    await page.screenshot({ path: ssPath, fullPage: true });
+    console.warn(`    [debug] スクリーンショット → ${ssPath}`);
+
+    const html = await page.evaluate(() => {
+      const modal = document.getElementById('ans_wrt');
+      const dialog = document.querySelector('[role="dialog"]');
+      return {
+        modal: modal ? modal.outerHTML.slice(0, 5000) : null,
+        dialog: dialog ? dialog.outerHTML.slice(0, 5000) : null,
+      };
+    });
+    const htmlPath = path.resolve(__dirname, `../data/post-debug-${label}.html`);
+    fs.writeFileSync(htmlPath, JSON.stringify(html, null, 2));
+    console.warn(`    [debug] HTML → ${htmlPath}`);
+  } catch (err) {
+    console.warn(`    [debug] dump失敗: ${err}`);
+  }
 }
 
 // 回答を投稿
@@ -324,18 +347,28 @@ async function postAnswer(page: Page, url: string, answer: string): Promise<bool
       '[data-cl-params*="ans_wrt"][data-cl-params*="preview"]',
       'button:has-text("確認画面へ")',
       'button:has-text("プレビュー")',
+      'button:has-text("確認する")',
+      'button:has-text("回答する")',
+      'button:has-text("回答を投稿")',
     ];
     let previewClicked = false;
     for (const sel of previewBtnSelectors) {
-      const btn = page.locator(sel).first();
-      if (await btn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      const btns = await page.locator(sel).all();
+      for (const btn of btns) {
+        const visible = await btn.isVisible({ timeout: 2000 }).catch(() => false);
+        if (!visible) continue;
+        const disabled = await btn.isDisabled().catch(() => false);
+        if (disabled) continue;
+        await btn.scrollIntoViewIfNeeded().catch(() => {});
         await btn.click();
         previewClicked = true;
         break;
       }
+      if (previewClicked) break;
     }
     if (!previewClicked) {
       console.warn('  → プレビューボタンが見つかりません');
+      await dumpDebugInfo(page, 'preview-not-found');
     }
     await page.waitForTimeout(3000);
 
@@ -360,6 +393,9 @@ async function postAnswer(page: Page, url: string, answer: string): Promise<bool
       'button:has-text("回答を投稿")',
       '[data-cl-params*="ans_wrt"][data-cl-params*="submit"]',
       'button:has-text("送信")',
+      'button:has-text("この内容で投稿")',
+      'button:has-text("回答する")',
+      'button[type="submit"]:has-text("投稿")',
     ];
 
     for (const sel of submitSelectors) {
@@ -388,10 +424,9 @@ async function postAnswer(page: Page, url: string, answer: string): Promise<bool
       }
     }
 
-    // デバッグ用スクリーンショット
-    const ssPath = path.resolve(__dirname, '../data/post-debug.png');
-    await page.screenshot({ path: ssPath, fullPage: false });
-    console.warn(`  → 送信ボタンが見つかりませんでした → ${ssPath}`);
+    // デバッグ用スクリーンショット・HTML
+    await dumpDebugInfo(page, 'submit-not-found');
+    console.warn(`  → 送信ボタンが見つかりませんでした`);
     return false;
   } catch (err) {
     console.warn(`  → 投稿失敗: ${err}`);
