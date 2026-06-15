@@ -754,6 +754,29 @@ const faqSchema = {
     </div>
   </section>
 
+  <!-- ===== TESTIMONIAL ===== -->
+  <section class="py-20 px-4 bg-[#0e0c0a] border-t border-gray-800">
+    <div class="max-w-4xl mx-auto">
+      <p class="text-sm font-semibold text-indigo-400 mb-3 tracking-wide text-center">利用者の声</p>
+      <h2 class="text-2xl sm:text-3xl font-black text-white mb-12 text-center">使った人から、こんな声が届いています</h2>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        {[
+          '外部リンクを読み込んで内容に反映してくれるのがすごく便利。',
+          '授業のPDF資料をそのまま読んでくれるのがめっちゃアツい。',
+          'Word・PDFどちらでも出力できるのが助かる。',
+          '参考文献の書き方がしっかりしていて安心感がある。',
+          '参考にした論文・資料を保存しておけるのがいい。',
+          '文字数制限や引用の書き方を学部ごとに変更できるのが地味に助かる。',
+        ].map((quote) => (
+          <div class="bg-gray-900/60 border border-gray-800 rounded-xl p-5">
+            <p class="text-gray-200 text-sm leading-relaxed">「{quote}」</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- ===== SOLUTION: FEATURES ===== -->
   <section id="features" class="py-24 px-4 bg-[#0e0c0a]">
     <div class="max-w-5xl mx-auto">
