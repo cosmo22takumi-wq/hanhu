@@ -43,12 +43,21 @@ ${baseText}
       }],
     });
 
-    const text = message.content[0].type === 'text' ? message.content[0].text.trim() : null;
-    if (!text || text.length < minLen || text.length > maxLen) return null;
+    const raw = message.content[0].type === 'text' ? message.content[0].text.trim() : null;
+    if (!raw || raw.length < minLen) return null;
 
-    return text.replace(/^[「『"']|[」』"']$/g, '').split('\n')[0].trim();
+    // 長すぎる場合は文末で切り詰める（null返しより投稿機会を優先）
+    let text = raw.split('\n')[0].trim().replace(/^[「『"']|[」』"']$/g, '');
+    if (text.length > maxLen) {
+      const cut = text.slice(0, maxLen).replace(/[。、！？…]+[^。、！？…]*$/, '');
+      text = cut.length >= minLen ? cut : null as unknown as string;
+      if (!text) { log('warn', `[Claude] 長さ超過で切り詰め不可 (${raw.length}字)`); return null; }
+      log('warn', `[Claude] ${raw.length}字→${text.length}字に切り詰め`);
+    }
+
+    return text;
   } catch (err) {
-    log('warn', `[Claude] 生成失敗: ${err}`);
+    log('warn', `[Claude] API呼び出し失敗: ${err}`);
     return null;
   }
 }

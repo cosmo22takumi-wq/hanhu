@@ -410,15 +410,18 @@ async function postAnswer(page: Page, url: string, answer: string): Promise<bool
         await btn.scrollIntoViewIfNeeded().catch(() => {});
         await page.waitForTimeout(500);
         await btn.click({ force: true, timeout: 10000 });
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(4000);
 
-        // 投稿完了確認
-        const successMsg = page.locator('text=回答が投稿されました, text=ありがとうございました, text=投稿が完了').first();
-        const isSuccess = await successMsg.isVisible({ timeout: 5000 }).catch(() => false);
+        // 投稿完了確認（テキスト検出 or フォームが消えた = 投稿成功）
+        const successMsg = page.locator('text=回答が投稿されました, text=ありがとうございました, text=投稿が完了, text=回答を受け付けました').first();
+        const isSuccess = await successMsg.isVisible({ timeout: 3000 }).catch(() => false);
+        const textareaGone = !(await page.locator('#clapTextarea, textarea[name="body"]').first().isVisible({ timeout: 2000 }).catch(() => true));
         if (isSuccess) {
           console.log('  → 投稿完了（確認メッセージ検出）');
+        } else if (textareaGone) {
+          console.log('  → 投稿完了（フォーム消滅で確認）');
         } else {
-          console.log('  → 投稿ボタンクリック済み（確認メッセージ未検出）');
+          console.log('  → 投稿ボタンクリック済み（確認未検出）');
         }
         return true;
       }
