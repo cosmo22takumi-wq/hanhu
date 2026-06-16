@@ -291,10 +291,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'theme, faculty, charCount は必須です' })
   }
 
-  // 参考資料上限: Pro・管理者・プロモ中 → 3件、それ以外 → 1件
+  // 参考資料上限: 有料 → 3件、無料 → URL資料のみ（noteのみの資料はブロック）
   const isAdmin = userEmail === ADMIN_EMAIL
-  const planForMaterials = await getPlanType(userId, userEmail)
-  const MATERIAL_LIMIT = (isAdmin || planForMaterials === 'pro') ? 3 : 1
+  const planType = await getPlanType(userId, userEmail)
+  const MATERIAL_LIMIT = (isAdmin || planType === 'pro') ? 3 : 3
   const enabledMaterialsCheck = (body.materials ?? []).filter((m) => m.enabled)
   if (enabledMaterialsCheck.length > MATERIAL_LIMIT) {
     return res.status(400).json({
@@ -303,18 +303,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
   }
 
+  // 無料ユーザーのファイル資料ブロック（URLなしでnoteのみ = ファイルアップロード由来）
+  if (!isAdmin && planType === 'free') {
+    const hasFileMaterial = enabledMaterialsCheck.some((m) => !m.url && m.note && m.note.length > 0)
+    if (hasFileMaterial) {
+      return res.status(403).json({
+        error: 'FILE_MATERIAL_REQUIRES_PLAN',
+        message: 'ファイルのアップロードは有料プランでのみ利用できます。URLからの資料追加は無料でお使いいただけます。',
+      })
+    }
+  }
+
+  // 無料ユーザーの文字数上限: 3000字まで
+  const FREE_CHAR_LIMIT = 3000
+  if (!isAdmin && planType === 'free' && body.charCount > FREE_CHAR_LIMIT) {
+    body.charCount = FREE_CHAR_LIMIT
+  }
+
   const MONTHLY_LIMIT = 50
 
   // 生成回数チェック
   if (!isAdmin) {
     try {
-      const planType = await getPlanType(userId, userEmail)
       const currentMonthKey = new Date().toISOString().slice(0, 7) // "2026-05"
 
-      const FREE_GEN_LIMIT = 2
-
       if (planType === 'free') {
-        // 無料体験: 2回まで生成可能、以降はTrialGate
+        // 無料プランは無制限生成可能（UIでバナー誘導）、カウントのみ記録
         const { data: usageData } = await adminSupabase
           .from('usage')
           .select('monthly_count, month_key')
@@ -324,15 +338,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const freeUsed = usageData?.month_key === 'trial'
           ? ((usageData?.monthly_count as number | null) ?? 0)
           : 0
-
-        if (freeUsed >= FREE_GEN_LIMIT) {
-          return res.status(402).json({
-            error: 'TRIAL_REQUIRED',
-            message: `無料体験（${FREE_GEN_LIMIT}回）を使い切りました。7日間トライアルを開始してください。`,
-            used: freeUsed,
-            limit: FREE_GEN_LIMIT,
-          })
-        }
 
         await adminSupabase.from('usage').upsert(
           { user_id: userId, monthly_count: freeUsed + 1, month_key: 'trial', updated_at: new Date().toISOString() },

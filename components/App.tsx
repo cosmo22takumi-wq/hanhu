@@ -3,7 +3,7 @@ import type { User } from '@supabase/supabase-js'
 import { supabase, ADMIN_EMAIL } from '../utils/supabaseClient'
 import type { PlanType } from '../utils/planTypes'
 import Auth from './Auth'
-import TrialGate from './TrialGate'
+import UpgradeBanner from './UpgradeBanner'
 import CiNiiSearch from './CiNiiSearch'
 import ProofreadPanel from './ProofreadPanel'
 import type { ProofreadResult } from '../pages/api/proofread'
@@ -69,7 +69,7 @@ export default function App() {
   const [proofreadLimit, setProofreadLimit] = useState<number | null>(null)
   const [showPricing, setShowPricing] = useState(false)
   const [pricingFromLimit, setPricingFromLimit] = useState(false)
-  const [trialLimitHit, setTrialLimitHit] = useState(false)
+  const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [savedReports, setSavedReports] = useState<SavedReport[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
@@ -279,9 +279,10 @@ export default function App() {
 
       if (!res.ok) {
         const err = await res.json() as { error?: string; message?: string; count?: number }
-        if (err.error === 'TRIAL_REQUIRED') {
-          setTrialLimitHit(true)
+        if (err.error === 'FILE_MATERIAL_REQUIRES_PLAN') {
+          setGenError(err.message ?? 'ファイル資料は有料プランでのみ利用できます')
           setGenerating(false)
+          setShowUpgradeBanner(true)
           return
         }
         if (err.error === 'MONTHLY_LIMIT_REACHED') {
@@ -322,6 +323,15 @@ export default function App() {
 
       if (!accumulated) throw new Error('レポートが生成されませんでした')
       if (user) logEvent(user.id, 'generate_success')
+
+      // 無料ユーザー: 2回ごとにアップグレードバナー表示
+      if (plan === 'free' && !isAdmin) {
+        const key = 'pochi_free_gen_count'
+        const count = (parseInt(localStorage.getItem(key) ?? '0', 10) || 0) + 1
+        localStorage.setItem(key, String(count))
+        if (count % 2 === 0) setShowUpgradeBanner(true)
+      }
+
       // スコア評価（バックグラウンド）
       setScoresLoading(true)
       const { data: { session: evalSession } } = await supabase.auth.getSession()
@@ -428,10 +438,8 @@ export default function App() {
     )
   }
 
-  if (trialLimitHit) return <TrialGate />
-
   const enabledMaterialsCount = materials.filter((m) => m.enabled).length
-  const charLimit = CHAR_LIMIT
+  const charLimit = (!isAdmin && !isPro) ? 3000 : CHAR_LIMIT
 
   const tabBtn = (id: InputTab, label: string) => (
     <button
@@ -478,6 +486,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {showPricing && <Pricing status={subStatus} currentPeriodEnd={currentPeriodEnd} onClose={() => { setShowPricing(false); setPricingFromLimit(false) }} fromLimit={pricingFromLimit} />}
+      {showUpgradeBanner && !isPro && !isAdmin && (
+        <UpgradeBanner onClose={() => setShowUpgradeBanner(false)} />
+      )}
 
       {showOnboarding && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -581,11 +592,13 @@ export default function App() {
             {inputTab === 'whisper' && (
               isPro
                 ? <WhisperRecorder onTranscribed={handleTranscribed} />
-                : <LockedFeature message="音声文字起こしは Standard 以上のプランで使えます" />
+                : <LockedFeature message="音声文字起こしは有料プランで使えます。7日間無料トライアルあり" />
             )}
 
             {inputTab === 'file' && (
-              <FileUploader onExtracted={handleFileExtracted} />
+              isPro
+                ? <FileUploader onExtracted={handleFileExtracted} />
+                : <LockedFeature message="ファイルのアップロードは有料プランで使えます。URLからの資料追加は無料でOK" />
             )}
 
             {inputTab === 'proofread' && (
