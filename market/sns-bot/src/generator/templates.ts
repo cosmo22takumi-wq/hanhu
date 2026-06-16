@@ -515,4 +515,66 @@ export const TEMPLATES: Template[] = [
     content: '友達に「レポート手伝って」って配ったアプリ、思った以上にみんな使ってくれてて、自分の悩みって結構みんなの悩みだったんだなと実感した',
     has_cta: true, weight: 1.5,
   },
+
+  // ──────── バズコンテンツ（リアルな失敗・発見・あるある）────────
+  {
+    category: 'daily_life',
+    content: 'レポート3000字、気づいたら「なお」「さらに」「また」で繋いでるだけになってた。接続詞で字数稼ぐスキルだけ上がっていく',
+    has_cta: false, weight: 1.8,
+  },
+  {
+    category: 'daily_life',
+    content: '先生に「自分の言葉で書いて」って言われるんだけど、自分の言葉で書いたら「根拠は？」って言われる。どこに自分の言葉を入れる隙があるんですか',
+    has_cta: false, weight: 1.8,
+  },
+  {
+    category: 'daily_life',
+    content: 'Wikipediaが使えないって知って代わりに論文探したら、論文が有料で読めないって知って、大学のアカウントでログインしたら読めるって知った。この情報、入学式で教えてほしかった',
+    has_cta: false, weight: 2.0,
+  },
+  {
+    category: 'daily_life',
+    content: '「1500字以上」のレポートに2000字書いて出したら「簡潔にまとめなさい」って返ってきた。字数上限も字数下限も書いといてくれ',
+    has_cta: false, weight: 1.9,
+  },
+  {
+    category: 'daily_life',
+    content: 'ChatGPTに参考文献出してもらったら実在しない論文が3本あった。あやうく提出するところだった。あれは本当に怖い',
+    has_cta: false, weight: 2.0,
+  },
+  {
+    category: 'daily_life',
+    content: '電子図書館、大学のIDでタダで使えるって知ったの2年生の後期なんだけど、みんな知ってた？ずっとAmazonで教科書買ってた',
+    has_cta: false, weight: 2.0,
+  },
+  {
+    category: 'daily_life',
+    content: 'レポートの提出期限が23:59なのに23:58に出して心臓止まるかと思った経験、絶対みんなある',
+    has_cta: false, weight: 1.9,
+  },
+  {
+    category: 'report_struggle',
+    content: '「自分の考えを述べよ」って書いてあるレポートで自分の考えを書いたら「主観的すぎる」って言われた。どうすればいいんですか',
+    has_cta: false, weight: 1.8,
+  },
+  {
+    category: 'chatgpt_shallow',
+    content: 'GPTのレポートって文章は整ってるのに中身がない、という絶妙な出来になる。先生はすぐわかるらしい。わかるんかい',
+    has_cta: false, weight: 1.7,
+  },
+  {
+    category: 'latenight',
+    content: '深夜2時のレポート、参考文献の書き方を調べてたはずがAPA形式とMLA形式の違いを30分読んでて気づいたら3時になってた',
+    has_cta: false, weight: 1.8,
+  },
+  {
+    category: 'self_made_app',
+    content: '電子図書館のURLそのまま貼ったらレポートの叩き台ができるやつ作った。参考文献も自動でついてくるから架空論文問題も解決した。プロフにリンクある',
+    has_cta: true, weight: 1.8,
+  },
+  {
+    category: 'self_made_app',
+    content: '「ChatGPTが出す参考文献、実在するの？」って毎回確認してた時間、全部無駄だったので解決策作った。プロフ見て',
+    has_cta: true, weight: 1.7,
+  },
 ];

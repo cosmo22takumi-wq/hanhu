@@ -407,6 +407,82 @@ const faqSchema = {
     </div>
   </section>
 
+  <!-- ===== 電子図書館ガイド ===== -->
+  <section class="bg-white py-16 px-4 border-b border-gray-100">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-xs font-bold text-indigo-500 uppercase tracking-widest text-center mb-3">使い方はたった3ステップ</p>
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 text-center mb-2 leading-tight">
+        まず、大学の電子図書館で<br class="sm:hidden" />教科書を見つけよう
+      </h2>
+      <p class="text-gray-500 text-sm text-center mb-10">
+        URLを貼るだけで、その本の内容を根拠にしたレポートが生成されます。<br class="hidden sm:block" />ChatGPTと違い、架空の参考文献は出てきません。
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        {[
+          {
+            num: '01',
+            title: '電子図書館で教科書を探す',
+            desc: '大学のポータルサイトからアクセスできます。下のリンクから各サービスへ。',
+            links: [
+              { label: 'Maruzen eBook', href: 'https://elib.maruzen.co.jp/' },
+              { label: 'KinoDen（紀伊國屋）', href: 'https://kinoden.kinokuniya.co.jp/' },
+              { label: 'CiNii Research', href: 'https://cir.nii.ac.jp/' },
+            ],
+          },
+          {
+            num: '02',
+            title: '読みたいページのURLをコピー',
+            desc: 'ブラウザのアドレスバーにあるURLをそのままコピーするだけ。ログイン状態のURLで大丈夫です。',
+            links: [],
+          },
+          {
+            num: '03',
+            title: 'ポチレポに貼ってテーマを入力',
+            desc: 'URLを貼り付けて、レポートのテーマを一行書いたら「生成」を押すだけ。3分で叩き台が完成します。',
+            links: [],
+          },
+        ].map(({ num, title, desc, links }) => (
+          <div class="rounded-2xl border border-gray-200 p-5 bg-gray-50 flex flex-col gap-3">
+            <span class="text-4xl font-black text-gray-200 leading-none">{num}</span>
+            <p class="font-black text-gray-900 text-base">{title}</p>
+            <p class="text-gray-500 text-xs leading-relaxed flex-1">{desc}</p>
+            {links.length > 0 && (
+              <div class="flex flex-col gap-1.5 mt-1">
+                {links.map(({ label, href }) => (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-500 transition"
+                  >
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    {label} で探す →
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div class="bg-indigo-50 border border-indigo-100 rounded-2xl px-6 py-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
+        <div>
+          <p class="font-black text-gray-900 mb-1">教科書が見つかったら、ポチレポで使ってみよう</p>
+          <p class="text-xs text-gray-500">2回まで無料で試せます。カード登録は2回使い切ってから。</p>
+        </div>
+        <a
+          href={APP_URL}
+          class="shrink-0 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl px-6 py-3 transition shadow-md whitespace-nowrap"
+        >
+          URLを貼って試す →
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== STATS BAR ===== -->
   <section class="bg-[#0a0908] border-y border-gray-800/80 py-10 px-4">
     <div class="max-w-4xl mx-auto grid grid-cols-3 text-center divide-x divide-gray-800">

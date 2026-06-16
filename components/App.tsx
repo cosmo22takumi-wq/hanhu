@@ -69,6 +69,7 @@ export default function App() {
   const [proofreadLimit, setProofreadLimit] = useState<number | null>(null)
   const [showPricing, setShowPricing] = useState(false)
   const [pricingFromLimit, setPricingFromLimit] = useState(false)
+  const [trialLimitHit, setTrialLimitHit] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [savedReports, setSavedReports] = useState<SavedReport[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
@@ -279,8 +280,7 @@ export default function App() {
       if (!res.ok) {
         const err = await res.json() as { error?: string; message?: string; count?: number }
         if (err.error === 'TRIAL_REQUIRED') {
-          setPricingFromLimit(true)
-          setShowPricing(true)
+          setTrialLimitHit(true)
           setGenerating(false)
           return
         }
@@ -428,7 +428,7 @@ export default function App() {
     )
   }
 
-  if (!isAdmin && plan === 'free') return <TrialGate />
+  if (trialLimitHit) return <TrialGate />
 
   const enabledMaterialsCount = materials.filter((m) => m.enabled).length
   const charLimit = CHAR_LIMIT

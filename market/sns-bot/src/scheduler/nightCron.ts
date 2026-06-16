@@ -6,6 +6,7 @@ import { generateOnePost } from '../generator/postGenerator';
 import { generateReply } from '../generator/replyGenerator';
 import { getPage, ensureLoggedIn } from '../browser/xBot';
 import { postTweet, postReply } from '../browser/poster';
+import { runReplyHuntJob } from '../browser/replyBot';
 import { scrapeEngagement, scrapeComments } from '../browser/scraper';
 import { calcScore, generateInsight, printNightSummary } from '../analysis/analyzer';
 import { updateTemplateWeights, suppressZeroLikeTemplates, printLearningReport } from '../analysis/learner';
@@ -207,6 +208,16 @@ export function registerCronJobs(): void {
     child.stderr?.on('data', (d: Buffer) => log('warn', `[知恵袋] ${d.toString().trim()}`));
     child.on('exit', (code: number | null) => log('info', `[知恵袋] 終了 (code: ${code})`));
     log('info', '[Cron] 知恵袋ボット起動');
+  }, { timezone: 'Asia/Tokyo' });
+
+  // 4時間ごとにリプライ狩りジョブ（8時・12時・16時・20時）
+  cron.schedule('0 8,12,16,20 * * *', async () => {
+    if (isRunning) return;
+    log('info', '[Cron] リプライ狩り開始');
+    const page = await getPage();
+    const loggedIn = await ensureLoggedIn(page);
+    if (!loggedIn) { log('error', '[Cron] リプライ狩り: ログイン失敗'); return; }
+    await runReplyHuntJob(page);
   }, { timezone: 'Asia/Tokyo' });
 
   // 毎日15時にも知恵袋ボットを起動

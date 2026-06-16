@@ -311,41 +311,58 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const planType = await getPlanType(userId, userEmail)
       const currentMonthKey = new Date().toISOString().slice(0, 7) // "2026-05"
 
+      const FREE_GEN_LIMIT = 2
+
       if (planType === 'free') {
-        return res.status(402).json({
-          error: 'TRIAL_REQUIRED',
-          message: '無料トライアルを開始するにはカード登録が必要です。',
-        })
+        // 無料体験: 2回まで生成可能、以降はTrialGate
+        const { data: usageData } = await adminSupabase
+          .from('usage')
+          .select('monthly_count, month_key')
+          .eq('user_id', userId)
+          .maybeSingle()
+
+        const freeUsed = usageData?.month_key === 'trial'
+          ? ((usageData?.monthly_count as number | null) ?? 0)
+          : 0
+
+        if (freeUsed >= FREE_GEN_LIMIT) {
+          return res.status(402).json({
+            error: 'TRIAL_REQUIRED',
+            message: `無料体験（${FREE_GEN_LIMIT}回）を使い切りました。7日間トライアルを開始してください。`,
+            used: freeUsed,
+            limit: FREE_GEN_LIMIT,
+          })
+        }
+
+        await adminSupabase.from('usage').upsert(
+          { user_id: userId, monthly_count: freeUsed + 1, month_key: 'trial', updated_at: new Date().toISOString() },
+          { onConflict: 'user_id' }
+        )
+      } else {
+        const { data: usageData } = await adminSupabase
+          .from('usage')
+          .select('monthly_count, month_key')
+          .eq('user_id', userId)
+          .maybeSingle()
+
+        const monthKey = (usageData?.month_key as string | null) ?? ''
+        const monthlyCount = monthKey === currentMonthKey
+          ? ((usageData?.monthly_count as number | null) ?? 0)
+          : 0
+
+        if (monthlyCount >= MONTHLY_LIMIT) {
+          return res.status(402).json({
+            error: 'MONTHLY_LIMIT_REACHED',
+            message: `今月の生成回数（${MONTHLY_LIMIT}回）に達しました。来月1日にリセットされます。`,
+            count: monthlyCount,
+            limit: MONTHLY_LIMIT,
+          })
+        }
+        await adminSupabase.from('usage').upsert(
+          { user_id: userId, monthly_count: monthlyCount + 1, month_key: currentMonthKey, updated_at: new Date().toISOString() },
+          { onConflict: 'user_id' }
+        )
       }
-
-      const { data: usageData } = await adminSupabase
-        .from('usage')
-        .select('monthly_count, month_key')
-        .eq('user_id', userId)
-        .maybeSingle()
-
-      const monthKey = (usageData?.month_key as string | null) ?? ''
-      const monthlyCount = monthKey === currentMonthKey
-        ? ((usageData?.monthly_count as number | null) ?? 0)
-        : 0
-
-      if (monthlyCount >= MONTHLY_LIMIT) {
-        return res.status(402).json({
-          error: 'MONTHLY_LIMIT_REACHED',
-          message: `今月の生成回数（${MONTHLY_LIMIT}回）に達しました。来月1日にリセットされます。`,
-          count: monthlyCount,
-          limit: MONTHLY_LIMIT,
-        })
-      }
-      await adminSupabase.from('usage').upsert(
-        {
-          user_id: userId,
-          monthly_count: monthlyCount + 1,
-          month_key: currentMonthKey,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id' }
-      )
     } catch (err) {
       console.error('usage check error:', err)
       return res.status(500).json({ error: `利用チェックエラー: ${String(err)}` })
