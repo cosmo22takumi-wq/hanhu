@@ -459,8 +459,8 @@ async function main(): Promise<void> {
     await new Promise((r) => setTimeout(r, 1500));
   }
 
-  // 重複除去・1日最大7件に制限
-  const unique = [...new Map(targets.map((q) => [q.url, q])).values()].slice(0, 7);
+  // 重複除去・1回あたり最大12件に制限
+  const unique = [...new Map(targets.map((q) => [q.url, q])).values()].slice(0, 12);
   console.log(`\n対象: ${unique.length}件の質問に回答します\n`);
 
   let successCount = 0;
@@ -472,7 +472,7 @@ async function main(): Promise<void> {
     // 詳細取得
     const detail = await getQuestionDetail(page, q.url);
     if (!detail) { console.warn('  → 詳細取得失敗、スキップ'); continue; }
-    if (detail.answerCount >= 10) { console.log(`  → 既に${detail.answerCount}件の回答あり、スキップ`); continue; }
+    if (detail.answerCount >= 5) { console.log(`  → 既に${detail.answerCount}件の回答あり、スキップ`); continue; }
 
     // ターゲット外（大学生以外）をスキップ
     const fullText = q.title + ' ' + (detail.body || '');
