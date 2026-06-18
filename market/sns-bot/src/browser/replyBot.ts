@@ -146,8 +146,11 @@ export async function runReplyHuntJob(page: Page): Promise<void> {
 
       if (ok) {
         replyCount++;
+        log('success', `[ReplyBot] リプライ完了 (${replyCount}件目): ${tweet.url}`);
         await followUser(page, tweet.url);
         await humanDelay(8000, 15000); // 連続リプライ防止
+      } else {
+        log('warn', `[ReplyBot] リプライ失敗（postReply=false）: ${tweet.url}`);
       }
     }
 

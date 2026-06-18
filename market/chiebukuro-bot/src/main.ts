@@ -160,15 +160,15 @@ async function searchQuestions(page: Page, query: string): Promise<Question[]> {
     await page.keyboard.press('Enter');
     await page.waitForTimeout(3000);
 
-    // 「回答数の少ない順」に切り替え（value=5）→ 回答待ちの質問を優先
+    // 「新着順」に切り替え（value=2）→ 投稿直後で回答ゼロの質問を優先
     const sortSelect = page.locator('select[data-_cl_link="pl"]').first();
     if (await sortSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await sortSelect.selectOption('5');
+      await sortSelect.selectOption('2');
       await page.waitForTimeout(2500);
     }
   } catch {
     await page.goto(
-      `https://chiebukuro.yahoo.co.jp/search?p=${encodeURIComponent(query)}&sort=1`,
+      `https://chiebukuro.yahoo.co.jp/search?p=${encodeURIComponent(query)}&sort=2`,
       { waitUntil: 'domcontentloaded', timeout: 30000 }
     );
     await page.waitForTimeout(2000);

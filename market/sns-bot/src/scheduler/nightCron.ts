@@ -210,8 +210,9 @@ export function registerCronJobs(): void {
     log('info', '[Cron] 知恵袋ボット起動');
   }, { timezone: 'Asia/Tokyo' });
 
-  // 4時間ごとにリプライ狩りジョブ（8時・12時・16時・20時）
-  cron.schedule('0 8,12,16,20 * * *', async () => {
+  // 4時間ごとにリプライ狩りジョブ（8:15・12:15・16:15・20:15）
+  // ← :00と:30の投稿ジョブとブラウザ競合しないよう:15にずらす
+  cron.schedule('15 8,12,16,20 * * *', async () => {
     if (isRunning) return;
     log('info', '[Cron] リプライ狩り開始');
     const page = await getPage();
