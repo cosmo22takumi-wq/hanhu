@@ -584,6 +584,7 @@ export default function App() {
             {inputTab === 'cinii' && (
               <CiNiiSearch
                 user={user}
+                theme={theme}
                 onAdded={() => setMaterialListKey((k) => k + 1)}
                 onUpgrade={() => { setPricingFromLimit(true); setShowPricing(true) }}
               />
