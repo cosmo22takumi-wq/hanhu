@@ -7,6 +7,7 @@ import { generateReply } from '../generator/replyGenerator';
 import { getPage, ensureLoggedIn } from '../browser/xBot';
 import { postTweet, postReply } from '../browser/poster';
 import { runReplyHuntJob } from '../browser/replyBot';
+import { runFollowJob } from '../browser/followBot';
 import { scrapeEngagement, scrapeComments } from '../browser/scraper';
 import { calcScore, generateInsight, printNightSummary } from '../analysis/analyzer';
 import { updateTemplateWeights, suppressZeroLikeTemplates, printLearningReport } from '../analysis/learner';
@@ -208,6 +209,16 @@ export function registerCronJobs(): void {
     child.stderr?.on('data', (d: Buffer) => log('warn', `[知恵袋] ${d.toString().trim()}`));
     child.on('exit', (code: number | null) => log('info', `[知恵袋] 終了 (code: ${code})`));
     log('info', '[Cron] 知恵袋ボット起動');
+  }, { timezone: 'Asia/Tokyo' });
+
+  // 朝7時・夜19時にフォロージョブ（各30件、1日60件フォロー）
+  cron.schedule('0 7,19 * * *', async () => {
+    if (isRunning) return;
+    log('info', '[Cron] フォロージョブ開始');
+    const page = await getPage();
+    const loggedIn = await ensureLoggedIn(page);
+    if (!loggedIn) { log('error', '[Cron] フォロージョブ: ログイン失敗'); return; }
+    await runFollowJob(page);
   }, { timezone: 'Asia/Tokyo' });
 
   // 4時間ごとにリプライ狩りジョブ（8:15・12:15・16:15・20:15）

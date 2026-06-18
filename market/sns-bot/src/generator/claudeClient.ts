@@ -55,6 +55,11 @@ ${baseText}
       log('warn', `[Claude] ${raw.length}字→${text.length}字に切り詰め`);
     }
 
+    // 20%の確率でハッシュタグを付与（露出拡大。文字数余裕がある場合のみ）
+    if (Math.random() < 0.2 && text.length + 12 <= maxLen) {
+      text = text + ' #大学生 #レポート';
+    }
+
     return text;
   } catch (err) {
     log('warn', `[Claude] API呼び出し失敗: ${err}`);

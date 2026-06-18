@@ -145,10 +145,10 @@ async function waitAndClickSubmit(page: Page): Promise<boolean> {
 export async function postTweet(page: Page, content: string): Promise<string | null> {
   log('info', `[Poster] 投稿開始 (${content.length}字): "${content.slice(0, 30)}..."`);
 
-  // 55文字制限チェック（日本語はXで2ウェイトのため実質140字制限に合わせ余裕を持たせる）
-  if (content.length > 55) {
-    log('warn', `[Poster] 文字数オーバー(${content.length}字)、55字に切り詰めます`);
-    content = content.slice(0, 55);
+  // 100文字制限（X は日本語も1文字=1カウント、140字上限で十分余裕あり）
+  if (content.length > 100) {
+    log('warn', `[Poster] 文字数オーバー(${content.length}字)、100字に切り詰めます`);
+    content = content.slice(0, 100).replace(/[。、！？…]+[^。、！？…]*$/, '') || content.slice(0, 100);
   }
 
   try {
